@@ -39,7 +39,7 @@ public class InterfaceGraficaUML {
         this.framePrincipal.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.framePrincipal.setLayout(new MigLayout());
         this.framePrincipal.setTitle("Editor de Diagramas UML");
-        framePrincipal.setIconImage(new ImageIcon(MenuPrincipal.class.getResource("/imagens/icone_aplicativo.png")).getImage());
+        framePrincipal.setIconImage(new ImageIcon(MenuPrincipal.class.getResource("/imagens/logo/app_icone.png")).getImage());
 
         // Criando um menuPrincipal e uma AreaDeDiagramas a partir das classes relacionadas ---------------------------
 

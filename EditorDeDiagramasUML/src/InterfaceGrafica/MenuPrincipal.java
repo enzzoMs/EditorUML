@@ -47,7 +47,7 @@ public class MenuPrincipal {
         painelLogoAplicativo.setBackground(Color.black);
         painelLogoAplicativo.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 3, new Color(0xeaeaea)));
 
-        JLabel logoAplicativo = new JLabel(new ImageIcon(MenuPrincipal.class.getResource("/imagens/img_logo_aplicativo.png")));
+        JLabel logoAplicativo = new JLabel(new ImageIcon(MenuPrincipal.class.getResource("/imagens/logo/app_logo_branco.png")));
 
         painelLogoAplicativo.add(logoAplicativo);
 
