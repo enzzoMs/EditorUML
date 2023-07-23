@@ -1,4 +1,4 @@
-package utils;
+package auxiliares;
 
 import ClassesAuxiliares.RobotoFont;
 import interfacegrafica.MenuPrincipal;
@@ -13,7 +13,7 @@ import java.util.ResourceBundle;
 
 /**
  * Singleton que gerencia o acesso a Strings, Cores, Imagens e Fontes, possuindo métodos para garantir a recuperação
- * de qualquer um dos três.
+ * de qualquer um deles.
  */
 
 public class GerenciadorDeRecursos {
@@ -81,10 +81,10 @@ public class GerenciadorDeRecursos {
     /**
      * @param nome Nome associado ao caminho da Imagem (Veja caminhos.properties).
      */
-    public Image getImagem(String nome) {
+    public ImageIcon getImagem(String nome) {
         if (bundleCaminhos.containsKey(nome)) {
             URL urlImagem = Objects.requireNonNull(MenuPrincipal.class.getResource(bundleCaminhos.getString(nome)));
-            return new ImageIcon(urlImagem).getImage();
+            return new ImageIcon(urlImagem);
         } else {
             throw new IllegalArgumentException(String.format("Não existe Imagem com nome \"%s\"", nome));
         }

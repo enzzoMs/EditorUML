@@ -1,155 +1,171 @@
 package interfacegrafica;
 
-import ClassesAuxiliares.RobotoFont;
-
+import ClassesAuxiliares.GerenciadorDeArquivos;
+import DiagramaUML.DiagramaUML;
 import net.miginfocom.swing.MigLayout;
+import auxiliares.GerenciadorDeRecursos;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class MenuPrincipal {
-    /*
-        Classe que representa a interface gráfica do menu principal do aplicativo. Possui como atributo principal o
-        painelMenuPrincipal que possui todos os componentes gráficos do menu.
-     */
-
     private final JPanel painelMenuPrincipal;
 
-    public MenuPrincipal(GerenciadorInterfaceGrafica interfaceGrafica) {
+    public MenuPrincipal(GerenciadorInterfaceGrafica gerenciadorInterfaceGrafica) {
+        GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
-        // Criando e Configurando o painelMenuPrincipal --------------------------------------------------------------
+        // Adicionando listener para quando o usuario tentar fechar a aplicacao
+        gerenciadorInterfaceGrafica.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                if (gerenciadorInterfaceGrafica.estaMostrandoMenuPrincipal()) {
+                    gerenciadorInterfaceGrafica.mostrarDialogFecharAplicacao();
+                }
+            }
+        });
 
         painelMenuPrincipal = new JPanel();
-        painelMenuPrincipal.setLayout(new MigLayout("insets 30 70 30 70"));
-        painelMenuPrincipal.setBackground(Color.white);
+        painelMenuPrincipal.setLayout(new MigLayout("insets 30 110 30 110"));
+        painelMenuPrincipal.setBackground(gerenciadorDeRecursos.getColor("white"));
 
-        // Criando e adicionado os componentes gráficos do menu ao painelMenuPrincipal -------------------------------
+        // Criando e adicionado os componentes gráficos do menu ao painelMenuPrincipal
 
-        RobotoFont robotoFont = new RobotoFont();
+        JPanel painelLogoAplicativo = new JPanel(new MigLayout("fill, insets 60 55 60 55"));
+        painelLogoAplicativo.setBackground(gerenciadorDeRecursos.getColor("black"));
+        painelLogoAplicativo.setBorder(BorderFactory.createMatteBorder(
+                0, 0, 0, 3, gerenciadorDeRecursos.getColor("bright_gray"))
+        );
 
-        JPanel painelTituloAplicativo = new JPanel(new MigLayout("insets 30 25 0 25", "[grow, fill]"));
-        painelTituloAplicativo.setBackground(Color.white);
+        JLabel logoAplicativo = new JLabel(gerenciadorDeRecursos.getImagem("app_logo_branco"));
+        painelLogoAplicativo.add(logoAplicativo);
 
-        JLabel labelTituloAplicativo = new JLabel("EDITOR DE DIAGRAMAS UML");
-        labelTituloAplicativo.setFont(robotoFont.getRobotoBlack(20));
+        // ----------------------------------------------------------------------------
+
+        JPanel painelTituloAplicativo = new JPanel(new MigLayout("insets 15 30 0 30", "[grow, fill]"));
+        painelTituloAplicativo.setBackground(gerenciadorDeRecursos.getColor("white"));
+
+        JLabel labelTituloAplicativo = new JLabel(gerenciadorDeRecursos.getString("app_titulo_maiusculo"));
+        labelTituloAplicativo.setFont(gerenciadorDeRecursos.getRobotoBlack(28));
         labelTituloAplicativo.setHorizontalAlignment(JLabel.CENTER);
 
         JPanel painelFaixaTitulo = new JPanel();
-        painelFaixaTitulo.setBorder(BorderFactory.createMatteBorder(0, 0, 3, 0, Color.black));
+        painelFaixaTitulo.setBorder(BorderFactory.createMatteBorder(
+            0, 0, 3, 0, gerenciadorDeRecursos.getColor("black"))
+        );
         painelFaixaTitulo.setOpaque(false);
 
         painelTituloAplicativo.add(labelTituloAplicativo, "wrap, gaptop 18");
         painelTituloAplicativo.add(painelFaixaTitulo, "align center");
 
-        JPanel painelLogoAplicativo = new JPanel(new MigLayout("fill, insets 60 80 60 80"));
-        painelLogoAplicativo.setBackground(Color.black);
-        painelLogoAplicativo.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 3, new Color(0xeaeaea)));
+        // ----------------------------------------------------------------------------
 
-        JLabel logoAplicativo = new JLabel(new ImageIcon(MenuPrincipal.class.getResource("/imagens/logo/app_logo_branco.png")));
+        JLabel labelImgNovoDiagrama = new JLabel(gerenciadorDeRecursos.getImagem("icone_sinal_mais"));
 
-        painelLogoAplicativo.add(logoAplicativo);
-
-
-
-        JLabel labelImgNovoDiagrama = new JLabel(new ImageIcon(MenuPrincipal.class.getResource("/imagens/img_novo.png")));
-
-        JLabel labelNovoDiagrama = new JLabel("Novo Diagrama");
-        labelNovoDiagrama.setFont(robotoFont.getRobotoMedium(15));
+        JLabel labelNovoDiagrama = new JLabel(gerenciadorDeRecursos.getString("diagrama_novo"));
+        labelNovoDiagrama.setFont(gerenciadorDeRecursos.getRobotoMedium(16));
         labelNovoDiagrama.setHorizontalAlignment(JLabel.CENTER);
 
         JPanel painelNovoDiagrama = new JPanel(new MigLayout("fill, insets 5 10 5 10"));
-        painelNovoDiagrama.setBackground(Color.white);
+        painelNovoDiagrama.setBackground(gerenciadorDeRecursos.getColor("white"));
         painelNovoDiagrama.add(labelImgNovoDiagrama, "split 2, align center, gapright 5");
         painelNovoDiagrama.add(labelNovoDiagrama, "align center, grow");
-        painelNovoDiagrama.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(0x242424)));
+        painelNovoDiagrama.setBorder(BorderFactory.createMatteBorder(
+            1, 1, 1, 1, gerenciadorDeRecursos.getColor("raisin_black")
+        ));
         painelNovoDiagrama.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                interfaceGrafica.novoDiagrama();
+                gerenciadorInterfaceGrafica.mostrarAreaDeDiagramas(null);
             }
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                painelNovoDiagrama.setBackground(new Color(0xebebeb));
+                painelNovoDiagrama.setBackground(gerenciadorDeRecursos.getColor("light_gray"));
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                painelNovoDiagrama.setBackground(Color.white);
+                painelNovoDiagrama.setBackground(gerenciadorDeRecursos.getColor("white"));
             }
         });
 
+        // ----------------------------------------------------------------------------
 
-        JLabel labelImgAbrirDiagrama = new JLabel(new ImageIcon(MenuPrincipal.class.getResource("/imagens/img_pasta_fechada.png")));
+        JLabel labelImgAbrirDiagrama = new JLabel(gerenciadorDeRecursos.getImagem("icone_pasta_fechada"));
 
-        JLabel labelAbrirDiagrama = new JLabel("Abrir Diagrama");
-        labelAbrirDiagrama.setFont(robotoFont.getRobotoMedium(15));
+        JLabel labelAbrirDiagrama = new JLabel(gerenciadorDeRecursos.getString("diagrama_abrir"));
+        labelAbrirDiagrama.setFont(gerenciadorDeRecursos.getRobotoMedium(16));
         labelAbrirDiagrama.setHorizontalAlignment(JLabel.CENTER);
 
         JPanel painelAbrirDiagrama = new JPanel(new MigLayout("fill, insets 5 10 5 10"));
-        painelAbrirDiagrama.setBackground(Color.white);
+        painelAbrirDiagrama.setBackground(gerenciadorDeRecursos.getColor("white"));
         painelAbrirDiagrama.add(labelImgAbrirDiagrama, "split 2, align center, gapright 5");
         painelAbrirDiagrama.add(labelAbrirDiagrama, "align center, grow");
-        painelAbrirDiagrama.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(0x242424)));
+        painelAbrirDiagrama.setBorder(BorderFactory.createMatteBorder(
+            1, 1, 1, 1, gerenciadorDeRecursos.getColor("raisin_black")
+        ));
         painelAbrirDiagrama.addMouseListener(new MouseAdapter() {
-            final ImageIcon imgPastaAberta = new ImageIcon(MenuPrincipal.class.getResource("/imagens/img_pasta_aberta.png"));
-            final ImageIcon imgPastaFechada = new ImageIcon(MenuPrincipal.class.getResource("/imagens/img_pasta_fechada.png"));
+            final ImageIcon imgPastaAberta = gerenciadorDeRecursos.getImagem("icone_pasta_aberta");
+            final ImageIcon imgPastaFechada = gerenciadorDeRecursos.getImagem("icone_pasta_fechada");
+            final GerenciadorDeArquivos gerenciadorDeArquivos = new GerenciadorDeArquivos(new AreaDeDiagramas(gerenciadorInterfaceGrafica));
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                interfaceGrafica.abrirDiagrama();
+                DiagramaUML diagrama = gerenciadorDeArquivos.abrirDiagrama();
+                gerenciadorInterfaceGrafica.mostrarAreaDeDiagramas(diagrama);
             }
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                painelAbrirDiagrama.setBackground(new Color(0xebebeb));
-
+                painelAbrirDiagrama.setBackground(gerenciadorDeRecursos.getColor("light_gray"));
                 labelImgAbrirDiagrama.setIcon(imgPastaAberta);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                painelAbrirDiagrama.setBackground(Color.white);
-
+                painelAbrirDiagrama.setBackground(gerenciadorDeRecursos.getColor("white"));
                 labelImgAbrirDiagrama.setIcon(imgPastaFechada);
             }
         });
 
+        // ----------------------------------------------------------------------------
 
-
-        JLabel labelSairAplicativo = new JLabel("Sair");
-        labelSairAplicativo.setFont(robotoFont.getRobotoBlack(15));
-        labelSairAplicativo.setForeground(Color.white);
+        JLabel labelSairAplicativo = new JLabel(gerenciadorDeRecursos.getString("sair"));
+        labelSairAplicativo.setFont(gerenciadorDeRecursos.getRobotoMedium(16));
+        labelSairAplicativo.setForeground(gerenciadorDeRecursos.getColor("white"));
         labelSairAplicativo.setHorizontalAlignment(JLabel.CENTER);
 
         JPanel painelSairAplicativo = new JPanel(new MigLayout("fill, insets 5 10 5 10"));
-        painelSairAplicativo.setBackground(new Color(0x282626));
+        painelSairAplicativo.setBackground(gerenciadorDeRecursos.getColor("raisin_black"));
 
         painelSairAplicativo.add(labelSairAplicativo, "align center, grow");
         painelSairAplicativo.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                interfaceGrafica.fecharAplicacao();
+                gerenciadorInterfaceGrafica.mostrarDialogFecharAplicacao();
             }
 
             @Override
             public void mouseEntered(MouseEvent e) {
-                painelSairAplicativo.setBackground(new Color(0x303030));
+                painelSairAplicativo.setBackground(gerenciadorDeRecursos.getColor("dark_charcoal"));
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                painelSairAplicativo.setBackground(Color.black);
+                painelSairAplicativo.setBackground(gerenciadorDeRecursos.getColor("black"));
             }
         });
 
+        // ----------------------------------------------------------------------------
 
         JPanel faixaInferiorMenu = new JPanel();
-        faixaInferiorMenu.setBackground(new Color(0x212121));
+        faixaInferiorMenu.setBackground(gerenciadorDeRecursos.getColor("raisin_black"));
 
-        // ------------------------------------------------------------------------------------------------------------
+        // ----------------------------------------------------------------------------
 
         painelMenuPrincipal.add(faixaInferiorMenu, "south");
         painelMenuPrincipal.add(painelLogoAplicativo, "west");

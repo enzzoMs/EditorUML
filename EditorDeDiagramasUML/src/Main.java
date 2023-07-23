@@ -1,6 +1,6 @@
 import interfacegrafica.GerenciadorInterfaceGrafica;
 import com.formdev.flatlaf.FlatLightLaf;
-import utils.GerenciadorDeRecursos;
+import auxiliares.GerenciadorDeRecursos;
 
 import javax.swing.*;
 import java.awt.*;
