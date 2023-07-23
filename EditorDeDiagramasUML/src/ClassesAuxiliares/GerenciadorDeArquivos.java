@@ -2,8 +2,7 @@ package ClassesAuxiliares;
 
 import ComponentesUML.*;
 import DiagramaUML.DiagramaUML;
-import InterfaceGrafica.AreaDeDiagramas;
-import RelacoesUML.*;
+import interfacegrafica.AreaDeDiagramas;
 import net.miginfocom.swing.MigLayout;
 
 import javax.imageio.ImageIO;

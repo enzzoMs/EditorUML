@@ -1,7 +1,7 @@
 package DiagramaUML;
 
 import ComponentesUML.ComponenteUML;
-import InterfaceGrafica.AreaDeDiagramas;
+import interfacegrafica.AreaDeDiagramas;
 import RelacoesUML.RelacaoUML;
 
 import java.util.ArrayList;

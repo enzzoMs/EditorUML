@@ -1,4 +1,4 @@
-package InterfaceGrafica;
+package interfacegrafica;
 
 import AlteracoesDeElementos.*;
 import ClassesAuxiliares.*;
@@ -51,14 +51,14 @@ public class AreaDeDiagramas {
 
 
     private final GerenciadorDeArquivos gerenciadorArquivos = new GerenciadorDeArquivos(this);
-    private final InterfaceGraficaUML interfaceGraficaUML;
+    private final GerenciadorInterfaceGrafica gerenciadorInterfaceGrafica;
 
-    public AreaDeDiagramas(InterfaceGraficaUML interfaceGraficaUML) {
+    public AreaDeDiagramas(GerenciadorInterfaceGrafica gerenciadorInterfaceGrafica) {
         // Criando e configurando o painelAreaDeDiagramas -------------------------------------------------------------
 
         this.painelAreaDeDiagramas = new JPanel();
         this.painelAreaDeDiagramas.setLayout(new MigLayout());
-        this.interfaceGraficaUML = interfaceGraficaUML;
+        this.gerenciadorInterfaceGrafica = gerenciadorInterfaceGrafica;
 
         // Criando e adicionado os componentes gráficos ao painelAreaDeDiagramas -------------------------------------
 
@@ -247,7 +247,7 @@ public class AreaDeDiagramas {
                     labelDiretorioNaoSalvo.setVisible(false);
 
                     if (destinoDoJDialog[0] == 0) {
-                        interfaceGraficaUML.mostrarMenuPrincipal();
+                        gerenciadorInterfaceGrafica.mostrarMenuPrincipal();
 
                         resetarAreaDeDiagramas();
 
@@ -258,7 +258,7 @@ public class AreaDeDiagramas {
                         System.exit(0);
                     } else {
                         labelDiretorio.setText("Diagrama salvo em:     " + gerenciadorArquivos.getArquivoDiagrama().getAbsolutePath());
-                        interfaceGraficaUML.getFramePrincipal().setTitle("Editor de Diagramas UML - " + gerenciadorArquivos.getArquivoDiagrama().getName());
+                        gerenciadorInterfaceGrafica.getFramePrincipal().setTitle("Editor de Diagramas UML - " + gerenciadorArquivos.getArquivoDiagrama().getName());
                     }
                 }
             }
@@ -269,7 +269,7 @@ public class AreaDeDiagramas {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (destinoDoJDialog[0] == 0) {
-                    interfaceGraficaUML.mostrarMenuPrincipal();
+                    gerenciadorInterfaceGrafica.mostrarMenuPrincipal();
 
                     labelDiretorioNaoSalvo.setVisible(false);
 
@@ -339,7 +339,7 @@ public class AreaDeDiagramas {
 
                 if (gerenciadorArquivos.getArquivoDiagrama() != null) {
                     labelDiretorioNaoSalvo.setVisible(false);
-                    AreaDeDiagramas.this.interfaceGraficaUML.getFramePrincipal().setTitle("Editor de Diagramas UML - " + gerenciadorArquivos.getArquivoDiagrama().getName());
+                    AreaDeDiagramas.this.gerenciadorInterfaceGrafica.getFramePrincipal().setTitle("Editor de Diagramas UML - " + gerenciadorArquivos.getArquivoDiagrama().getName());
                 }
             }
         });
@@ -349,7 +349,7 @@ public class AreaDeDiagramas {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (diagramaUMLatual.isDiagramaSalvo()) {
-                    interfaceGraficaUML.mostrarMenuPrincipal();
+                    gerenciadorInterfaceGrafica.mostrarMenuPrincipal();
                 } else {
                     if (gerenciadorArquivos.getArquivoDiagrama() != null) {
                         labelMensagem.setText("Deseja salvar as alterações em " +
@@ -394,7 +394,7 @@ public class AreaDeDiagramas {
                     labelDiretorio.setText("Diagrama salvo em:     " + gerenciadorArquivos.getArquivoDiagrama().getAbsolutePath());
 
                     labelDiretorioNaoSalvo.setVisible(false);
-                    AreaDeDiagramas.this.interfaceGraficaUML.getFramePrincipal().setTitle("Editor de Diagramas UML - " + gerenciadorArquivos.getArquivoDiagrama().getName());
+                    AreaDeDiagramas.this.gerenciadorInterfaceGrafica.getFramePrincipal().setTitle("Editor de Diagramas UML - " + gerenciadorArquivos.getArquivoDiagrama().getName());
                 }
             }
         });
@@ -429,7 +429,7 @@ public class AreaDeDiagramas {
 
                     labelDiretorioNaoSalvo.setVisible(false);
                     labelDiretorio.setText("Diagrama salvo em:     " + gerenciadorArquivos.getArquivoDiagrama().getAbsolutePath());
-                    AreaDeDiagramas.this.interfaceGraficaUML.getFramePrincipal().setTitle("Editor de Diagramas UML - " + gerenciadorArquivos.getArquivoDiagrama().getName());
+                    AreaDeDiagramas.this.gerenciadorInterfaceGrafica.getFramePrincipal().setTitle("Editor de Diagramas UML - " + gerenciadorArquivos.getArquivoDiagrama().getName());
                 }
             }
         });
@@ -483,7 +483,7 @@ public class AreaDeDiagramas {
         });
 
 
-        AreaDeDiagramas.this.interfaceGraficaUML.getFramePrincipal().addWindowListener(new WindowAdapter()
+        AreaDeDiagramas.this.gerenciadorInterfaceGrafica.getFramePrincipal().addWindowListener(new WindowAdapter()
         {
             @Override
             public void windowClosing(WindowEvent e)
@@ -1461,7 +1461,7 @@ public class AreaDeDiagramas {
         }
 
         this.diagramaUMLatual = new DiagramaUML(this);
-        this.interfaceGraficaUML.getFramePrincipal().setTitle("Editor de Diagramas UML - NovoDiagrama");
+        this.gerenciadorInterfaceGrafica.getFramePrincipal().setTitle("Editor de Diagramas UML - NovoDiagrama");
 
         ((JLabel) ((JPanel) ((JPanel) painelAreaDeDiagramas.getComponent(1)).getComponent(0))
                 .getComponent(0)).setText("* O Diagrama ainda não foi salvo");
@@ -1487,7 +1487,7 @@ public class AreaDeDiagramas {
                     .getComponent(0));
 
             labelDiretorio.setText("Diagrama salvo em:     " + gerenciadorArquivos.getArquivoDiagrama().getAbsolutePath());
-            interfaceGraficaUML.getFramePrincipal().setTitle("Editor de Diagramas UML - " + gerenciadorArquivos.getArquivoDiagrama().getName());
+            gerenciadorInterfaceGrafica.getFramePrincipal().setTitle("Editor de Diagramas UML - " + gerenciadorArquivos.getArquivoDiagrama().getName());
 
             return true;
         }
@@ -1574,7 +1574,7 @@ public class AreaDeDiagramas {
 
     public void addAlteracao(AlteracaoDeElementosUML novaAlteracao) {
         if (diagramaUMLatual.isDiagramaSalvo()) {
-            interfaceGraficaUML.getFramePrincipal().setTitle(interfaceGraficaUML.getFramePrincipal().getTitle() + "*");
+            gerenciadorInterfaceGrafica.getFramePrincipal().setTitle(gerenciadorInterfaceGrafica.getFramePrincipal().getTitle() + "*");
 
             if (gerenciadorArquivos.getArquivoDiagrama() != null) {
                 ((JPanel) ((JPanel) painelAreaDeDiagramas.getComponent(1)).getComponent(0)).getComponent(1).setVisible(true);

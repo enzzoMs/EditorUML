@@ -1,4 +1,4 @@
-package InterfaceGrafica;
+package interfacegrafica;
 
 import ClassesAuxiliares.RobotoFont;
 
@@ -17,7 +17,7 @@ public class MenuPrincipal {
 
     private final JPanel painelMenuPrincipal;
 
-    public MenuPrincipal(InterfaceGraficaUML interfaceGrafica) {
+    public MenuPrincipal(GerenciadorInterfaceGrafica interfaceGrafica) {
 
         // Criando e Configurando o painelMenuPrincipal --------------------------------------------------------------
 

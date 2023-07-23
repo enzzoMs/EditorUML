@@ -1,20 +1,49 @@
 package utils;
 
+import ClassesAuxiliares.RobotoFont;
+import interfacegrafica.MenuPrincipal;
+
+import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.util.Properties;
+import java.io.InputStream;
+import java.net.URL;
+import java.util.Objects;
+import java.util.ResourceBundle;
 
+/**
+ * Singleton que gerencia o acesso a Strings, Cores, Imagens e Fontes, possuindo métodos para garantir a recuperação
+ * de qualquer um dos três.
+ */
 
 public class GerenciadorDeRecursos {
     private static GerenciadorDeRecursos instancia;
-    private final Properties propertiesCores;
+    private final ResourceBundle bundleCores;
+    private final ResourceBundle bundleStrings;
+    private final ResourceBundle bundleCaminhos;
+    private Font robotoBlack;
+    private Font robotoMedium;
 
     private GerenciadorDeRecursos() {
-        propertiesCores = new Properties();
+        bundleStrings = ResourceBundle.getBundle("strings");
+        bundleCores = ResourceBundle.getBundle("cores");
+        bundleCaminhos = ResourceBundle.getBundle("caminhos");
+
+        // Criando as fontes Roboto Black e Roboto Medium
 
         try {
-            propertiesCores.load(GerenciadorDeRecursos.class.getResourceAsStream("/cores.properties"));
-        } catch (IOException e) {
+            GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
+
+            InputStream fonte = RobotoFont.class.getResourceAsStream("/fontes/Roboto-Black.ttf");
+            this.robotoBlack = Font.createFont(Font.TRUETYPE_FONT, fonte);
+            graphicsEnvironment.registerFont(this.robotoBlack);
+
+            fonte = RobotoFont.class.getResourceAsStream("/fontes/Roboto-Medium.ttf");
+            robotoMedium = Font.createFont(Font.TRUETYPE_FONT, fonte);
+            graphicsEnvironment.registerFont(robotoMedium);
+
+        } catch (IOException | FontFormatException e) {
+            System.out.println("Falha ao carregar fonte");
             e.printStackTrace();
         }
     }
@@ -27,11 +56,45 @@ public class GerenciadorDeRecursos {
         return instancia;
     }
 
-    public Color getColor(String nomeCor) {
-        if (propertiesCores.containsKey(nomeCor)) {
-            return Color.decode(propertiesCores.getProperty(nomeCor));
+    /**
+     * @param nome Nome associado a propriedade da Cor (Veja cores.properties).
+     */
+    public Color getColor(String nome) {
+        if (bundleCores.containsKey(nome)) {
+            return Color.decode(bundleCores.getString(nome));
         } else {
-            throw new IllegalArgumentException(String.format("Não existe cor com nome \"%s\"", nomeCor));
+            throw new IllegalArgumentException(String.format("Não existe Cor com nome \"%s\"", nome));
         }
+    }
+
+    /**
+     * @param nome Nome associado a propriedade da String (Veja strings.properties).
+     */
+    public String getString(String nome) {
+        if (bundleStrings.containsKey(nome)) {
+            return bundleStrings.getString(nome);
+        } else {
+            throw new IllegalArgumentException(String.format("Não existe String com nome \"%s\"", nome));
+        }
+    }
+
+    /**
+     * @param nome Nome associado ao caminho da Imagem (Veja caminhos.properties).
+     */
+    public Image getImagem(String nome) {
+        if (bundleCaminhos.containsKey(nome)) {
+            URL urlImagem = Objects.requireNonNull(MenuPrincipal.class.getResource(bundleCaminhos.getString(nome)));
+            return new ImageIcon(urlImagem).getImage();
+        } else {
+            throw new IllegalArgumentException(String.format("Não existe Imagem com nome \"%s\"", nome));
+        }
+    }
+
+    public Font getRobotoBlack(float tamanho) {
+        return robotoBlack.deriveFont(tamanho);
+    }
+
+    public Font getRobotoMedium(float tamanho) {
+        return robotoMedium.deriveFont(tamanho);
     }
 }
