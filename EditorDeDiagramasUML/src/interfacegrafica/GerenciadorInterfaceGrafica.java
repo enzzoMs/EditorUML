@@ -54,8 +54,6 @@ public class GerenciadorInterfaceGrafica {
      * Caso seja Null um novo diagrama será criado.
      */
     public void mostrarAreaDeDiagramas(DiagramaUML diagrama) {
-        // TODO: Usar parametro
-
         framePrincipal.setVisible(false);
         framePrincipal.remove(menuPrincipal.getPainelMenuPrincipal());
         framePrincipal.add(areaDeDiagramas.getPainelAreaDeDiagramas(), "north");
@@ -65,8 +63,11 @@ public class GerenciadorInterfaceGrafica {
         mostrandoAreaDeDiagramas = true;
         mostrandoMenuPrincipal = false;
 
-        // TODO: remover novo diagrama
-        areaDeDiagramas.novoDiagrama();
+        if (diagrama != null) {
+            areaDeDiagramas.carregarDiagrama(diagrama);
+        } else {
+            areaDeDiagramas.novoDiagrama();
+        }
     }
 
     public void mostrarMenuPrincipal() {
@@ -93,9 +94,8 @@ public class GerenciadorInterfaceGrafica {
         framePrincipal.addWindowListener(windowAdapter);
     }
 
-    // TODO: remover esse metodo
-    public JFrame getFramePrincipal() {
-        return framePrincipal;
+    public void setWindowTitle(String titulo) {
+        framePrincipal.setTitle(titulo);
     }
 
     public boolean estaMostrandoMenuPrincipal() {
@@ -122,8 +122,8 @@ public class GerenciadorInterfaceGrafica {
         JPanel painelPerguntaSair = new JPanel(new MigLayout("insets 15 25 15 25"));
         painelPerguntaSair.setOpaque(false);
         painelPerguntaSair.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(0, 25, 0, 25),
-                BorderFactory.createMatteBorder(0, 0, 2, 0, gerenciadorDeRecursos.getColor("black"))
+            BorderFactory.createEmptyBorder(0, 25, 0, 25),
+            BorderFactory.createMatteBorder(0, 0, 2, 0, gerenciadorDeRecursos.getColor("black"))
         ));
 
         JLabel labelPerguntaSair = new JLabel(gerenciadorDeRecursos.getString("sair_pergunta"));

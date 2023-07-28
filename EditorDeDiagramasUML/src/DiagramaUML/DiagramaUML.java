@@ -4,6 +4,7 @@ import ComponentesUML.ComponenteUML;
 import interfacegrafica.AreaDeDiagramas;
 import RelacoesUML.RelacaoUML;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public class DiagramaUML {
@@ -14,7 +15,9 @@ public class DiagramaUML {
 
     private final ArrayList<RelacaoUML> listaRelacaoes = new ArrayList<>(); // colocar relacoes !!!!!!!!!!!!!!!
 
-    private boolean diagramaSalvo = true;
+    private boolean diagramaSalvo = false;
+
+    public File arquivoDiagrama;
 
 
     public DiagramaUML(AreaDeDiagramas areaDeDiagramas) {

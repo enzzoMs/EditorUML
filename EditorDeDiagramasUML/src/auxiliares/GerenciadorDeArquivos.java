@@ -1,8 +1,7 @@
-package ClassesAuxiliares;
+package auxiliares;
 
 import ComponentesUML.*;
 import DiagramaUML.DiagramaUML;
-import interfacegrafica.AreaDeDiagramas;
 import net.miginfocom.swing.MigLayout;
 
 import javax.imageio.ImageIO;
@@ -16,293 +15,217 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
+import java.util.Objects;
 
+/**
+ * Singleton que lida com o acesso a arquivos, fornecendo recursos especificamente para abrir, salvar ou
+ * exportar DiagramasUML.
+ */
 public class GerenciadorDeArquivos {
-    /*
-        Classe que tem por objetivo prestar serviçõs a AreaDeDiagramas, abrindo, salvando ou exportanto um diagrama de
-        acordo com a vontade do usuário.
-     */
-
-
     // Objeto do tipo File que representa o aquivo no qual o diagrama está salvo.
-    private File arquivoDiagrama;
-    private final AreaDeDiagramas areaDeDiagramas;
+    //private File arquivoDiagrama;
+    //private final AreaDeDiagramas areaDeDiagramas;
 
     // JDialog usado para indicar ao usuário que ocorreu um erro ao abrir um diagrama.
-    private final JDialog JDialogErroAoAbrir;
+
+    private static GerenciadorDeArquivos instancia;
+
+    private final JDialog dialogErroAoAbrir = new JDialog();
 
 
-    public GerenciadorDeArquivos(AreaDeDiagramas areaDeDiagramas) {
-        this.areaDeDiagramas = areaDeDiagramas;
-
-        // Configurando os componentes gráficos do JDialogErroAoAbrir ------------------------------------------------
-
-        RobotoFont robotoFont = new RobotoFont();
-
-        JPanel painelErro = new JPanel(new MigLayout("insets 5 0 10 0"));
-        painelErro.setBackground(Color.white);
-
-        JLabel labelImgErro = new JLabel(new ImageIcon(GerenciadorDeArquivos.class.getResource("/imagens/img_erro.png")));
-
-        JPanel painelImgErro = new JPanel(new MigLayout("fill, insets 15 15 15 15"));
-        painelImgErro.setBackground(new Color(0x1d2021));
-        painelImgErro.add(labelImgErro, "align center");
-
-
-        JPanel painelMensagem = new JPanel(new MigLayout("insets 10 20 8 20"));
-        painelMensagem.setOpaque(false);
-
-        JLabel labelErro = new JLabel("Um erro ocorreu!");
-        labelErro.setFont(robotoFont.getRobotoMedium(14));
-
-        JLabel labelErroInformacoes1 = new JLabel("Certifique-se que o arquivo foi gerado pelo próprio", JLabel.CENTER);
-        labelErroInformacoes1.setFont(robotoFont.getRobotoMedium(12));
-
-        JLabel labelErroInformacoes2 = new JLabel("aplicativo e não foi modificado.", JLabel.CENTER);
-        labelErroInformacoes2.setFont(robotoFont.getRobotoMedium(12));
-
-        painelMensagem.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createEmptyBorder(0, 25, 0, 25),
-                BorderFactory.createMatteBorder(0, 0, 1, 0, Color.black)
-        ));
-
-        painelMensagem.add(labelErro, "align center, wrap, gapbottom 5");
-        painelMensagem.add(labelErroInformacoes1, "align center, wrap");
-        painelMensagem.add(labelErroInformacoes2, "align center, wrap");
-
-
-        JPanel painelRespostaOK = new JPanel(new MigLayout("fill, insets 5 15 5 15"));
-        painelRespostaOK.setBackground(Color.white);
-        painelRespostaOK.setBorder(BorderFactory.createMatteBorder(1, 1, 1, 1, new Color(0x242424)));
-
-        JLabel labelRespostaOK = new JLabel("OK");
-        labelRespostaOK.setFont(robotoFont.getRobotoMedium(14));
-        labelRespostaOK.setForeground(Color.black);
-
-        painelRespostaOK.add(labelRespostaOK, "align center");
-        painelRespostaOK.addMouseListener( new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                ((JPanel) e.getSource()).setBackground(new Color(0x282626));
-                ((JPanel) e.getSource()).getComponent(0).setForeground(Color.white);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                ((JPanel) e.getSource()).setBackground(Color.white);
-                ((JPanel) e.getSource()).getComponent(0).setForeground(Color.black);
-            }
-        });
-
-        painelErro.add(painelImgErro, "west");
-        painelErro.add(painelMensagem, "wrap");
-        painelErro.add(painelRespostaOK, "gaptop 10, align right, gapright 20");
-
-        JDialogErroAoAbrir = new JDialog();
-        JDialogErroAoAbrir.setTitle("ERRO");
-        JDialogErroAoAbrir.setContentPane(painelErro);
-        JDialogErroAoAbrir.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        JDialogErroAoAbrir.setResizable(false);
-        JDialogErroAoAbrir.pack();
-
-
-        painelRespostaOK.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                JDialogErroAoAbrir.setVisible(false);
-            }
-        });
-
+    private GerenciadorDeArquivos() {
+        inicializarDialogErroAoAbrir();
     }
 
-    public void novoDiagrama() {
-        arquivoDiagrama = null;
+    public static synchronized GerenciadorDeArquivos getInstancia() {
+        if (instancia == null) {
+            instancia = new GerenciadorDeArquivos();
+        }
+
+        return instancia;
     }
 
-    public void salvarDiagrama(DiagramaUML diagramaUML) {
-        /*
-        Salva um determinado diagrama no local especificado pelo atributo arquivoDiagrama, para isso faz uma chamada
-        para o método desconstruirDiagrama e escreve o resultado em um arquivo de texto.
-         */
-
+    /**
+     * Salva o diagrama no mesmo arquivo especificado pelo atributo "arquivoDiagrama" do argumento.
+     */
+    public void salvarDiagrama(DiagramaUML diagrama) {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(arquivoDiagrama));
-            writer.write(desconstruirDiagrama(diagramaUML));
+            BufferedWriter writer = new BufferedWriter(new FileWriter(diagrama.arquivoDiagrama));
+            writer.write(desconstruirDiagrama(diagrama));
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        diagramaUML.setDiagramaSalvo(true);
+        diagrama.setDiagramaSalvo(true);
     }
 
-    public boolean salvarDiagramaComo(DiagramaUML diagramaUML) {
-        /* Salva um determinado diagrama em um diretório especificado pelo usuário, modificando o atributo arquivoDiagrama.
-        Retorna true caso o procedimento tenha sido bem sucessio e false caso contrário.
-         */
+    /**
+     * Inicializa um FileChooser, deixa o usuário escolher um diretório e salva o diagrama.
+     */
+    public void salvarDiagramaComo(DiagramaUML diagrama) {
+        GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
         JFileChooser fileChooser = new JFileChooser();
 
-        if (arquivoDiagrama == null) {
+        if (diagrama.arquivoDiagrama == null) {
             fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-            fileChooser.setSelectedFile( new File("NovoDiagrama"));
+            fileChooser.setSelectedFile(new File(gerenciadorDeRecursos.getString("diagrama_nome_default")));
         } else {
-            fileChooser.setCurrentDirectory(arquivoDiagrama);
+            fileChooser.setCurrentDirectory(diagrama.arquivoDiagrama);
+            fileChooser.setSelectedFile(diagrama.arquivoDiagrama);
         }
 
-        fileChooser.setDialogTitle("Salvar Diagrama");
-
+        fileChooser.setDialogTitle(gerenciadorDeRecursos.getString("diagrama_salvar"));
         fileChooser.setAcceptAllFileFilterUsed(false);
-
         fileChooser.setFileFilter(new FileFilter() {
             @Override
-            public boolean accept(File f) {
-                return f.isDirectory();
+            public boolean accept(File file) {
+                return file.isDirectory();
             }
 
             @Override
             public String getDescription() {
-                return "Diretório";
+                return gerenciadorDeRecursos.getString("diretorio");
             }
         });
 
+        int chooserResposta = fileChooser.showSaveDialog(null);
 
-        int resposta = fileChooser.showSaveDialog(null);
+        if (chooserResposta == JFileChooser.APPROVE_OPTION) {
+            String caminhoArquivo = fileChooser.getSelectedFile().getAbsolutePath();
 
-        if (resposta == JFileChooser.APPROVE_OPTION) {
-            arquivoDiagrama = new File(fileChooser.getSelectedFile().getAbsolutePath());
+            if (Files.exists(Path.of(caminhoArquivo + ".txt"))) {
+                // Se ja existe um arquivo ".txt" com mesmo nome no diretorio entao adiciona uma terminacao do tipo
+                // "(n)". Por exemplo: "NovoDiagrama(1)" se ja existe um arquivo de nome "NovoDiagrama" no local
 
-            if (Files.exists(Path.of(arquivoDiagrama + ".txt"))) {
-                int index = 1;
+                int numeroArquivo = 1;
 
-                while (Files.exists(Path.of(arquivoDiagrama + "(" + index + ").txt"))) {
-                    index++;
+                while (Files.exists(Path.of(caminhoArquivo + "(" + numeroArquivo + ").txt"))) {
+                    numeroArquivo++;
                 }
 
-                arquivoDiagrama = new File(arquivoDiagrama + "(" + index + ").txt");
+                caminhoArquivo = caminhoArquivo + "(" + numeroArquivo + ").txt";
             } else {
-                arquivoDiagrama = new File(arquivoDiagrama + ".txt");
+                caminhoArquivo = caminhoArquivo + ".txt";
             }
 
+            File arquivoDiagrama = new File(caminhoArquivo);
 
             try {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(arquivoDiagrama));
-                writer.write(desconstruirDiagrama(diagramaUML));
+                writer.write(desconstruirDiagrama(diagrama));
                 writer.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            diagramaUML.setDiagramaSalvo(true);
-
-            return true;
+            diagrama.arquivoDiagrama = arquivoDiagrama;
+            diagrama.setDiagramaSalvo(true);
         }
-
-        return false;
-
     }
 
-    public DiagramaUML abrirDiagrama() {
-        // Retorna um novo DiagramaUML reconstruido a partir do metodo reconstruirDiagrama com o uso de um aquivo de texto.
+    /**
+     * Inicializa um FileChooser para que um arquivo de texto seja escolhido e reconstrói um DiagramaUML a partir dele.
+     * @return O Diagrama reconstruído. Null caso nenhum arquivo seja escolhido ou um erro ocorreu durante o processo.
+     * @see DiagramaUML
+     */
+    public DiagramaUML abrirDiagrama(File diretorioAtual) {
+        GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
         JFileChooser fileChooser = new JFileChooser();
 
-        if (arquivoDiagrama == null) {
-            fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-        } else {
-            fileChooser.setCurrentDirectory(arquivoDiagrama);
-        }
+        fileChooser.setCurrentDirectory(
+            Objects.requireNonNullElseGet(
+                diretorioAtual, () -> new File(System.getProperty("user.home"))
+            )
+        );
 
-        fileChooser.setDialogTitle("Abrir Diagrama");
-
+        fileChooser.setDialogTitle(gerenciadorDeRecursos.getString("diagrama_abrir"));
         fileChooser.setAcceptAllFileFilterUsed(false);
+        fileChooser.setFileFilter(new FileNameExtensionFilter(
+            gerenciadorDeRecursos.getString("arquivo_de_texto"), "txt")
+        );
 
-        fileChooser.setFileFilter(new FileNameExtensionFilter("Arquivo de texto", "txt"));
+        int chooserResposta = fileChooser.showOpenDialog(null);
 
+        if (chooserResposta == JFileChooser.APPROVE_OPTION) {
+            File arquivoDiagrama = new File(fileChooser.getSelectedFile().getAbsolutePath());
 
-        int resposta = fileChooser.showOpenDialog(null);
-
-
-        if (resposta == JFileChooser.APPROVE_OPTION) {
-            arquivoDiagrama = new File(fileChooser.getSelectedFile().getAbsolutePath());
-
+            // TODO: este metodo deve lidar com mostrar o dialog de erro
             return reconstruirDiagrama(arquivoDiagrama);
         }
 
         return null;
-
     }
 
-    public void exportarDiagrama(JPanel painelComComponentes) {
-        /* Exporta o diagrama em formato .png para um diretório de escolha, para fazer isso é necessário receber como
-        parametro um JPanel que possui os componentes do diagrama.
-         */
+    /**
+     * Inicializa um FileChooser, deixa o usuário escolher um diretório e salva o conteúdo do painel como uma
+     * imagem ".png".
+     */
+    public void exportarDiagrama(JPanel painel, File arquivoDiagrama) {
+        GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
         JFileChooser fileChooser = new JFileChooser();
 
         if (arquivoDiagrama == null) {
             fileChooser.setCurrentDirectory(new File(System.getProperty("user.home")));
-            fileChooser.setSelectedFile( new File("NovoDiagrama"));
+            fileChooser.setSelectedFile( new File(gerenciadorDeRecursos.getString("diagrama_nome_default")));
         } else {
             fileChooser.setSelectedFile(new File(arquivoDiagrama.getName().replaceAll("\\.txt", "")));
             fileChooser.setCurrentDirectory(arquivoDiagrama);
         }
 
-
-        fileChooser.setDialogTitle("Exportar Diagrama");
-
+        fileChooser.setDialogTitle(gerenciadorDeRecursos.getString("diagrama_exportar"));
         fileChooser.setAcceptAllFileFilterUsed(false);
-
         fileChooser.setFileFilter(new FileFilter() {
             @Override
-            public boolean accept(File f) {
-                return f.isDirectory();
+            public boolean accept(File file) {
+                return file.isDirectory();
             }
 
             @Override
             public String getDescription() {
-                return "Diretório";
+                return gerenciadorDeRecursos.getString("diretorio");
             }
         });
 
+        int respostaChooser = fileChooser.showDialog(null, gerenciadorDeRecursos.getString("exportar"));
 
-        int resposta = fileChooser.showDialog(null, "Export");
+        if (respostaChooser == JFileChooser.APPROVE_OPTION) {
+            String caminhoArquivo = fileChooser.getSelectedFile().getAbsolutePath();
 
-        if (resposta == JFileChooser.APPROVE_OPTION) {
-            File aquivoPngDiagrama = new File(fileChooser.getSelectedFile().getAbsolutePath());
+            // Se ja existe um arquivo ".png" com mesmo nome no diretorio entao adiciona uma terminacao do tipo
+            // "(n)". Por exemplo: "NovoDiagrama(1)" se ja existe um arquivo de nome "NovoDiagrama" no local
+            if (Files.exists(Path.of(caminhoArquivo + ".png"))) {
+                int numeroArquivo = 1;
 
-            if (Files.exists(Path.of(aquivoPngDiagrama + ".png"))) {
-                int index = 1;
-
-                while (Files.exists(Path.of(aquivoPngDiagrama + "(" + index + ").png"))) {
-                    index++;
+                while (Files.exists(Path.of(caminhoArquivo + "(" + numeroArquivo + ").png"))) {
+                    numeroArquivo++;
                 }
 
-                aquivoPngDiagrama = new File(aquivoPngDiagrama + "(" + index + ").png");
+                caminhoArquivo = caminhoArquivo + "(" + numeroArquivo + ").png";
             } else {
-                aquivoPngDiagrama = new File(aquivoPngDiagrama + ".png");
+                caminhoArquivo =caminhoArquivo + ".png";
             }
 
+            BufferedImage bufferedImage = new BufferedImage(
+                    painel.getWidth(),
+                    painel.getHeight(),
+                    BufferedImage.TYPE_INT_ARGB
+            );
 
-            BufferedImage bufferedImage = new BufferedImage(((Container) painelComComponentes).getWidth(), ((Container) painelComComponentes).getHeight(), BufferedImage.TYPE_INT_ARGB);
-            ((Container) painelComComponentes).paint(bufferedImage.getGraphics());
+            painel.paint(bufferedImage.getGraphics());
 
             try {
-                ImageIO.write(bufferedImage, "PNG", aquivoPngDiagrama);
-            } catch (IOException e) {}
-
-
+                ImageIO.write(bufferedImage, "PNG", new File(caminhoArquivo));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
     }
 
-
-
-    public File getArquivoDiagrama() {
-        return arquivoDiagrama;
-    }
-
+    // TODO: mover para outro lugar tipo utils ou no diagrama mesmo
     private String desconstruirDiagrama(DiagramaUML diagramaUML) {
         /*
             Retorna uma string contendo as informações do diagrama para ser salvo em um arquivo de texto.
@@ -342,6 +265,7 @@ public class GerenciadorDeArquivos {
             será notificado através do JDialogErroAoAbrir e o método returna null.
 
          */
+        /*
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(arquivo));
@@ -525,7 +449,87 @@ public class GerenciadorDeArquivos {
             JDialogErroAoAbrir.setVisible(true);
 
             return null;
-        }
+        }*/
+        return null;
+    }
+
+    private void inicializarDialogErroAoAbrir() {
+        GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
+
+        // ----------------------------------------------------------------------------
+
+        JLabel labelImgErro = new JLabel(gerenciadorDeRecursos.getImagem("icone_erro"));
+
+        JPanel painelImgErro = new JPanel(new MigLayout("fill, insets 15 15 15 15"));
+        painelImgErro.setBackground(gerenciadorDeRecursos.getColor("dark_jungle_green"));
+        painelImgErro.add(labelImgErro, "align center");
+
+        // ----------------------------------------------------------------------------
+
+        JPanel painelMensagem = new JPanel(new MigLayout("insets 10 20 8 20"));
+        painelMensagem.setOpaque(false);
+
+        JLabel labelErro = new JLabel(gerenciadorDeRecursos.getString("erro_ocorreu"));
+        labelErro.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
+
+        JLabel labelErroInformacoes = new JLabel(gerenciadorDeRecursos.getString("erro_imagem_explicacao"), JLabel.CENTER);
+        labelErroInformacoes.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
+
+        painelMensagem.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createEmptyBorder(0, 25, 0, 25),
+            BorderFactory.createMatteBorder(0, 0, 1, 0, gerenciadorDeRecursos.getColor("black"))
+        ));
+
+        painelMensagem.add(labelErro, "align center, wrap, gapbottom 5");
+        painelMensagem.add(labelErroInformacoes, "align center, wrap");
+
+        // ----------------------------------------------------------------------------
+
+        JPanel painelRespostaOK = new JPanel(new MigLayout("fill, insets 5 15 5 15"));
+        painelRespostaOK.setBackground(gerenciadorDeRecursos.getColor("white"));
+        painelRespostaOK.setBorder(BorderFactory.createMatteBorder(
+            1, 1, 1, 1, gerenciadorDeRecursos.getColor("raisin_black")
+        ));
+
+        JLabel labelRespostaOK = new JLabel(gerenciadorDeRecursos.getString("ok_maiusculo"));
+        labelRespostaOK.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
+        labelRespostaOK.setForeground(gerenciadorDeRecursos.getColor("black"));
+
+        painelRespostaOK.add(labelRespostaOK, "align center");
+        painelRespostaOK.addMouseListener( new MouseAdapter() {
+            // O componente de index 0 eh o labelRespostaOK
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                ((JPanel) e.getSource()).setBackground(gerenciadorDeRecursos.getColor("raisin_black"));
+                ((JPanel) e.getSource()).getComponent(0).setForeground(gerenciadorDeRecursos.getColor("white"));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                ((JPanel) e.getSource()).setBackground(gerenciadorDeRecursos.getColor("white"));
+                ((JPanel) e.getSource()).getComponent(0).setForeground(gerenciadorDeRecursos.getColor("black"));
+            }
+
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                dialogErroAoAbrir.setVisible(false);
+            }
+        });
+
+        // ----------------------------------------------------------------------------
+
+        JPanel painelErro = new JPanel(new MigLayout("insets 5 0 10 0"));
+        painelErro.setBackground(gerenciadorDeRecursos.getColor("white"));
+        painelErro.add(painelImgErro, "west");
+        painelErro.add(painelMensagem, "wrap");
+        painelErro.add(painelRespostaOK, "gaptop 10, align right, gapright 20");
+
+        dialogErroAoAbrir.setTitle(gerenciadorDeRecursos.getString("erro_maiusculo"));
+        dialogErroAoAbrir.setContentPane(painelErro);
+        dialogErroAoAbrir.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+        dialogErroAoAbrir.setResizable(false);
+        dialogErroAoAbrir.pack();
     }
 }
 

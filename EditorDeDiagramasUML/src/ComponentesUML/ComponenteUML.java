@@ -53,7 +53,7 @@ public abstract class ComponenteUML {
         JPanel painelExcluirComponente = new JPanel(new MigLayout("debug, insets 5 0 10 0"));
         painelExcluirComponente.setBackground(Color.white);
 
-        JLabel labelImgInterrogacao = new JLabel(new ImageIcon(ComponenteUML.class.getResource("/imagens/img_interrogacao_pequena.png")));
+        JLabel labelImgInterrogacao = new JLabel(new ImageIcon(ComponenteUML.class.getResource("/imagens/icones/interrogacao_pequena.png")));
         JPanel painelImgInterrogacao = new JPanel(new MigLayout("fill, insets 15 15 15 15"));
         painelImgInterrogacao.setBackground(new Color(0x1d2021));
         painelImgInterrogacao.add(labelImgInterrogacao, "align center");

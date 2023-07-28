@@ -2,9 +2,6 @@ package ComponentesUML;
 
 import AlteracoesDeElementos.ComponenteModificado;
 import ClassesAuxiliares.RobotoFont;
-import ComponentesUML.Atributo;
-import ComponentesUML.ComponenteUML;
-import ComponentesUML.Metodo;
 import DiagramaUML.DiagramaUML;
 import net.miginfocom.swing.MigLayout;
 
@@ -2036,7 +2033,7 @@ public class ClasseUML extends ComponenteUML {
         JPanel painelErroNomeClasse = new JPanel(new MigLayout("insets 5 0 10 0"));
         painelErroNomeClasse.setBackground(Color.white);
 
-        JLabel labelImgErro = new JLabel(new ImageIcon(ClasseUML.class.getResource("/imagens/img_erro.png")));
+        JLabel labelImgErro = new JLabel(new ImageIcon(ClasseUML.class.getResource("/imagens/icones/erro.png")));
 
         JPanel painelImgErro = new JPanel(new MigLayout("fill, insets 15 15 15 15"));
         painelImgErro.setBackground(new Color(0x1d2021));

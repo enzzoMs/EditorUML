@@ -1,6 +1,6 @@
 package interfacegrafica;
 
-import ClassesAuxiliares.GerenciadorDeArquivos;
+import auxiliares.GerenciadorDeArquivos;
 import DiagramaUML.DiagramaUML;
 import net.miginfocom.swing.MigLayout;
 import auxiliares.GerenciadorDeRecursos;
@@ -111,12 +111,14 @@ public class MenuPrincipal {
         painelAbrirDiagrama.addMouseListener(new MouseAdapter() {
             final ImageIcon imgPastaAberta = gerenciadorDeRecursos.getImagem("icone_pasta_aberta");
             final ImageIcon imgPastaFechada = gerenciadorDeRecursos.getImagem("icone_pasta_fechada");
-            final GerenciadorDeArquivos gerenciadorDeArquivos = new GerenciadorDeArquivos(new AreaDeDiagramas(gerenciadorInterfaceGrafica));
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                DiagramaUML diagrama = gerenciadorDeArquivos.abrirDiagrama();
-                gerenciadorInterfaceGrafica.mostrarAreaDeDiagramas(diagrama);
+                DiagramaUML diagrama = GerenciadorDeArquivos.getInstancia().abrirDiagrama(null);
+
+                if (diagrama != null) {
+                    gerenciadorInterfaceGrafica.mostrarAreaDeDiagramas(diagrama);
+                }
             }
 
             @Override
