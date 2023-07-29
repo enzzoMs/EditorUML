@@ -22,15 +22,9 @@ import java.util.Objects;
  * exportar DiagramasUML.
  */
 public class GerenciadorDeArquivos {
-    // Objeto do tipo File que representa o aquivo no qual o diagrama está salvo.
-    //private File arquivoDiagrama;
-    //private final AreaDeDiagramas areaDeDiagramas;
-
-    // JDialog usado para indicar ao usuário que ocorreu um erro ao abrir um diagrama.
-
     private static GerenciadorDeArquivos instancia;
 
-    private final JDialog dialogErroAoAbrir = new JDialog();
+    private final JDialog dialogErro = new JDialog();
 
 
     private GerenciadorDeArquivos() {
@@ -53,11 +47,10 @@ public class GerenciadorDeArquivos {
             BufferedWriter writer = new BufferedWriter(new FileWriter(diagrama.arquivoDiagrama));
             writer.write(desconstruirDiagrama(diagrama));
             writer.close();
+            diagrama.setDiagramaSalvo(true);
         } catch (IOException e) {
-            e.printStackTrace();
+            mostrarDialogErro(GerenciadorDeRecursos.getInstancia().getString("erro_salvar"));
         }
-
-        diagrama.setDiagramaSalvo(true);
     }
 
     /**
@@ -76,7 +69,7 @@ public class GerenciadorDeArquivos {
             fileChooser.setSelectedFile(diagrama.arquivoDiagrama);
         }
 
-        fileChooser.setDialogTitle(gerenciadorDeRecursos.getString("diagrama_salvar"));
+        fileChooser.setDialogTitle(gerenciadorDeRecursos.getString("salvar"));
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.setFileFilter(new FileFilter() {
             @Override
@@ -116,12 +109,12 @@ public class GerenciadorDeArquivos {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(arquivoDiagrama));
                 writer.write(desconstruirDiagrama(diagrama));
                 writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
 
-            diagrama.arquivoDiagrama = arquivoDiagrama;
-            diagrama.setDiagramaSalvo(true);
+                diagrama.arquivoDiagrama = arquivoDiagrama;
+                diagrama.setDiagramaSalvo(true);
+            } catch (IOException e) {
+                mostrarDialogErro(GerenciadorDeRecursos.getInstancia().getString("erro_salvar"));
+            }
         }
     }
 
@@ -220,7 +213,7 @@ public class GerenciadorDeArquivos {
             try {
                 ImageIO.write(bufferedImage, "PNG", new File(caminhoArquivo));
             } catch (IOException e) {
-                e.printStackTrace();
+                mostrarDialogErro(GerenciadorDeRecursos.getInstancia().getString("erro_exportar"));
             }
         }
     }
@@ -453,6 +446,16 @@ public class GerenciadorDeArquivos {
         return null;
     }
 
+    private void mostrarDialogErro(String mensagemErro) {
+        JLabel labelErroMensagem = (JLabel) ((JPanel) dialogErro.getContentPane().getComponent(1)).getComponent(0);
+
+        labelErroMensagem.setText(mensagemErro);
+
+        dialogErro.pack();
+        dialogErro.setLocationRelativeTo(null);
+        dialogErro.setVisible(true);
+    }
+
     private void inicializarDialogErroAoAbrir() {
         GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
@@ -469,19 +472,15 @@ public class GerenciadorDeArquivos {
         JPanel painelMensagem = new JPanel(new MigLayout("insets 10 20 8 20"));
         painelMensagem.setOpaque(false);
 
-        JLabel labelErro = new JLabel(gerenciadorDeRecursos.getString("erro_ocorreu"));
-        labelErro.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
-
-        JLabel labelErroInformacoes = new JLabel(gerenciadorDeRecursos.getString("erro_imagem_explicacao"), JLabel.CENTER);
-        labelErroInformacoes.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
+        JLabel labelErroMensagem = new JLabel("", JLabel.CENTER);
+        labelErroMensagem.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
 
         painelMensagem.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createEmptyBorder(0, 25, 0, 25),
             BorderFactory.createMatteBorder(0, 0, 1, 0, gerenciadorDeRecursos.getColor("black"))
         ));
 
-        painelMensagem.add(labelErro, "align center, wrap, gapbottom 5");
-        painelMensagem.add(labelErroInformacoes, "align center, wrap");
+        painelMensagem.add(labelErroMensagem, "align center, wrap, gapbottom 5");
 
         // ----------------------------------------------------------------------------
 
@@ -513,7 +512,7 @@ public class GerenciadorDeArquivos {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                dialogErroAoAbrir.setVisible(false);
+                dialogErro.setVisible(false);
             }
         });
 
@@ -525,11 +524,10 @@ public class GerenciadorDeArquivos {
         painelErro.add(painelMensagem, "wrap");
         painelErro.add(painelRespostaOK, "gaptop 10, align right, gapright 20");
 
-        dialogErroAoAbrir.setTitle(gerenciadorDeRecursos.getString("erro_maiusculo"));
-        dialogErroAoAbrir.setContentPane(painelErro);
-        dialogErroAoAbrir.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
-        dialogErroAoAbrir.setResizable(false);
-        dialogErroAoAbrir.pack();
+        dialogErro.setTitle(gerenciadorDeRecursos.getString("erro_maiusculo"));
+        dialogErro.setContentPane(painelErro);
+        dialogErro.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+        dialogErro.setResizable(false);
     }
 }
 
