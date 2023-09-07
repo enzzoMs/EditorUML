@@ -1,9 +1,9 @@
 package RelacoesUML;
 
-import AlteracoesDeElementos.RelacaoModificada;
+import componentes.alteracoes.RelacaoModificada;
 import ClassesAuxiliares.RobotoFont;
-import ComponentesUML.ComponenteUML;
-import DiagramaUML.DiagramaUML;
+import componentes.ComponenteUML;
+import diagrama.DiagramaUML;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -153,7 +153,7 @@ public class RelacaoAgregacao extends RelacaoUML {
         frameGerenciarRelacao = new JFrame();
         frameGerenciarRelacao.setResizable(false);
         frameGerenciarRelacao.setTitle("Configurar Relação");
-        frameGerenciarRelacao.setIconImage(new ImageIcon(ComponenteUML.class.getResource("/images/icone_configurar_componente.png")).getImage());
+        frameGerenciarRelacao.setIconImage(new ImageIcon(ComponenteUML.class.getResource("/images/configurar_48.png")).getImage());
 
 
         JPanel painelGerenciarRelacao = new JPanel(new MigLayout("insets 20 0 10 0", "","[grow, fill]"));

@@ -1,6 +1,6 @@
 package interfacegrafica;
 
-import DiagramaUML.DiagramaUML;
+import diagrama.DiagramaUML;
 import auxiliares.GerenciadorDeRecursos;
 import net.miginfocom.swing.MigLayout;
 

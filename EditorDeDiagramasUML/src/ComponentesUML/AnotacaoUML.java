@@ -1,15 +1,15 @@
 package ComponentesUML;
 
+/*
 import AlteracoesDeElementos.ComponenteModificado;
 import ClassesAuxiliares.RobotoFont;
 import DiagramaUML.DiagramaUML;
+import componentes.ComponenteUML;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
-import javax.swing.plaf.basic.BasicSliderUI;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -18,7 +18,8 @@ import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-public class AnotacaoUML extends ComponenteUML{
+/*
+public class AnotacaoUML extends ComponenteUML {
 
     private String textoAnotacao = "";
     private final JPanel painelTextoAnotacao;
@@ -323,5 +324,5 @@ public class AnotacaoUML extends ComponenteUML{
                 limiteAnotacao +
                 "\n";
     }
-}
+}*/
 

@@ -1,7 +1,6 @@
 package auxiliares;
 
-import ComponentesUML.*;
-import DiagramaUML.DiagramaUML;
+import diagrama.DiagramaUML;
 import net.miginfocom.swing.MigLayout;
 
 import javax.imageio.ImageIO;
@@ -12,7 +11,10 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -25,7 +27,6 @@ public class GerenciadorDeArquivos {
     private static GerenciadorDeArquivos instancia;
 
     private final JDialog dialogErro = new JDialog();
-
 
     private GerenciadorDeArquivos() {
         inicializarDialogErroAoAbrir();
@@ -45,7 +46,7 @@ public class GerenciadorDeArquivos {
     public void salvarDiagrama(DiagramaUML diagrama) {
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(diagrama.arquivoDiagrama));
-            writer.write(desconstruirDiagrama(diagrama));
+            writer.write(diagrama.desconstruirDiagrama());
             writer.close();
             diagrama.setDiagramaSalvo(true);
         } catch (IOException e) {
@@ -107,7 +108,7 @@ public class GerenciadorDeArquivos {
 
             try {
                 BufferedWriter writer = new BufferedWriter(new FileWriter(arquivoDiagrama));
-                writer.write(desconstruirDiagrama(diagrama));
+                writer.write(diagrama.desconstruirDiagrama());
                 writer.close();
 
                 diagrama.arquivoDiagrama = arquivoDiagrama;
@@ -217,39 +218,6 @@ public class GerenciadorDeArquivos {
             }
         }
     }
-
-    // TODO: mover para outro lugar tipo utils ou no diagrama mesmo
-    private String desconstruirDiagrama(DiagramaUML diagramaUML) {
-        /*
-            Retorna uma string contendo as informações do diagrama para ser salvo em um arquivo de texto.
-            A string é construida de tal forma que cada informação aparece em uma linha diferente.
-         */
-
-        StringBuilder diagramaEmString = new StringBuilder();
-
-        diagramaEmString.append("UML APP\n");
-        diagramaEmString.append(diagramaUML.getListaComponentesUML().size());
-        diagramaEmString.append("\n");
-
-
-        for (ComponenteUML componenteUML : diagramaUML.getListaComponentesUML()) {
-            if (componenteUML instanceof ClasseUML) {
-                diagramaEmString.append("CLASSE_UML\n");
-            } else if (componenteUML instanceof AnotacaoUML) {
-                diagramaEmString.append("ANOTACAO_UML\n");
-            } else {
-                diagramaEmString.append("PACOTE_UML\n");
-            }
-
-            diagramaEmString.append(componenteUML.toString());
-        }
-
-
-        return diagramaEmString.toString();
-
-
-    }
-
 
     private DiagramaUML reconstruirDiagrama(File arquivo) {
         /*

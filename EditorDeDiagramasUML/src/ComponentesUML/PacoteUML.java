@@ -1,19 +1,19 @@
 package ComponentesUML;
 
+/*
 import AlteracoesDeElementos.ComponenteModificado;
 import ClassesAuxiliares.RobotoFont;
 import DiagramaUML.DiagramaUML;
+import componentes.ComponenteUML;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
 import java.util.HashMap;
 
+/*
 public class PacoteUML extends ComponenteUML {
     private String nome;
 
@@ -754,4 +754,4 @@ public class PacoteUML extends ComponenteUML {
                 painelAreaPacote.getHeight() +
                 "\n";
     }
-}
+}*/

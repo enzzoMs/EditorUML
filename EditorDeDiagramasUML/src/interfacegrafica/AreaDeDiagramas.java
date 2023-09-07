@@ -1,12 +1,14 @@
 package interfacegrafica;
 
-import AlteracoesDeElementos.*;
-import ClassesAuxiliares.*;
-import ComponentesUML.*;
-import DiagramaUML.DiagramaUML;
-import RelacoesUML.*;
+import componentes.alteracoes.AlteracaoDeComponentesUML;
+import componentes.alteracoes.ComponenteCriado;
+import ClassesAuxiliares.RobotoFont;
+import diagrama.DiagramaUML;
+import RelacoesUML.RelacaoUML;
 import auxiliares.GerenciadorDeArquivos;
 import auxiliares.GerenciadorDeRecursos;
+import componentes.ComponenteUML;
+import componentes.ClasseUML;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -29,9 +31,11 @@ public class AreaDeDiagramas {
     private final JPanel painelAreaDeDiagramas;
     private final JPanel painelQuadroBranco;
     private final JPanel painelOpcoesQuadroBranco;
-
-    // O diagrama que está sendo modificado pelo usuário.
     private DiagramaUML diagramaAtual;
+    // Por "habilitados" entende-se que o usuario pode interagir com eles
+    private boolean componentesHabilitados;
+    private final int TAMANHO_QUADRO_BRANCO = 5000;
+
 
     /*
         Os dois atributos abaixo servem para regular as ações do usário na area de diagramas, sendo que quando algum deles
@@ -39,7 +43,6 @@ public class AreaDeDiagramas {
      */
 
     private boolean selecaoDeRelacionamentoAcontecendo;
-    private boolean movimentacaoPermitida;
 
     /*
         ArrayList contendo os objetos de alteração de componente que serão usados para os recursos de desfazer e refazer
@@ -47,7 +50,7 @@ public class AreaDeDiagramas {
         sendo que quando o usuário desfaz uma ação o index volta uma posição, e se refizer avança uma posição, dessa forma
         é possivel saber a partir desse index qual objeto dessa lista precisa ser manipulado.
      */
-    private final ArrayList<AlteracaoDeElementosUML> listaDeAlteracoes = new ArrayList<>();
+    private final ArrayList<AlteracaoDeComponentesUML> listaDeAlteracoes = new ArrayList<>();
 
     private int indexAlteracao = -1;
 
@@ -83,7 +86,7 @@ public class AreaDeDiagramas {
             public void windowClosing(WindowEvent e)
             {
                 if (gerenciadorInterfaceGrafica.estaMostrandoAreaDeDiagramas()) {
-                    if (!diagramaAtual.isDiagramaSalvo() && diagramaAtual.arquivoDiagrama != null) {
+                    if (!diagramaAtual.diagramaEstaSalvo() && diagramaAtual.arquivoDiagrama != null) {
                         mostrarDialogSalvarAlteracoes();
                     } else {
                         gerenciadorInterfaceGrafica.mostrarDialogFecharAplicacao();
@@ -111,7 +114,7 @@ public class AreaDeDiagramas {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (!selecaoDeRelacionamentoAcontecendo) {
-                    ClasseUML novaClasse = new ClasseUML(diagramaAtual);
+                    ClasseUML novaClasse = new ClasseUML(AreaDeDiagramas.this);
                     diagramaAtual.addComponente(novaClasse);
 
                     AreaDeDiagramas.this.addAlteracao(new ComponenteCriado(
@@ -123,6 +126,7 @@ public class AreaDeDiagramas {
         });
 
 
+        /*
         JLabel labelNovaAnotacao = new JLabel(new ImageIcon(AreaDeDiagramas.class.getResource("/imagens/img_nova_anotacao.png")), JLabel.CENTER);
         labelNovaAnotacao.setOpaque(true);
         labelNovaAnotacao.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -164,7 +168,7 @@ public class AreaDeDiagramas {
 
                 }
             }
-        });
+        });*/
 
 
         MouseAdapter mouseAdapter = new MouseAdapter() {
@@ -188,7 +192,7 @@ public class AreaDeDiagramas {
         };
 
         labelNovaClasse.addMouseListener(mouseAdapter);
-        labelNovaAnotacao.addMouseListener(mouseAdapter);
+        /*labelNovaAnotacao.addMouseListener(mouseAdapter);
         labelnovoPacote.addMouseListener(mouseAdapter);
 
 
@@ -640,7 +644,7 @@ public class AreaDeDiagramas {
                     source.setBackground(new Color(0xe6e6e6));
                 }
             }
-        });
+        });*/
 
 
 
@@ -651,7 +655,7 @@ public class AreaDeDiagramas {
         JLabel labelSeparador1 = new JLabel("");
         labelSeparador1.setBorder(bordaSeparadores);
 
-        JLabel labelSeparador2 = new JLabel("");
+        /*JLabel labelSeparador2 = new JLabel("");
         labelSeparador2.setBorder(bordaSeparadores);
 
         JLabel labelSeparador3 = new JLabel("");
@@ -670,11 +674,12 @@ public class AreaDeDiagramas {
         labelSeparador7.setBorder(bordaSeparadores);
 
         JLabel labelSeparador8 = new JLabel("");
-        labelSeparador8.setBorder(bordaSeparadores);
+        labelSeparador8.setBorder(bordaSeparadores);*/
 
         menuComponentesDiagramas.add(labelNovaClasse, "wrap, gapbottom 5, growx");
         menuComponentesDiagramas.add(labelSeparador1, "wrap, grow, gapbottom 5, growx");
 
+        /*
         menuComponentesDiagramas.add(labelNovaAnotacao, "wrap, gapbottom 5, growx");
         menuComponentesDiagramas.add(labelSeparador2, "wrap, grow, gapbottom 5, growx");
 
@@ -696,7 +701,7 @@ public class AreaDeDiagramas {
         menuComponentesDiagramas.add(labelAgregacao, "wrap, gapbottom 5, growx");
         menuComponentesDiagramas.add(labelSeparador8, "wrap, grow, gapbottom 5, growx");
 
-        menuComponentesDiagramas.add(labelComposicao, "wrap, growx");
+        menuComponentesDiagramas.add(labelComposicao, "wrap, growx");*/
 
         // ==========================================================================================================
 
@@ -730,6 +735,7 @@ public class AreaDeDiagramas {
 
             @Override
             public void mouseDragged(MouseEvent e) {
+                // TODO: ver metodo getBounds
                 JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, painelQuadroBranco);
                 Rectangle view = viewPort.getViewRect();
 
@@ -742,7 +748,7 @@ public class AreaDeDiagramas {
                 double x = e.getPoint().getX();
                 double y = e.getPoint().getY();
 
-                if (movimentacaoPermitida && x > LIMITE_ESQUERDO_X && x < LIMITE_DIREITO_X && y > LIMITE_SUPERIOR_Y && y < LIMITE_INFERIOR_Y ) {
+                if (componentesHabilitados && x > LIMITE_ESQUERDO_X && x < LIMITE_DIREITO_X && y > LIMITE_SUPERIOR_Y && y < LIMITE_INFERIOR_Y ) {
                     //System.out.println(scrollPaneDiagramas.getViewport().getView().getX());
 
                     int deltaX = origin.x - e.getX();
@@ -780,6 +786,8 @@ public class AreaDeDiagramas {
                 8, painelOpcoesQuadroBranco.getPreferredSize().width,
                 painelOpcoesQuadroBranco.getPreferredSize().height);
 
+        /*
+
         painelCamadasQuadroBranco.add(painelCancelarRelacionamento, JLayeredPane.PALETTE_LAYER);
         painelCancelarRelacionamento.setBounds(
                 15,
@@ -801,7 +809,7 @@ public class AreaDeDiagramas {
                 30,
                 500 - painelErroRelacao.getPreferredSize().height - 30,
                 painelErroRelacao.getPreferredSize().width,
-                painelErroRelacao.getPreferredSize().height);
+                painelErroRelacao.getPreferredSize().height);*/
 
         // ==============================================================================
 
@@ -820,11 +828,12 @@ public class AreaDeDiagramas {
     }
 
     public void addComponenteAoQuadro(ComponenteUML componente, boolean centralizar) {
-        if (!(componente instanceof PacoteUML)) {
-            painelQuadroBranco.add(componente.getPainelComponente(), 0);
-        } else {
+
+        //if (!(componente instanceof PacoteUML)) {
+         //   painelQuadroBranco.add(componente.getPainelComponente(), 0);
+        //} else {
             painelQuadroBranco.add(componente.getPainelComponente());
-        }
+        //}
 
         if (centralizar) {
             JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, painelQuadroBranco);
@@ -840,7 +849,6 @@ public class AreaDeDiagramas {
 
             componente.getPainelComponente().setLocation(posicaoDoNovoComponente);
         }
-
 
         painelQuadroBranco.revalidate();
         painelQuadroBranco.repaint();
@@ -867,8 +875,10 @@ public class AreaDeDiagramas {
         return this.painelAreaDeDiagramas;
     }
 
-    public boolean isMovimentacaoPermitida() {
-        return movimentacaoPermitida;
+    // TODO: mudar isso
+    public boolean componentesEstaoHabilitados() {
+        //         return areaDeDiagramas.componentesEstaoHabilitados() || areaDeDiagramas.selecaoDeRelacoesNaoEstaAcontecendo();
+        return true;
     }
 
     public void addRelacionametoAoQuadro(ArrayList<JComponent> listaPaineisRelacionamento) {
@@ -880,15 +890,20 @@ public class AreaDeDiagramas {
         painelQuadroBranco.repaint();
     }
 
-    public boolean isSelecaoDeRelacionamentoAcontecendo() {
-        return selecaoDeRelacionamentoAcontecendo;
+    public int getTamanhoQuadroBranco() {
+        return TAMANHO_QUADRO_BRANCO;
+    }
+
+    // TODO: mudar nome disso
+    public boolean selecaoDeRelacoesNaoEstaAcontecendo() {
+        return !selecaoDeRelacionamentoAcontecendo;
     }
 
     public void setSelecaoDeRelacionamentoAcontecendo(boolean selecaoDeRelacionamentoAcontecendo) {
         this.selecaoDeRelacionamentoAcontecendo = selecaoDeRelacionamentoAcontecendo;
     }
 
-    public void addAlteracao(AlteracaoDeElementosUML novaAlteracao) {
+    public void addAlteracao(AlteracaoDeComponentesUML novaAlteracao) {
         /*
         if (diagramaAtual.isDiagramaSalvo()) {
             gerenciadorInterfaceGrafica.getFramePrincipal().setTitle(gerenciadorInterfaceGrafica.getFramePrincipal().getTitle() + "*");
@@ -964,7 +979,7 @@ public class AreaDeDiagramas {
         painelOpcoesQuadroBranco.getComponent(3).setEnabled(false);
 
 
-        movimentacaoPermitida = false;
+        componentesHabilitados = false;
 
         painelQuadroBranco.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
@@ -990,7 +1005,6 @@ public class AreaDeDiagramas {
         setLabelDiretorioDiagrama(null);
     }
 
-
     private void salvarDiagrama(boolean salvarComo) {
         GerenciadorDeArquivos gerenciadorDeArquivos = GerenciadorDeArquivos.getInstancia();
         GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
@@ -1001,7 +1015,7 @@ public class AreaDeDiagramas {
             gerenciadorDeArquivos.salvarDiagrama(diagramaAtual);
         }
 
-        if (diagramaAtual.isDiagramaSalvo()) {
+        if (diagramaAtual.diagramaEstaSalvo()) {
             setLabelDiretorioDiagrama(diagramaAtual.arquivoDiagrama.getAbsolutePath());
 
             setVisibilidadeDiagramaNaoSalvo(false);
@@ -1030,7 +1044,6 @@ public class AreaDeDiagramas {
             gerenciadorDeRecursos.getString("app_titulo") + " - " + diagramaAtual.arquivoDiagrama.getName()
         );
     }
-
 
     /**
      * Exporta os componentes do quadro branco para uma imagem ".png".
@@ -1099,7 +1112,7 @@ public class AreaDeDiagramas {
     }
 
     private void voltar() {
-        if (!diagramaAtual.isDiagramaSalvo() && diagramaAtual.arquivoDiagrama != null) {
+        if (!diagramaAtual.diagramaEstaSalvo() && diagramaAtual.arquivoDiagrama != null) {
             if (mostrarDialogSalvarAlteracoes()) {
                 gerenciadorInterfaceGrafica.mostrarMenuPrincipal();
             }
@@ -1227,7 +1240,7 @@ public class AreaDeDiagramas {
         opcoes[0].addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (!diagramaAtual.isDiagramaSalvo() && diagramaAtual.arquivoDiagrama != null) {
+                if (!diagramaAtual.diagramaEstaSalvo() && diagramaAtual.arquivoDiagrama != null) {
                     if (mostrarDialogSalvarAlteracoes()) {
                         novoDiagrama();
                     }
@@ -1241,7 +1254,7 @@ public class AreaDeDiagramas {
         opcoes[1].addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (!diagramaAtual.isDiagramaSalvo()) {
+                if (!diagramaAtual.diagramaEstaSalvo()) {
                     salvarDiagrama(false);
                 }
             }

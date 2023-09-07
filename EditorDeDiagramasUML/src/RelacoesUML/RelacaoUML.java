@@ -1,7 +1,7 @@
 package RelacoesUML;
 
-import ComponentesUML.ComponenteUML;
-import DiagramaUML.DiagramaUML;
+import componentes.ComponenteUML;
+import diagrama.DiagramaUML;
 
 import javax.swing.*;
 import java.awt.*;

@@ -1,7 +1,7 @@
 package interfacegrafica;
 
 import auxiliares.GerenciadorDeArquivos;
-import DiagramaUML.DiagramaUML;
+import diagrama.DiagramaUML;
 import net.miginfocom.swing.MigLayout;
 import auxiliares.GerenciadorDeRecursos;
 
@@ -63,7 +63,7 @@ public class MenuPrincipal {
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelImgNovoDiagrama = new JLabel(gerenciadorDeRecursos.getImagem("icone_sinal_mais"));
+        JLabel labelImgNovoDiagrama = new JLabel(gerenciadorDeRecursos.getImagem("icone_sinal_mais_30"));
 
         JLabel labelNovoDiagrama = new JLabel(gerenciadorDeRecursos.getString("diagrama_novo"));
         labelNovoDiagrama.setFont(gerenciadorDeRecursos.getRobotoMedium(16));

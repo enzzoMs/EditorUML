@@ -1,21 +1,17 @@
 package RelacoesUML;
 
-import AlteracoesDeElementos.RelacaoModificada;
+import componentes.alteracoes.RelacaoModificada;
 import ClassesAuxiliares.RobotoFont;
-import ComponentesUML.ComponenteUML;
-import DiagramaUML.DiagramaUML;
+import componentes.ComponenteUML;
+import diagrama.DiagramaUML;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.border.Border;
-import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class RelacaoDependencia extends RelacaoUML {
     private final JLabel labelSetaDependencia = new JLabel();
@@ -155,7 +151,7 @@ public class RelacaoDependencia extends RelacaoUML {
         frameGerenciarRelacao = new JFrame();
         frameGerenciarRelacao.setResizable(false);
         frameGerenciarRelacao.setTitle("Configurar Relação");
-        frameGerenciarRelacao.setIconImage(new ImageIcon(RelacaoDependencia.class.getResource("/imagens/icone_configurar_componente.png")).getImage());
+        frameGerenciarRelacao.setIconImage(new ImageIcon(RelacaoDependencia.class.getResource("/imagens/icones/configurar_48.png")).getImage());
 
         RobotoFont robotoFont = new RobotoFont();
 

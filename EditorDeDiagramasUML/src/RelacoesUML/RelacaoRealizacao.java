@@ -1,9 +1,9 @@
 package RelacoesUML;
 
-import AlteracoesDeElementos.RelacaoModificada;
+import componentes.alteracoes.RelacaoModificada;
 import ClassesAuxiliares.RobotoFont;
-import ComponentesUML.ComponenteUML;
-import DiagramaUML.DiagramaUML;
+import componentes.ComponenteUML;
+import diagrama.DiagramaUML;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -11,7 +11,6 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Area;
 import java.util.ArrayList;
 
 
@@ -153,7 +152,7 @@ public class RelacaoRealizacao extends RelacaoUML {
         frameGerenciarRelacao = new JFrame();
         frameGerenciarRelacao.setResizable(false);
         frameGerenciarRelacao.setTitle("Configurar Relação");
-        frameGerenciarRelacao.setIconImage(new ImageIcon(ComponenteUML.class.getResource("/imagens/icone_configurar_componente.png")).getImage());
+        frameGerenciarRelacao.setIconImage(new ImageIcon(ComponenteUML.class.getResource("/imagens/icones/configurar_48.png")).getImage());
 
         RobotoFont robotoFont = new RobotoFont();
 
