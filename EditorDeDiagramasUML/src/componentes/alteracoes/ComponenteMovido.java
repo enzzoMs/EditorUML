@@ -2,42 +2,31 @@ package componentes.alteracoes;
 
 import componentes.ComponenteUML;
 
-public class ComponenteMovido implements AlteracaoDeComponentesUML {
-    /*
-        Classe que indica uma alteração no diagrama sob a forma de um componente sendo movido.
-        Guarda informações com relação a posição antes e depois do componente ter sido movimentado de forma a ajudar
-        a implementar os métodos refazer e desfazer alteração.
-     */
+import java.awt.*;
 
-    private final int posicaoXantesDoMovimento;
-    private final int posicaoYantesDoMovimento;
-    private final int posicaoXdepoisDoMovimento;
-    private final int posicaoYdepoisDoMovimento;
+/**
+ * Classe que indica uma alteração no diagrama sob a forma de um componente sendo movido.
+ * Guarda informações com relação a posição antes e depois do componente ter sido movimentado.
+ */
+
+public class ComponenteMovido implements AlteracaoDeComponenteUML {
+    private final Point posicaoAntesDoMovimento;
+    private final Point posicaoDepoisDoMovimento;
     private final ComponenteUML componenteMovido;
 
-
-    public ComponenteMovido(int posicaoXantesDoMovimento, int posicaoYantesDoMovimento, int posicaoXdepoisDoMovimento,
-                            int posicaoYdepoisDoMovimento, ComponenteUML componenteMovido) {
-
-        this.posicaoXantesDoMovimento = posicaoXantesDoMovimento;
-        this.posicaoYantesDoMovimento = posicaoYantesDoMovimento;
-        this.posicaoXdepoisDoMovimento = posicaoXdepoisDoMovimento;
-        this.posicaoYdepoisDoMovimento = posicaoYdepoisDoMovimento;
+    public ComponenteMovido(Point posicaoAntesDoMovimento, Point posicaoDepoisDoMovimento, ComponenteUML componenteMovido) {
+        this.posicaoAntesDoMovimento = posicaoAntesDoMovimento;
+        this.posicaoDepoisDoMovimento = posicaoDepoisDoMovimento;
         this.componenteMovido = componenteMovido;
     }
 
-
     @Override
     public void desfazerAlteracao() {
-        // Move o componente para a posição antes do movimento.
-
-        componenteMovido.getPainelComponente().setLocation(posicaoXantesDoMovimento, posicaoYantesDoMovimento);
+        componenteMovido.getPainelComponente().setLocation(posicaoAntesDoMovimento);
     }
 
     @Override
     public void refazerAlteracao() {
-        // Move o componente para a posição depois do movimento.
-
-        componenteMovido.getPainelComponente().setLocation(posicaoXdepoisDoMovimento, posicaoYdepoisDoMovimento);
+        componenteMovido.getPainelComponente().setLocation(posicaoDepoisDoMovimento);
     }
 }

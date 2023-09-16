@@ -26,7 +26,6 @@ public class DiagramaUML {
 
     public void addComponente(ComponenteUML novoComponente) {
         listaComponentesUML.add(novoComponente);
-        areaDeDiagramas.addComponenteAoQuadro(novoComponente, true);
     }
 
     public void addRelacao(RelacaoUML novaRelacao) {
@@ -36,7 +35,6 @@ public class DiagramaUML {
 
     public void removerComponente(ComponenteUML componente) {
         listaComponentesUML.remove(componente);
-        areaDeDiagramas.removerComponenteDoQuadro(componente);
     }
 
     public void removerRelacao(RelacaoUML relacaoUML) {

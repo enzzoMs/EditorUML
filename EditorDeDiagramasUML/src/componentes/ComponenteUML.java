@@ -1,6 +1,7 @@
 package componentes;
 
 import auxiliares.GerenciadorDeRecursos;
+import componentes.alteracoes.AlteracaoDeComponenteUML;
 import componentes.alteracoes.ComponenteMovido;
 import componentes.alteracoes.ComponenteRemovido;
 import interfacegrafica.AreaDeDiagramas;
@@ -11,7 +12,6 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 /**
  * TODO
@@ -25,10 +25,13 @@ public abstract class ComponenteUML {
     private final JPanel glassPane = new JPanel();
     private final JFrame frameGerenciarComponente = new JFrame();
     private final JPanel painelOpcoesComponente = new JPanel();
+    private final AreaDeDiagramas areaDeDiagramas;
     private int largura;
     private int altura;
 
     public ComponenteUML(AreaDeDiagramas areaDeDiagramas) {
+        this.areaDeDiagramas = areaDeDiagramas;
+
         GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
         painelComponente.setOpaque(false);
@@ -37,7 +40,7 @@ public abstract class ComponenteUML {
         frameGerenciarComponente.setResizable(false);
         frameGerenciarComponente.setTitle(gerenciadorDeRecursos.getString("componente_configurar"));
         frameGerenciarComponente.setIconImage(gerenciadorDeRecursos.getImagem("icone_configurar_48").getImage());
-        frameGerenciarComponente.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frameGerenciarComponente.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
         // ----------------------------------------------------------------------------
 
@@ -189,10 +192,9 @@ public abstract class ComponenteUML {
                 if (areaDeDiagramas.componentesEstaoHabilitados()) {
                     painelComponente.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
-                    // TODO
-                    areaDeDiagramas.addAlteracao(new ComponenteMovido(
-                        posicaoPainelX, posicaoPainelY,
-                        painelComponente.getX(), painelComponente.getY(),
+                    areaDeDiagramas.addAlteracaoDeComponente(new ComponenteMovido(
+                        new Point(posicaoPainelX, posicaoPainelY),
+                        painelComponente.getLocation(),
                         ComponenteUML.this
                     ));
                 }
@@ -211,13 +213,16 @@ public abstract class ComponenteUML {
         painelComponente.add(componente);
     }
 
-    // TODO: tirar isso
-    public JPanel getPainelComponente() {
-        return painelComponente;
+    public void adicionarAlteracaoDeComponente(AlteracaoDeComponenteUML alteracao) {
+        areaDeDiagramas.addAlteracaoDeComponente(alteracao);
     }
 
-    public JFrame getFrameGerenciarComponente() {
-        return frameGerenciarComponente;
+    public void removerComponenteDoQuadroBranco() {
+        areaDeDiagramas.removerComponenteDoQuadro(this);
+    }
+
+    public void adicionarComponenteAoQuadroBranco() {
+        areaDeDiagramas.addComponente(this, false);
     }
 
     public void setBounds(int largura, int altura) {
@@ -232,17 +237,20 @@ public abstract class ComponenteUML {
         painelComponente.repaint();
     }
 
+    public JPanel getPainelComponente() {
+        return painelComponente;
+    }
+
+    public JFrame getFrameGerenciarComponente() {
+        return frameGerenciarComponente;
+    }
+
     public int getLargura() {
         return largura;
     }
 
     public int getAltura() {
         return altura;
-    }
-
-    // TODO: tirar isso
-    public JPanel getPainelOpcoesComponenteUML() {
-        return painelOpcoesComponente;
     }
 
     // TODO: ver esse metodo
@@ -334,21 +342,17 @@ public abstract class ComponenteUML {
         painelRespostaNao.addMouseListener(adapterPainelResposta);
 
         // ----------------------------------------------------------------------------
-
-        // TODO
-       /* mouseAdapter = new MouseAdapter() {
+        painelRespostaSim.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                diagramaUML.getAreaDeDiagramas().addAlteracao(new ComponenteRemovido(
-                        painelComponente.getX(), painelComponente.getY(),
-                        ComponenteUML.this
+                areaDeDiagramas.addAlteracaoDeComponente(new ComponenteRemovido(
+                    painelComponente.getLocation(),
+                    ComponenteUML.this
                 ));
-                diagramaUML.removerComponente(ComponenteUML.this);
+                removerComponenteDoQuadroBranco();
                 frameGerenciarComponente.setVisible(false);
             }
-        };
-
-        painelRespostaSim.addMouseListener(mouseAdapter);*/
+        });
 
         // ----------------------------------------------------------------------------
 
@@ -371,10 +375,9 @@ public abstract class ComponenteUML {
         return dialogExcluirComponente;
     }
 
-    /**
-     * Representação do componente em formato de String. Cada informação deve estar em uma linha diferente.
-     */
     public abstract String toString();
+
+    public abstract <T> void setModelo(T novoModelo);
 
     protected abstract void initFrameGerenciarComponente();
 }

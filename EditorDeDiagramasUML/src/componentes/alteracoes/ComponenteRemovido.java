@@ -2,33 +2,27 @@ package componentes.alteracoes;
 
 import componentes.ComponenteUML;
 
-public class ComponenteRemovido implements AlteracaoDeComponentesUML {
-    /*
-        Classe que indica uma alteração no diagrama sob a forma de um componente sendo removido.
-        Guarda informações com relação a última posição desse componente no momento em que ele foi removido de forma
-        a ajudar a implementar os métodos refazer e desfazer alteração.
-     */
+import java.awt.*;
 
-    private final int posicaoXantesDaRemocao;
-    private final int posicaoYdepoisDaRemocao;
+/**
+ * Classe que indica uma alteração no diagrama sob a forma de um componente sendo removido.
+ * Guarda informações com relação a última posição desse componente no momento em que ele foi removido.
+ */
+public class ComponenteRemovido implements AlteracaoDeComponenteUML {
+    private final Point posicaoAntesDaRemocao;
     private final ComponenteUML componenteRemovido;
 
-    public ComponenteRemovido(int posicaoXantesDaRemocao, int posicaoYdepoisDaRemocao, ComponenteUML componenteRemovido) {
-        this.posicaoXantesDaRemocao = posicaoXantesDaRemocao;
-        this.posicaoYdepoisDaRemocao = posicaoYdepoisDaRemocao;
+    public ComponenteRemovido(Point posicaoAntesDaRemocao, ComponenteUML componenteRemovido) {
+        this.posicaoAntesDaRemocao = posicaoAntesDaRemocao;
         this.componenteRemovido = componenteRemovido;
     }
 
     public void desfazerAlteracao() {
-        // Adiciona o componente na última posição antes da remoção.
-
-       // componenteRemovido.getDiagramaUML().addComponente(componenteRemovido);
-        componenteRemovido.getPainelComponente().setLocation(posicaoXantesDaRemocao, posicaoYdepoisDaRemocao);
+        componenteRemovido.adicionarComponenteAoQuadroBranco();
+        componenteRemovido.getPainelComponente().setLocation(posicaoAntesDaRemocao);
     }
 
     public void refazerAlteracao() {
-        // Remove o componente.
-
-       // componenteRemovido.getDiagramaUML().removerComponente(componenteRemovido);
+       componenteRemovido.removerComponenteDoQuadroBranco();
     }
 }

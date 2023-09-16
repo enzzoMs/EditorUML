@@ -26,6 +26,10 @@ public class Atributo {
             (estatico ? "</u></html>" : "");
     }
 
+    public Atributo copiar() {
+        return new Atributo(nome, tipo, valorPadrao, visibilidade, estatico);
+    }
+
     public Visibilidade getVisibilidade() {
         return visibilidade;
     }

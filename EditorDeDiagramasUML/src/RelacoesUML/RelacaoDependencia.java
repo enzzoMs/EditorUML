@@ -242,7 +242,7 @@ public class RelacaoDependencia extends RelacaoUML {
             @Override
             public void mouseClicked(MouseEvent e) {
                 frameGerenciarRelacao.setVisible(false);
-                getDiagramaUML().getAreaDeDiagramas().addAlteracao(new RelacaoModificada((ArrayList<JComponent>) getListaPaineisRelacao().clone(), RelacaoModificada.TipoDaModificao.REMOVIDA,
+                getDiagramaUML().getAreaDeDiagramas().addAlteracaoDeComponente(new RelacaoModificada((ArrayList<JComponent>) getListaPaineisRelacao().clone(), RelacaoModificada.TipoDaModificao.REMOVIDA,
                         RelacaoDependencia.this));
                 getDiagramaUML().removerRelacao(RelacaoDependencia.this);
             }

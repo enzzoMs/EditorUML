@@ -13,6 +13,10 @@ public class Parametro {
         this.valorPadrao = valorPadrao;
     }
 
+    public Parametro copiar() {
+        return new Parametro(nome, tipo, valorPadrao);
+    }
+
     public String getNome() {
         return nome;
     }

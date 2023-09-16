@@ -8,7 +8,7 @@ package componentes.alteracoes;
  * @see ComponenteRemovido
  * @see RelacaoModificada
  */
-public interface AlteracaoDeComponentesUML {
+public interface AlteracaoDeComponenteUML {
     void desfazerAlteracao();
 
     void refazerAlteracao();

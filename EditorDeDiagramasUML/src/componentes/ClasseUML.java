@@ -1,11 +1,9 @@
 package componentes;
 
 import auxiliares.GerenciadorDeRecursos;
-import modelos.Atributo;
-import modelos.Metodo;
-import modelos.Parametro;
-import modelos.Visibilidade;
+import componentes.alteracoes.ComponenteModificado;
 import interfacegrafica.AreaDeDiagramas;
+import modelos.*;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -16,10 +14,7 @@ import javax.swing.border.MatteBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -32,24 +27,19 @@ import java.util.function.Consumer;
  * representar uma interface.
  */
 public class ClasseUML extends ComponenteUML {
-    private String nome = GerenciadorDeRecursos.getInstancia().getString("classe_nome_default");
-    private String comentario = "";
-    private boolean ehAbstrata;
-    private boolean ehInterface;
-    private int numCaracteresQuebrarComentario = 20;
+    private Classe modeloClasseAtual = new Classe();
+    private Classe modeloClasseAntesDeAlteracoes;
     private final JPanel painelNomeClasse = new JPanel();
     private final JList<String> jListAtributos = new JList<>();
     private final JList<String> jListMetodos = new JList<>();
-    private final ArrayList<Atributo> atributos = new ArrayList<>();
-    private final ArrayList<Metodo> metodos = new ArrayList<>();
-
+    private static final int LARGURA_MINIMA = 120;
 
     public ClasseUML(AreaDeDiagramas areaDeDiagramas) {
         super(areaDeDiagramas);
 
         GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
-        JLabel labelNomeClasse = new JLabel(nome, JLabel.CENTER);
+        JLabel labelNomeClasse = new JLabel(modeloClasseAtual.getNome(), JLabel.CENTER);
         labelNomeClasse.setFont(gerenciadorDeRecursos.getRobotoBlack(15));
         labelNomeClasse.setOpaque(false);
         labelNomeClasse.setForeground(gerenciadorDeRecursos.getColor("white"));
@@ -92,8 +82,7 @@ public class ClasseUML extends ComponenteUML {
 
         // ----------------------------------------------------------------------------
 
-        // Nesse momento o painelNomeClasse é com certeza o componente mais largo dos três
-        int largura = painelNomeClasse.getPreferredSize().width;
+        int largura = LARGURA_MINIMA;
 
         int altura = painelNomeClasse.getPreferredSize().height +
                 jListAtributos.getPreferredSize().height +
@@ -115,7 +104,6 @@ public class ClasseUML extends ComponenteUML {
         );
 
         super.setBounds(largura, altura);
-
         // TODO: mudar a implementacao disso para outro lugar
         /*
         JLabel labelUndo = (JLabel) diagramaUML.getAreaDeDiagramas().getPainelOpcoesQuadroBranco().getComponent(3);
@@ -134,7 +122,6 @@ public class ClasseUML extends ComponenteUML {
                 ClasseUML.this.getFrameGerenciarComponente().setVisible(false);
             }
         });*/
-
     }
 
 
@@ -153,11 +140,11 @@ public class ClasseUML extends ComponenteUML {
         GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
         JLabel labelNomeClasse = (JLabel) painelNomeClasse.getComponent(0);
-        labelNomeClasse.setText(nome);
+        labelNomeClasse.setText(modeloClasseAtual.getNome());
 
         // ----------------------------------------------------------------------------
 
-        if (ehAbstrata) {
+        if (modeloClasseAtual.ehAbstrata()) {
             labelNomeClasse.setFont(gerenciadorDeRecursos.getRobotoBlack(15).deriveFont(Font.ITALIC));
             painelNomeClasse.setBackground(gerenciadorDeRecursos.getColor("gray"));
         } else {
@@ -169,7 +156,7 @@ public class ClasseUML extends ComponenteUML {
 
         painelNomeClasse.removeAll();
 
-        if (ehInterface) {
+        if (modeloClasseAtual.ehInterface()) {
             JLabel labelInterface = new JLabel(gerenciadorDeRecursos.getString("interface_uml"), JLabel.CENTER);
             labelInterface.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
             labelInterface.setForeground(gerenciadorDeRecursos.getColor("white"));
@@ -184,8 +171,8 @@ public class ClasseUML extends ComponenteUML {
 
         // Realizando as quebras de linha do comentario
 
-        if (!comentario.isEmpty()) {
-            ArrayList<String> linhasComentario = quebrarComentarioEmLinhas(comentario);
+        if (!modeloClasseAtual.getComentario().isEmpty()) {
+            ArrayList<String> linhasComentario = quebrarComentarioEmLinhas(modeloClasseAtual.getComentario());
 
             for (int i = 0; i < linhasComentario.size(); i++) {
                 JLabel labelComentario = new JLabel(linhasComentario.get(i), JLabel.CENTER);
@@ -202,10 +189,10 @@ public class ClasseUML extends ComponenteUML {
         DefaultListModel<String> listModelAtributos = (DefaultListModel<String>) jListAtributos.getModel();
         listModelAtributos.clear();
 
-        for (Atributo atributo : atributos) {
+        for (Atributo atributo : modeloClasseAtual.getAtributos()) {
             String atributoTextoUml = (atributo.ehEstatico() ? "<html><u>" : "") +
                     // em interfaces a visibilidade nao é mostrada
-                    (ehInterface ? "" : atributo.getVisibilidade().getSimbolo()) +
+                    (modeloClasseAtual.ehInterface() ? "" : atributo.getVisibilidade().getSimbolo()) +
                     atributo.getNome() +
                     (atributo.getTipo().isEmpty() ? "" : ": " + atributo.getTipo()) +
                     (atributo.getValorPadrao().isEmpty() ? "" : " = " + atributo.getValorPadrao()) +
@@ -214,7 +201,7 @@ public class ClasseUML extends ComponenteUML {
             listModelAtributos.addElement(atributoTextoUml);
         }
 
-        if (atributos.isEmpty()) {
+        if (modeloClasseAtual.getAtributos().isEmpty()) {
             // se nao houver atributos adiciona uma string vazia somente para que o tamanho do painel nao seja 0
             listModelAtributos.add(0, "");
         }
@@ -224,7 +211,7 @@ public class ClasseUML extends ComponenteUML {
         DefaultListModel<String> listModelMetodos = (DefaultListModel<String>) jListMetodos.getModel();
         listModelMetodos.clear();
 
-        for (Metodo metodo : metodos) {
+        for (Metodo metodo : modeloClasseAtual.getMetodos()) {
             ArrayList<Parametro> parametros = metodo.getParametros();
 
             // Se o metodo tiver mais de um parametro então eles serao mostrados em linhas separadas
@@ -235,7 +222,7 @@ public class ClasseUML extends ComponenteUML {
             metodoTextoUml.append("<html>")
                 .append(metodo.ehEstatico() ? "<u>" : "")
                 .append(metodo.ehAbstrato() ? "<i>" : "")
-                .append(ehInterface ? "" : metodo.getVisibilidade().getSimbolo())
+                .append(modeloClasseAtual.ehInterface() ? "" : metodo.getVisibilidade().getSimbolo())
                 .append(metodo.getNome())
                 .append("(")
                 // Se o metodos tiver mais de um parametro eles sao mostrados em linhas separadas
@@ -257,14 +244,12 @@ public class ClasseUML extends ComponenteUML {
             listModelMetodos.addElement(String.valueOf(metodoTextoUml));
         }
 
-        if (metodos.isEmpty()) {
+        if (modeloClasseAtual.getMetodos().isEmpty()) {
             // se nao houver metodos adiciona uma string vazia somente para que o tamanho do painel nao seja 0
             listModelMetodos.add(0, "");
         }
 
         // ----------------------------------------------------------------------------
-
-        int LARGURA_MINIMA = 120;
 
         int novaLargura = Math.max(painelNomeClasse.getPreferredSize().width,
                           Math.max(jListMetodos.getPreferredSize().width, jListAtributos.getPreferredSize().width));
@@ -290,6 +275,39 @@ public class ClasseUML extends ComponenteUML {
         );
 
         super.setBounds(novaLargura, novaAltura);
+    }
+
+    private ArrayList<String> quebrarComentarioEmLinhas(String novoComentario) {
+        ArrayList<String> linhasComentario = new ArrayList<>();
+
+        int numCaracteresSubstring = 0;
+        int inicioSubstring = 0;
+
+        for (int i = 0; i < novoComentario.length(); i++) {
+            if ((numCaracteresSubstring >= modeloClasseAtual.getNumCharsQuebrarComentario() &&
+                    novoComentario.charAt(i) == ' ') || novoComentario.charAt(i) == '\n') {
+
+                linhasComentario.add(novoComentario.substring(inicioSubstring, i));
+                inicioSubstring = i + 1;
+                numCaracteresSubstring = 0;
+            }
+
+            numCaracteresSubstring++;
+        }
+
+        // Se ainda tiver sobrado caracteres adiciona o restante a lista
+        if (numCaracteresSubstring != 0) {
+            linhasComentario.add(novoComentario.substring(inicioSubstring));
+        }
+        return linhasComentario;
+    }
+
+    @Override
+    public <T> void setModelo(T novoModelo) {
+        if (novoModelo instanceof Classe) {
+            modeloClasseAtual = (Classe) novoModelo;
+            atualizarComponentesGraficos();
+        }
     }
 
     @Override
@@ -412,27 +430,27 @@ public class ClasseUML extends ComponenteUML {
 
         // ----------------------------------------------------------------------------
 
-        JButton botaoSair = new JButton(gerenciadorDeRecursos.getString("aplicar_maiuscula"));
-        botaoSair.setFont(gerenciadorDeRecursos.getRobotoBlack(13));
-        botaoSair.setForeground(gerenciadorDeRecursos.getColor("white"));
-        botaoSair.setBackground(gerenciadorDeRecursos.getColor("black"));
-        botaoSair.setBorder(new EmptyBorder(12, 20, 12, 20));
-        botaoSair.setOpaque(false);
-        botaoSair.setFocusable(false);
-        botaoSair.setHorizontalTextPosition(JButton.LEFT);
-        botaoSair.addMouseListener(new MouseAdapter() {
+        JButton botaoAplicar = new JButton(gerenciadorDeRecursos.getString("aplicar_maiuscula"));
+        botaoAplicar.setFont(gerenciadorDeRecursos.getRobotoBlack(13));
+        botaoAplicar.setForeground(gerenciadorDeRecursos.getColor("white"));
+        botaoAplicar.setBackground(gerenciadorDeRecursos.getColor("black"));
+        botaoAplicar.setBorder(new EmptyBorder(12, 20, 12, 20));
+        botaoAplicar.setOpaque(false);
+        botaoAplicar.setFocusable(false);
+        botaoAplicar.setHorizontalTextPosition(JButton.LEFT);
+        botaoAplicar.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                botaoSair.setBackground(gerenciadorDeRecursos.getColor("raisin_black"));
+                botaoAplicar.setBackground(gerenciadorDeRecursos.getColor("raisin_black"));
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
-                botaoSair.setBackground(gerenciadorDeRecursos.getColor("black"));
+                botaoAplicar.setBackground(gerenciadorDeRecursos.getColor("black"));
             }
         });
-        botaoSair.addActionListener(e -> {
-            if (nome.isEmpty()) {
+        botaoAplicar.addActionListener(e -> {
+            if (modeloClasseAtual.getNome().isEmpty()) {
                 dialogErroNomeClasse.setLocationRelativeTo(null);
                 dialogErroNomeClasse.setVisible(true);
                 return;
@@ -440,55 +458,44 @@ public class ClasseUML extends ComponenteUML {
 
             atualizarComponentesGraficos();
 
-            //TODO
+            if (!modeloClasseAntesDeAlteracoes.ehIgual(modeloClasseAtual)) {
+                adicionarAlteracaoDeComponente(new ComponenteModificado<>(
+                        modeloClasseAntesDeAlteracoes,
+                        modeloClasseAtual,
+                    ClasseUML.this
+                ));
 
-            /*
-            HashMap<String, Object> informacoesDepoisDaModificacao = ClasseUML.this.obterInformacoes();
-
-            Object[] arrayStringInformacoesDepoisDaModificacao = {
-                    informacoesDepoisDaModificacao.get("NOME"),
-                    informacoesDepoisDaModificacao.get("COMENTARIO"),
-                    informacoesDepoisDaModificacao.get("ABSTRATA"),
-                    informacoesDepoisDaModificacao.get("INTERFACE"),
-                    informacoesDepoisDaModificacao.get("LIMITE_COMENTARIO"),
-                    informacoesDepoisDaModificacao.get("LISTA_STRING_METODOS"),
-                    informacoesDepoisDaModificacao.get("LISTA_STRING_ATRIBUTOS")
-            };
-
-            Object[] arrayStringInformacoesAntesDaModificacao = {
-                    informacoesAntesDaModificacao.get("NOME"),
-                    informacoesAntesDaModificacao.get("COMENTARIO"),
-                    informacoesAntesDaModificacao.get("ABSTRATA"),
-                    informacoesAntesDaModificacao.get("INTERFACE"),
-                    informacoesAntesDaModificacao.get("LIMITE_COMENTARIO"),
-                    informacoesAntesDaModificacao.get("LISTA_STRING_METODOS"),
-                    informacoesAntesDaModificacao.get("LISTA_STRING_ATRIBUTOS")
-            };
-
-
-            if (!Arrays.deepToString(arrayStringInformacoesAntesDaModificacao).equals(Arrays.deepToString(arrayStringInformacoesDepoisDaModificacao))) {
-                ClasseUML.super.getDiagramaUML().getAreaDeDiagramas().addAlteracao(new ComponenteModificado(
-                        informacoesAntesDaModificacao,
-                        informacoesDepoisDaModificacao,
-                        ClasseUML.this));
+                modeloClasseAntesDeAlteracoes = modeloClasseAtual.copiar();
             }
-            informacoesAntesDaModificacao = ClasseUML.this.obterInformacoes();*/
-
         });
 
         // ----------------------------------------------------------------------------
-        getFrameGerenciarComponente().addWindowListener(new WindowAdapter() {
+
+        getFrameGerenciarComponente().addComponentListener(new ComponentAdapter() {
             @Override
-            public void windowClosing(WindowEvent e) {
-                if (nome.isEmpty()) {
+            public void componentShown(ComponentEvent e) {
+                modeloClasseAntesDeAlteracoes = modeloClasseAtual.copiar();
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                if (modeloClasseAtual.getNome().isEmpty()) {
                     dialogErroNomeClasse.setLocationRelativeTo(null);
                     dialogErroNomeClasse.setVisible(true);
                     return;
                 }
 
-                atualizarComponentesGraficos();
+                if (!modeloClasseAntesDeAlteracoes.ehIgual(modeloClasseAtual)) {
+                    adicionarAlteracaoDeComponente(new ComponenteModificado<>(
+                            modeloClasseAntesDeAlteracoes,
+                            modeloClasseAtual,
+                            ClasseUML.this
+                    ));
 
-                ClasseUML.super.getFrameGerenciarComponente().setVisible(false);
+                    atualizarComponentesGraficos();
+
+                    modeloClasseAntesDeAlteracoes = modeloClasseAtual.copiar();
+                }
             }
         });
 
@@ -512,38 +519,13 @@ public class ClasseUML extends ComponenteUML {
 
         painelGerenciarComponente.add(painelTamanhoMaximo, "grow, wrap");
 
-        painelGerenciarComponente.add(botaoSair, "align right, gaptop:push, gapbottom 0");
+        painelGerenciarComponente.add(botaoAplicar, "align right, gaptop:push, gapbottom 0");
 
         super.getFrameGerenciarComponente().add(painelGerenciarComponente);
         super.getFrameGerenciarComponente().pack();
 
         painelGerenciarComponente.remove(painelTamanhoMaximo);
         painelGerenciarComponente.add(paineisGerenciarComponente[0], "grow, wrap", 1);
-    }
-
-    private ArrayList<String> quebrarComentarioEmLinhas(String novoComentario) {
-        ArrayList<String> linhasComentario = new ArrayList<>();
-
-        int numCaracteresSubstring = 0;
-        int inicioSubstring = 0;
-
-        for (int i = 0; i < novoComentario.length(); i++) {
-            if ((numCaracteresSubstring >= numCaracteresQuebrarComentario &&
-                    novoComentario.charAt(i) == ' ') || novoComentario.charAt(i) == '\n') {
-
-                linhasComentario.add(novoComentario.substring(inicioSubstring, i));
-                inicioSubstring = i + 1;
-                numCaracteresSubstring = 0;
-            }
-
-            numCaracteresSubstring++;
-        }
-
-        // Se ainda tiver sobrado caracteres adiciona o restante a lista
-        if (numCaracteresSubstring != 0) {
-            linhasComentario.add(novoComentario.substring(inicioSubstring));
-        }
-        return linhasComentario;
     }
 
     private JPanel getPainelGerenciarClasse() {
@@ -565,17 +547,17 @@ public class ClasseUML extends ComponenteUML {
         textFieldNomeClasse.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                nome = textFieldNomeClasse.getText();
+                modeloClasseAtual.setNome(textFieldNomeClasse.getText());
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                nome = textFieldNomeClasse.getText();
+                modeloClasseAtual.setNome(textFieldNomeClasse.getText());
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                nome = textFieldNomeClasse.getText();
+                modeloClasseAtual.setNome(textFieldNomeClasse.getText());
             }
         });
 
@@ -591,17 +573,17 @@ public class ClasseUML extends ComponenteUML {
         textAreaComentarioClasse.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
-                comentario = textAreaComentarioClasse.getText();
+                modeloClasseAtual.setComentario(textAreaComentarioClasse.getText());
             }
 
             @Override
             public void removeUpdate(DocumentEvent e) {
-                comentario = textAreaComentarioClasse.getText();
+                modeloClasseAtual.setComentario(textAreaComentarioClasse.getText());
             }
 
             @Override
             public void changedUpdate(DocumentEvent e) {
-                comentario = textAreaComentarioClasse.getText();
+                modeloClasseAtual.setComentario(textAreaComentarioClasse.getText());
             }
         });
 
@@ -625,7 +607,9 @@ public class ClasseUML extends ComponenteUML {
         spinnerNumCaracteres.setForeground(gerenciadorDeRecursos.getColor("onyx"));
         ((JSpinner.DefaultEditor) spinnerNumCaracteres.getEditor()).getTextField().setEditable(false);
         ((JSpinner.DefaultEditor) spinnerNumCaracteres.getEditor()).getTextField().setFocusable(false);
-        spinnerNumCaracteres.addChangeListener(e -> numCaracteresQuebrarComentario = (int) spinnerNumCaracteres.getValue());
+        spinnerNumCaracteres.addChangeListener(e -> {
+            modeloClasseAtual.setNumCharsQuebrarComentario((int) spinnerNumCaracteres.getValue());
+        });
 
         // ----------------------------------------------------------------------------
 
@@ -657,14 +641,29 @@ public class ClasseUML extends ComponenteUML {
 
         checkBoxAbstrata.addActionListener(e -> {
             checkBoxInterface.setSelected(false);
-            ehAbstrata = checkBoxAbstrata.isSelected();
-            ehInterface = false;
+            modeloClasseAtual.setAbstrata(checkBoxAbstrata.isSelected());
+            modeloClasseAtual.setInterface(false);
         });
 
         checkBoxInterface.addActionListener(e -> {
             checkBoxAbstrata.setSelected(false);
-            ehInterface = checkBoxInterface.isSelected();
-            ehAbstrata = false;
+            modeloClasseAtual.setInterface(checkBoxInterface.isSelected());
+            modeloClasseAtual.setAbstrata(false);
+        });
+
+        // ----------------------------------------------------------------------------
+
+        // Quando o frame gerenciar for aberto os text fields e campos devem ser atualizados de acordo com o modelo
+        // do componente. Isso deve ser feito por conta da possibilidade do modelo ter sido modificado em algum momento
+        getFrameGerenciarComponente().addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                textFieldNomeClasse.setText(modeloClasseAtual.getNome());
+                textAreaComentarioClasse.setText(modeloClasseAtual.getComentario());
+                spinnerNumCaracteres.setValue(modeloClasseAtual.getNumCharsQuebrarComentario());
+                checkBoxAbstrata.setSelected(modeloClasseAtual.ehAbstrata());
+                checkBoxInterface.setSelected(modeloClasseAtual.ehInterface());
+            }
         });
 
         // ----------------------------------------------------------------------------
@@ -753,7 +752,7 @@ public class ClasseUML extends ComponenteUML {
 
             private void atualizarAtributoSelecionado() {
                 if (jListGerenciarAtributos.getSelectedIndex() != -1) {
-                    Atributo atributoSelecionado = atributos.get(jListGerenciarAtributos.getSelectedIndex());
+                    Atributo atributoSelecionado = modeloClasseAtual.getAtributos().get(jListGerenciarAtributos.getSelectedIndex());
 
                     atributoSelecionado.setNome(textFieldNomeAtributo.getText());
                     atributoSelecionado.setTipo(textFieldTipoAtributo.getText());
@@ -785,7 +784,7 @@ public class ClasseUML extends ComponenteUML {
         }
         comboBoxVisibilidadeAtributo.addItemListener(e -> {
             if (jListGerenciarAtributos.getSelectedIndex() != -1) {
-                Atributo atributoSelecionado = atributos.get(jListGerenciarAtributos.getSelectedIndex());
+                Atributo atributoSelecionado = modeloClasseAtual.getAtributos().get(jListGerenciarAtributos.getSelectedIndex());
 
                 atributoSelecionado.setVisibilidade(
                         Visibilidade.getVisibilidadePorNome((String) comboBoxVisibilidadeAtributo.getSelectedItem())
@@ -806,7 +805,7 @@ public class ClasseUML extends ComponenteUML {
         checkBoxAtributoEstatico.setEnabled(false);
         checkBoxAtributoEstatico.addItemListener(e -> {
             if (jListGerenciarAtributos.getSelectedIndex() != -1) {
-                Atributo atributoSelecionado = atributos.get(jListGerenciarAtributos.getSelectedIndex());
+                Atributo atributoSelecionado = modeloClasseAtual.getAtributos().get(jListGerenciarAtributos.getSelectedIndex());
 
                 atributoSelecionado.setEstatico(checkBoxAtributoEstatico.isSelected());
 
@@ -835,20 +834,20 @@ public class ClasseUML extends ComponenteUML {
         painelGerenciarAtributos.setBackground(gerenciadorDeRecursos.getColor("white"));
 
         Consumer<Integer> emExcluirAtributo = (Integer indexAtributoExcluido) -> {
-            atributos.remove((int) indexAtributoExcluido);
+            modeloClasseAtual.getAtributos().remove((int) indexAtributoExcluido);
         };
 
         Consumer<Void> emNovoAtributo = (Void) -> {
             Atributo novoAtributo = new Atributo();
-            atributos.add(novoAtributo);
+            modeloClasseAtual.getAtributos().add(novoAtributo);
         };
 
         Consumer<Void> emAcimaAtributo = (Void) -> {
-            Collections.swap(atributos, jListGerenciarAtributos.getSelectedIndex(), jListGerenciarAtributos.getSelectedIndex() - 1);
+            Collections.swap(modeloClasseAtual.getAtributos(), jListGerenciarAtributos.getSelectedIndex(), jListGerenciarAtributos.getSelectedIndex() - 1);
         };
 
         Consumer<Void> emAbaixoAtributo = (Void) -> {
-            Collections.swap(atributos, jListGerenciarAtributos.getSelectedIndex(), jListGerenciarAtributos.getSelectedIndex() + 1);
+            Collections.swap(modeloClasseAtual.getAtributos(), jListGerenciarAtributos.getSelectedIndex(), jListGerenciarAtributos.getSelectedIndex() + 1);
         };
 
         JPanel painelOpcoesListaAtributos = getPainelOpcoesListaDeElementos(
@@ -888,7 +887,7 @@ public class ClasseUML extends ComponenteUML {
                 if (indexSelecionado != -1) {
                     habilitarCamposAtributo.accept(true);
 
-                    Atributo atributoSelecionado = atributos.get(jListGerenciarAtributos.getSelectedIndex());
+                    Atributo atributoSelecionado = modeloClasseAtual.getAtributos().get(jListGerenciarAtributos.getSelectedIndex());
 
                     // Removendo os listener para impedir que o atributo seja modificado de forma incorreta durante
                     // os 'setText' abaixo
@@ -920,7 +919,7 @@ public class ClasseUML extends ComponenteUML {
 
                 botaoExcluir.setEnabled(indexSelecionado != -1);
                 botaoAcima.setEnabled(indexSelecionado > 0);
-                botaoAbaixo.setEnabled(indexSelecionado < atributos.size() - 1 && indexSelecionado >= 0);
+                botaoAbaixo.setEnabled(indexSelecionado < modeloClasseAtual.getAtributos().size() - 1 && indexSelecionado >= 0);
             }
         });
 
@@ -933,6 +932,23 @@ public class ClasseUML extends ComponenteUML {
             BorderFactory.createMatteBorder(0, 0, 1, 0, gerenciadorDeRecursos.getColor("cultured")),
             BorderFactory.createMatteBorder(0, 0, 1, 0, gerenciadorDeRecursos.getColor("silver_sand"))
         ));
+
+        // ----------------------------------------------------------------------------
+
+        // Quando o frame gerenciar for aberto os text fields e campos devem ser atualizados de acordo com o modelo
+        // do componente. Isso deve ser feito por conta da possibilidade do modelo ter sido modificado em algum momento
+        getFrameGerenciarComponente().addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                DefaultListModel<String> atributosModel = (DefaultListModel<String>) jListGerenciarAtributos.getModel();
+
+                atributosModel.clear();
+
+                for (Atributo atributo : modeloClasseAtual.getAtributos()) {
+                    atributosModel.addElement(atributo.getRepresentacaoUml());
+                }
+            }
+        });
 
         // ----------------------------------------------------------------------------
 
@@ -1024,7 +1040,7 @@ public class ClasseUML extends ComponenteUML {
 
             private void atualizarMetodoSelecionado() {
                 if (jListGerenciarMetodos.getSelectedIndex() != -1) {
-                    Metodo metodoSelecionado = metodos.get(jListGerenciarMetodos.getSelectedIndex());
+                    Metodo metodoSelecionado = modeloClasseAtual.getMetodos().get(jListGerenciarMetodos.getSelectedIndex());
 
                     metodoSelecionado.setNome(textFieldNomeMetodo.getText());
                     metodoSelecionado.setTipo(textFieldTipoMetodo.getText());
@@ -1054,7 +1070,7 @@ public class ClasseUML extends ComponenteUML {
         }
         comboBoxVisibilidadeMetodo.addActionListener(e -> {
             if (jListGerenciarMetodos.getSelectedIndex() != -1) {
-                Metodo metodoSelecionado = metodos.get(jListGerenciarMetodos.getSelectedIndex());
+                Metodo metodoSelecionado = modeloClasseAtual.getMetodos().get(jListGerenciarMetodos.getSelectedIndex());
 
                 metodoSelecionado.setVisibilidade(
                     Visibilidade.getVisibilidadePorNome((String) comboBoxVisibilidadeMetodo.getSelectedItem())
@@ -1075,7 +1091,7 @@ public class ClasseUML extends ComponenteUML {
         checkBoxMetodoAbstrato.setEnabled(false);
         checkBoxMetodoAbstrato.addActionListener(e -> {
             if (jListGerenciarMetodos.getSelectedIndex() != -1) {
-                Metodo metodoSelecionado = metodos.get(jListGerenciarMetodos.getSelectedIndex());
+                Metodo metodoSelecionado = modeloClasseAtual.getMetodos().get(jListGerenciarMetodos.getSelectedIndex());
 
                 metodoSelecionado.setAbstrato(checkBoxMetodoAbstrato.isSelected());
 
@@ -1094,7 +1110,7 @@ public class ClasseUML extends ComponenteUML {
         checkBoxMetodoEstatico.setEnabled(false);
         checkBoxMetodoEstatico.addActionListener(e -> {
             if (jListGerenciarMetodos.getSelectedIndex() != -1) {
-                Metodo metodoSelecionado = metodos.get(jListGerenciarMetodos.getSelectedIndex());
+                Metodo metodoSelecionado = modeloClasseAtual.getMetodos().get(jListGerenciarMetodos.getSelectedIndex());
 
                 metodoSelecionado.setEstatico(checkBoxMetodoEstatico.isSelected());
 
@@ -1106,19 +1122,21 @@ public class ClasseUML extends ComponenteUML {
 
         // ----------------------------------------------------------------------------
 
-        Consumer<Integer> emExcluirMetodo = (Integer indexMetodoExcluido) -> metodos.remove((int) indexMetodoExcluido);
+        Consumer<Integer> emExcluirMetodo = (Integer indexMetodoExcluido) -> {
+            modeloClasseAtual.getMetodos().remove((int) indexMetodoExcluido);
+        };
 
         Consumer<Void> emNovoMetodo = (Void) -> {
             Metodo novoMetodo = new Metodo();
-            metodos.add(novoMetodo);
+            modeloClasseAtual.getMetodos().add(novoMetodo);
         };
 
         Consumer<Void> emAcimaMetodo = (Void) -> {
-            Collections.swap(metodos, jListGerenciarMetodos.getSelectedIndex(), jListGerenciarMetodos.getSelectedIndex() - 1);
+            Collections.swap(modeloClasseAtual.getMetodos(), jListGerenciarMetodos.getSelectedIndex(), jListGerenciarMetodos.getSelectedIndex() - 1);
         };
 
         Consumer<Void> emAbaixoMetodo = (Void) -> {
-            Collections.swap(metodos, jListGerenciarMetodos.getSelectedIndex(), jListGerenciarMetodos.getSelectedIndex() + 1);
+            Collections.swap(modeloClasseAtual.getMetodos(), jListGerenciarMetodos.getSelectedIndex(), jListGerenciarMetodos.getSelectedIndex() + 1);
         };
 
         JPanel painelOpcoesListaMetodos = getPainelOpcoesListaDeElementos(
@@ -1252,7 +1270,7 @@ public class ClasseUML extends ComponenteUML {
 
             private void atualizarParametroSelecionado() {
                 if (jListGerenciarParametros.getSelectedIndex() != -1) {
-                    Metodo metodoSelecionado = metodos.get(jListGerenciarMetodos.getSelectedIndex());
+                    Metodo metodoSelecionado = modeloClasseAtual.getMetodos().get(jListGerenciarMetodos.getSelectedIndex());
                     Parametro parametroSelecionado = metodoSelecionado.getParametros().get(jListGerenciarParametros.getSelectedIndex());
 
                     parametroSelecionado.setNome(textFieldNomeParametro.getText());
@@ -1277,13 +1295,13 @@ public class ClasseUML extends ComponenteUML {
         // ----------------------------------------------------------------------------
 
         Consumer<Integer> emExcluirParametro = (Integer indexParametroExcluido) -> {
-            Metodo metodoSelecionado = metodos.get(jListGerenciarMetodos.getSelectedIndex());
+            Metodo metodoSelecionado = modeloClasseAtual.getMetodos().get(jListGerenciarMetodos.getSelectedIndex());
             metodoSelecionado.getParametros().remove((int) indexParametroExcluido);
         };
 
         Consumer<Void> emNovoParametro = (Void) -> {
             Parametro novoParametro = new Parametro();
-            metodos.get(jListGerenciarMetodos.getSelectedIndex()).getParametros().add(novoParametro);
+            modeloClasseAtual.getMetodos().get(jListGerenciarMetodos.getSelectedIndex()).getParametros().add(novoParametro);
 
             DefaultListModel<String> model = (DefaultListModel<String>) jListGerenciarParametros.getModel();
             model.setElementAt(":", model.size() - 1);
@@ -1294,7 +1312,7 @@ public class ClasseUML extends ComponenteUML {
             int indexParametroSelecionado = jListGerenciarParametros.getSelectedIndex();
 
             Collections.swap(
-                metodos.get(indexMetodoSelecionado).getParametros(),
+                modeloClasseAtual.getMetodos().get(indexMetodoSelecionado).getParametros(),
                 indexParametroSelecionado, indexParametroSelecionado - 1
             );
         };
@@ -1304,7 +1322,7 @@ public class ClasseUML extends ComponenteUML {
             int indexParametroSelecionado = jListGerenciarParametros.getSelectedIndex();
 
             Collections.swap(
-                metodos.get(indexMetodoSelecionado).getParametros(),
+                modeloClasseAtual.getMetodos().get(indexMetodoSelecionado).getParametros(),
                 indexParametroSelecionado, indexParametroSelecionado + 1
             );
         };
@@ -1341,7 +1359,7 @@ public class ClasseUML extends ComponenteUML {
             if (!e.getValueIsAdjusting() && jListGerenciarMetodos.getSelectedIndex() != -1) {
                 int indexSelecionado = jListGerenciarParametros.getSelectedIndex();
 
-                Metodo metodoSelecionado = metodos.get(jListGerenciarMetodos.getSelectedIndex());
+                Metodo metodoSelecionado = modeloClasseAtual.getMetodos().get(jListGerenciarMetodos.getSelectedIndex());
                 List<Parametro> parametros = metodoSelecionado.getParametros();
 
                 if (indexSelecionado != -1) {
@@ -1385,7 +1403,7 @@ public class ClasseUML extends ComponenteUML {
                 if (indexSelecionado != -1) {
                     habilitarCamposMetodo.accept(true);
 
-                    Metodo metodoSelecionado = metodos.get(jListGerenciarMetodos.getSelectedIndex());
+                    Metodo metodoSelecionado = modeloClasseAtual.getMetodos().get(jListGerenciarMetodos.getSelectedIndex());
 
                     // Removendo os listener para impedir que o metodo seja modificado de forma incorreta durante
                     // os 'setText' abaixo
@@ -1426,10 +1444,29 @@ public class ClasseUML extends ComponenteUML {
 
                 botaoExcluir.setEnabled(indexSelecionado != -1);
                 botaoAcima.setEnabled(indexSelecionado > 0);
-                botaoAbaixo.setEnabled(indexSelecionado < metodos.size() - 1 && indexSelecionado >= 0);
+                botaoAbaixo.setEnabled(indexSelecionado < modeloClasseAtual.getMetodos().size() - 1 && indexSelecionado >= 0);
             }
 
             botaoNovoParametro.setEnabled(jListGerenciarMetodos.getSelectedIndex() != -1);
+        });
+
+        // ----------------------------------------------------------------------------
+
+        // Quando o frame gerenciar for aberto os text fields e campos devem ser atualizados de acordo com o modelo
+        // do componente. Isso deve ser feito por conta da possibilidade do modelo ter sido modificado em algum momento
+        getFrameGerenciarComponente().addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                DefaultListModel<String> metodosModel = (DefaultListModel<String>) jListGerenciarMetodos.getModel();
+                DefaultListModel<String> parametrosModel = (DefaultListModel<String>) jListGerenciarParametros.getModel();
+
+                parametrosModel.clear();
+                metodosModel.clear();
+
+                for (Metodo metodo : modeloClasseAtual.getMetodos()) {
+                    metodosModel.addElement(metodo.getRepresentacaoUml());
+                }
+            }
         });
 
         // ----------------------------------------------------------------------------
@@ -1660,20 +1697,20 @@ public class ClasseUML extends ComponenteUML {
         informacoesClasse.append(super.getPainelComponente().getX()).append("\n");
         informacoesClasse.append(super.getPainelComponente().getY());
         informacoesClasse.append("\n// Nome\n");
-        informacoesClasse.append(nome);
+        informacoesClasse.append(modeloClasseAtual.getNome());
         informacoesClasse.append("\n// Comentario\n");
-        informacoesClasse.append(comentario.replaceAll("\n", "(novaLinha)"));
+        informacoesClasse.append(modeloClasseAtual.getComentario().replaceAll("\n", "(novaLinha)"));
         informacoesClasse.append("\n// Numero de caracteres para quebra de linha\n");
-        informacoesClasse.append(numCaracteresQuebrarComentario);
+        informacoesClasse.append(modeloClasseAtual.getNumCharsQuebrarComentario());
         informacoesClasse.append("\n// Eh abstrata?\n");
-        informacoesClasse.append(ehAbstrata);
+        informacoesClasse.append(modeloClasseAtual.ehAbstrata());
         informacoesClasse.append("\n// Eh Interface?\n");
-        informacoesClasse.append(ehInterface);
+        informacoesClasse.append(modeloClasseAtual.ehInterface());
 
         informacoesClasse.append("\n// Numero de atributos\n");
-        informacoesClasse.append(atributos.size());
+        informacoesClasse.append(modeloClasseAtual.getAtributos().size());
 
-        for (Atributo atributo : atributos) {
+        for (Atributo atributo : modeloClasseAtual.getAtributos()) {
             informacoesClasse.append("\n// Atributo - Nome\n");
             informacoesClasse.append(atributo.getNome());
             informacoesClasse.append("\n// Atributo - Visibilidade\n");
@@ -1687,9 +1724,9 @@ public class ClasseUML extends ComponenteUML {
         }
 
         informacoesClasse.append("\n// Numero de metodos\n");
-        informacoesClasse.append(metodos.size());
+        informacoesClasse.append(modeloClasseAtual.getMetodos().size());
 
-        for (Metodo metodo : metodos) {
+        for (Metodo metodo : modeloClasseAtual.getMetodos()) {
             informacoesClasse.append("\n// Metodo - Nome\n");
             informacoesClasse.append(metodo.getNome());
             informacoesClasse.append("\n// Metodo - Visibilidade\n");

@@ -252,7 +252,7 @@ public class RelacaoAgregacao extends RelacaoUML {
             @Override
             public void mouseClicked(MouseEvent e) {
                 frameGerenciarRelacao.setVisible(false);
-                getDiagramaUML().getAreaDeDiagramas().addAlteracao(new RelacaoModificada((ArrayList<JComponent>) getListaPaineisRelacao().clone(), RelacaoModificada.TipoDaModificao.REMOVIDA,
+                getDiagramaUML().getAreaDeDiagramas().addAlteracaoDeComponente(new RelacaoModificada((ArrayList<JComponent>) getListaPaineisRelacao().clone(), RelacaoModificada.TipoDaModificao.REMOVIDA,
                         RelacaoAgregacao.this));
                 getDiagramaUML().removerRelacao(RelacaoAgregacao.this);
             }

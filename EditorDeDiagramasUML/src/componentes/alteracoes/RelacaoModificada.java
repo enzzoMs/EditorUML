@@ -5,7 +5,7 @@ import RelacoesUML.RelacaoUML;
 import javax.swing.*;
 import java.util.ArrayList;
 
-public class RelacaoModificada implements AlteracaoDeComponentesUML {
+public class RelacaoModificada implements AlteracaoDeComponenteUML {
 
     private final ArrayList<JComponent> listaComponentesDaRelacao;
     private final RelacaoUML relacaoUML;

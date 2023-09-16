@@ -49,6 +49,16 @@ public class Metodo {
         return textoUmlMetodo.toString();
     }
 
+    public Metodo copiar() {
+        ArrayList<Parametro> copiaParametros = new ArrayList<>();
+
+        for (Parametro parametro : parametros) {
+            copiaParametros.add(parametro.copiar());
+        }
+
+        return new Metodo(nome, visibilidade, tipo, estatico, abstrato, copiaParametros);
+    }
+
     public String getNome() {
         return nome;
     }

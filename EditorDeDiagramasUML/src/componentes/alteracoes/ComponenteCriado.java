@@ -2,35 +2,33 @@ package componentes.alteracoes;
 
 import componentes.ComponenteUML;
 
-public class ComponenteCriado implements AlteracaoDeComponentesUML {
-    /*
-        Classe que indica uma alteração no diagrama sob a forma de um componente sendo criado.
-        Guarda informações com relação a posição em que esse componente foi criado de forma a ajudar a implementar os
-        métodos refazer e desfazer alteração.
-     */
+import java.awt.*;
 
-    private final int posicaoXdepoisDaCriacao;
-    private final int posicaoYdepoisDaCriacao;
+/**
+ * Classe que indica uma alteração no diagrama sob a forma de um componente sendo criado.
+ * Guarda informações com relação a posição desse componente, implementando as ações de refazer e
+ * desfazer a alteração.
+ */
+public class ComponenteCriado implements AlteracaoDeComponenteUML {
+
+    private final Point posicaoDepoisDaCriacao;
     private final ComponenteUML componenteCriado;
 
-
-    public ComponenteCriado(int posicaoXdepoisDaCriacao, int posicaoYdepoisDaCriacao, ComponenteUML componenteCriado) {
-        this.posicaoXdepoisDaCriacao = posicaoXdepoisDaCriacao;
-        this.posicaoYdepoisDaCriacao = posicaoYdepoisDaCriacao;
+    public ComponenteCriado(Point posicaoDepoisDaCriacao, ComponenteUML componenteCriado) {
+        this.posicaoDepoisDaCriacao = posicaoDepoisDaCriacao;
         this.componenteCriado = componenteCriado;
     }
 
-
     public void desfazerAlteracao() {
-        // Desfazer a criação do componente, ou seja, remove o componente.
+        // Desfazer a criacao = remover o componente.
 
-        //componenteCriado.getDiagramaUML().removerComponente(componenteCriado);
+        componenteCriado.removerComponenteDoQuadroBranco();
     }
 
     public void refazerAlteracao() {
-        // Refazer a criação do componente na posição especificada pelos atributos.
+        // Coloca o componente na posicao especificada
 
-       // componenteCriado.getDiagramaUML().addComponente(componenteCriado);
-        componenteCriado.getPainelComponente().setLocation(posicaoXdepoisDaCriacao, posicaoYdepoisDaCriacao);
+        componenteCriado.adicionarComponenteAoQuadroBranco();
+        componenteCriado.getPainelComponente().setLocation(posicaoDepoisDaCriacao.x, posicaoDepoisDaCriacao.y);
     }
 }

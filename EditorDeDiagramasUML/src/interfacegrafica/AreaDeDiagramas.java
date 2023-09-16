@@ -1,8 +1,7 @@
 package interfacegrafica;
 
-import componentes.alteracoes.AlteracaoDeComponentesUML;
+import componentes.alteracoes.AlteracaoDeComponenteUML;
 import componentes.alteracoes.ComponenteCriado;
-import ClassesAuxiliares.RobotoFont;
 import diagrama.DiagramaUML;
 import RelacoesUML.RelacaoUML;
 import auxiliares.GerenciadorDeArquivos;
@@ -30,36 +29,41 @@ public class AreaDeDiagramas {
     // TODO: arrumar esses atributos e ver comentarios em metodos
     private final JPanel painelAreaDeDiagramas;
     private final JPanel painelQuadroBranco;
-    private final JPanel painelOpcoesQuadroBranco;
     private DiagramaUML diagramaAtual;
     // Por "habilitados" entende-se que o usuario pode interagir com eles
     private boolean componentesHabilitados;
     private final int TAMANHO_QUADRO_BRANCO = 5000;
-
+    private final static int LIMITE_ALTERACOES_DE_COMPONENTES = 25;
 
     /*
         Os dois atributos abaixo servem para regular as ações do usário na area de diagramas, sendo que quando algum deles
         for true certas ações não poderão ser feitas pelo usuário.
      */
 
+    // TODO: ver se da para tirar
     private boolean selecaoDeRelacionamentoAcontecendo;
+    private final ArrayList<AlteracaoDeComponenteUML> alteracoesDeComponentes = new ArrayList<>();
 
-    /*
-        ArrayList contendo os objetos de alteração de componente que serão usados para os recursos de desfazer e refazer
-        alteração no diagrama. O indexAlteracao indica a posição atual nessa lista de acordo com as ações do usuário,
-        sendo que quando o usuário desfaz uma ação o index volta uma posição, e se refizer avança uma posição, dessa forma
-        é possivel saber a partir desse index qual objeto dessa lista precisa ser manipulado.
+    /**
+     * Indica a posição atual na lista de alterações de acordo com as ações do usuário.
+     * Quando ele desfaz uma ação o index volta uma posição, e se refazer o index avança uma posição, dessa forma
+     * é possivel saber qual alteração precisa ser manipulado.
      */
-    private final ArrayList<AlteracaoDeComponentesUML> listaDeAlteracoes = new ArrayList<>();
-
     private int indexAlteracao = -1;
 
+    private boolean movimentacaoPermitida = false;
 
     // TODO: se possivel tentar remover isso
     private final GerenciadorInterfaceGrafica gerenciadorInterfaceGrafica;
 
     private final JDialog dialogSalvarAlteracoes = new JDialog();
     private final JPanel painelDiretorioDiagrama = new JPanel();
+
+    /**
+     * Um painel contendo botões para ações como: mover quadro, selecionar componente, desfazer e refazer alterações
+     */
+    private final JPanel painelAcoesQuadroBranco = new JPanel();
+
 
     public AreaDeDiagramas(GerenciadorInterfaceGrafica gerenciadorInterfaceGrafica) {
         GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
@@ -68,13 +72,10 @@ public class AreaDeDiagramas {
         painelAreaDeDiagramas.setLayout(new MigLayout());
         this.gerenciadorInterfaceGrafica = gerenciadorInterfaceGrafica;
 
-        painelOpcoesQuadroBranco = new JPanel(new MigLayout("insets 5 10 5 10"));
-        painelOpcoesQuadroBranco.setBackground(gerenciadorDeRecursos.getColor("white"));
-
         // Criando e adicionado os componentes graficos ao painelAreaDeDiagramas
 
         JPanel menuDeOpcoes = getPainelMenuDeOpcoes();
-        JPanel acoesQuadroBranco = getPainelAcoesQuadroBranco();
+        inicializarPainelAcoesQuadroBranco();
 
         // ----------------------------------------------------------------------------
 
@@ -86,45 +87,52 @@ public class AreaDeDiagramas {
             public void windowClosing(WindowEvent e)
             {
                 if (gerenciadorInterfaceGrafica.estaMostrandoAreaDeDiagramas()) {
-                    if (!diagramaAtual.diagramaEstaSalvo() && diagramaAtual.arquivoDiagrama != null) {
-                        mostrarDialogSalvarAlteracoes();
-                    } else {
+                    /*if (!diagramaAtual.diagramaEstaSalvo() && (
+                            diagramaAtual.arquivoDiagrama != null || !alteracoesDeComponentes.isEmpty())
+                    ) {
+                        // TODO
+                        //mostrarDialogSalvarAlteracoes();
+                    } else {*/
                         gerenciadorInterfaceGrafica.mostrarDialogFecharAplicacao();
-                    }
+                    //}
                 }
             }
         });
 
-        // ----------------------------------------------------------------------------
-
-        RobotoFont robotoFont = new RobotoFont();
-        // Configurando o painel lateral com o componentes para os diagramas ========================================
+        // Configurando o painel lateral com o componentes para os diagramas
 
         JPanel menuComponentesDiagramas = new JPanel(new MigLayout("insets 15 15 15 15"));
-        menuComponentesDiagramas.setBackground(Color.white);
-        menuComponentesDiagramas.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 2, new Color(0xe5e5e5)));
+        menuComponentesDiagramas.setBackground(gerenciadorDeRecursos.getColor("white"));
+        menuComponentesDiagramas.setBorder(
+            BorderFactory.createMatteBorder(0, 0, 0, 2, gerenciadorDeRecursos.getColor("platinum"))
+        );
 
+        // ----------------------------------------------------------------------------
 
-        JLabel labelNovaClasse = new JLabel(new ImageIcon(AreaDeDiagramas.class.getResource("/imagens/img_nova_classe.png")), JLabel.CENTER);
+        JLabel labelNovaClasse = new JLabel(gerenciadorDeRecursos.getImagem("componente_classe"), JLabel.CENTER);
         labelNovaClasse.setOpaque(true);
         labelNovaClasse.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        labelNovaClasse.setBackground(new Color(0xe6e6e6));
+        labelNovaClasse.setBackground(gerenciadorDeRecursos.getColor("platinum"));
 
         labelNovaClasse.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (!selecaoDeRelacionamentoAcontecendo) {
                     ClasseUML novaClasse = new ClasseUML(AreaDeDiagramas.this);
-                    diagramaAtual.addComponente(novaClasse);
 
-                    AreaDeDiagramas.this.addAlteracao(new ComponenteCriado(
-                            novaClasse.getPainelComponente().getX(),
-                            novaClasse.getPainelComponente().getY(),
-                            novaClasse));
+                    addComponente(novaClasse, true);
+
+                    addAlteracaoDeComponente(
+                        new ComponenteCriado(
+                            novaClasse.getPainelComponente().getLocation(),
+                            novaClasse
+                        )
+                    );
                 }
             }
         });
 
+        // ----------------------------------------------------------------------------
 
         /*
         JLabel labelNovaAnotacao = new JLabel(new ImageIcon(AreaDeDiagramas.class.getResource("/imagens/img_nova_anotacao.png")), JLabel.CENTER);
@@ -780,18 +788,18 @@ public class AreaDeDiagramas {
                 menuDeOpcoes.getPreferredSize().width - menuComponentesDiagramas.getPreferredSize().width,
                 500);
 
-        painelCamadasQuadroBranco.add(painelOpcoesQuadroBranco, JLayeredPane.PALETTE_LAYER);
-        painelOpcoesQuadroBranco.setBounds((scrollPaneDiagramas.getWidth()/2)
-                        - (painelOpcoesQuadroBranco.getPreferredSize().width/2)-menuComponentesDiagramas.getPreferredSize().width/4,
-                8, painelOpcoesQuadroBranco.getPreferredSize().width,
-                painelOpcoesQuadroBranco.getPreferredSize().height);
+        painelCamadasQuadroBranco.add(painelAcoesQuadroBranco, JLayeredPane.PALETTE_LAYER);
+        painelAcoesQuadroBranco.setBounds((scrollPaneDiagramas.getWidth()/2)
+                        - (painelAcoesQuadroBranco.getPreferredSize().width/2)-menuComponentesDiagramas.getPreferredSize().width/4,
+                8, painelAcoesQuadroBranco.getPreferredSize().width,
+                painelAcoesQuadroBranco.getPreferredSize().height);
 
         /*
 
         painelCamadasQuadroBranco.add(painelCancelarRelacionamento, JLayeredPane.PALETTE_LAYER);
         painelCancelarRelacionamento.setBounds(
                 15,
-                painelOpcoesQuadroBranco.getBounds().y,
+                painelAcoesQuadroBranco.getBounds().y,
                 painelCancelarRelacionamento.getPreferredSize().width,
                 painelCancelarRelacionamento.getPreferredSize().height);
 
@@ -827,7 +835,9 @@ public class AreaDeDiagramas {
 
     }
 
-    public void addComponenteAoQuadro(ComponenteUML componente, boolean centralizar) {
+    public void addComponente(ComponenteUML componente, boolean centralizar) {
+        diagramaAtual.addComponente(componente);
+
 
         //if (!(componente instanceof PacoteUML)) {
          //   painelQuadroBranco.add(componente.getPainelComponente(), 0);
@@ -836,30 +846,33 @@ public class AreaDeDiagramas {
         //}
 
         if (centralizar) {
-            JViewport viewPort = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, painelQuadroBranco);
-            Rectangle view = viewPort.getViewRect();
+            // Centraliza o componente com relacao ao viewPort
 
-            int LARGURA_QUADRO_BRANCO = view.width;
-            int ALTURA_QUADRO_BRANCO = view.height;
+            JViewport viewPortQuadroBranco = (JViewport) SwingUtilities.getAncestorOfClass(JViewport.class, painelQuadroBranco);
+            Rectangle viewRectQuadroBranco = viewPortQuadroBranco.getViewRect();
 
+            Point posicaoDoNovoComponente = viewPortQuadroBranco.getViewPosition();
 
-            Point posicaoDoNovoComponente = ((JViewport) painelQuadroBranco.getParent()).getViewPosition();
-            posicaoDoNovoComponente.move(posicaoDoNovoComponente.x + LARGURA_QUADRO_BRANCO/2 - componente.getLargura()/2 - componente.getLargura()/5 ,
-                    posicaoDoNovoComponente.y + ALTURA_QUADRO_BRANCO/2 - componente.getAltura()/2);
+            // O 'componente.getLargura()/5' é um tanto arbitrario, ele existe para deixar o componente mais ou menos
+            // centralizado com relacao ao menu de opcoes do quadro branco
+
+            posicaoDoNovoComponente.move(
+                posicaoDoNovoComponente.x + viewRectQuadroBranco.width/2 - componente.getLargura()/2 - componente.getLargura()/5 ,
+                posicaoDoNovoComponente.y + viewRectQuadroBranco.height/2 - componente.getAltura()/2
+            );
 
             componente.getPainelComponente().setLocation(posicaoDoNovoComponente);
         }
 
         painelQuadroBranco.revalidate();
         painelQuadroBranco.repaint();
-
     }
 
-
     public void removerComponenteDoQuadro(ComponenteUML componente) {
-        this.painelQuadroBranco.remove(componente.getPainelComponente());
-        this.painelQuadroBranco.revalidate();
-        this.painelQuadroBranco.repaint();
+        diagramaAtual.removerComponente(componente);
+        painelQuadroBranco.remove(componente.getPainelComponente());
+        painelQuadroBranco.revalidate();
+        painelQuadroBranco.repaint();
     }
 
     public void removerRelacaoDoQuadro(RelacaoUML relacaoGeneralizacao) {
@@ -903,45 +916,37 @@ public class AreaDeDiagramas {
         this.selecaoDeRelacionamentoAcontecendo = selecaoDeRelacionamentoAcontecendo;
     }
 
-    public void addAlteracao(AlteracaoDeComponentesUML novaAlteracao) {
-        /*
-        if (diagramaAtual.isDiagramaSalvo()) {
-            gerenciadorInterfaceGrafica.getFramePrincipal().setTitle(gerenciadorInterfaceGrafica.getFramePrincipal().getTitle() + "*");
+    public void addAlteracaoDeComponente(AlteracaoDeComponenteUML novaAlteracao) {
+        diagramaAtual.setDiagramaSalvo(false);
+        setLabelDiretorioDiagrama(null);
 
-            if (gerenciadorArquivos.getArquivoDiagrama() != null) {
-                ((JPanel) ((JPanel) painelAreaDeDiagramas.getComponent(1)).getComponent(0)).getComponent(1).setVisible(true);
-            }
+        GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
-            diagramaAtual.setDiagramaSalvo(false);
-        }
+        JLabel labelUndo = (JLabel) painelAcoesQuadroBranco.getComponent(3);
+        JLabel labelRedo = (JLabel) painelAcoesQuadroBranco.getComponent(4);
 
-
-        JLabel labelUndo = (JLabel) painelOpcoesQuadroBranco.getComponent(3);
-        JLabel labelRedo = (JLabel) painelOpcoesQuadroBranco.getComponent(4);
-
-
-        if (listaDeAlteracoes.size() >= indexAlteracao + 1) {
-            listaDeAlteracoes.subList(indexAlteracao + 1, listaDeAlteracoes.size()).clear();
+        // Se o usuario fez algumas operacoes de "desfazer", mas em algum ponto ao longo do caminho
+        // criou mais uma alteração de componente, então as alteracoes depois desse ponto sao descartadas,
+        // e essa alteracao vira o fim da lista
+        if (alteracoesDeComponentes.size() >= indexAlteracao + 1) {
+            alteracoesDeComponentes.subList(indexAlteracao + 1, alteracoesDeComponentes.size()).clear();
             labelRedo.setEnabled(false);
-            labelRedo.setBackground(new Color(0xf2f2f2));
+            labelRedo.setBackground(gerenciadorDeRecursos.getColor("anti_flash_white"));
         }
 
-
-        int LIMITE_DE_ALTERACOES = 25;
-
-        if (listaDeAlteracoes.size() >= LIMITE_DE_ALTERACOES) {
-            listaDeAlteracoes.remove(0);
-            listaDeAlteracoes.add(novaAlteracao);
+        if (alteracoesDeComponentes.size() >= LIMITE_ALTERACOES_DE_COMPONENTES) {
+            alteracoesDeComponentes.remove(0);
+            alteracoesDeComponentes.add(novaAlteracao);
         } else {
-            listaDeAlteracoes.add(novaAlteracao);
+            alteracoesDeComponentes.add(novaAlteracao);
             indexAlteracao++;
         }
 
 
         if (!labelUndo.isEnabled()) {
-            labelUndo.setBackground(Color.white);
+            labelUndo.setBackground(gerenciadorDeRecursos.getColor("white"));
             labelUndo.setEnabled(true);
-        }*/
+        }
 
     }
 
@@ -952,7 +957,7 @@ public class AreaDeDiagramas {
             }
         }
 
-        listaDeAlteracoes.clear();
+        //listaDeAlteracoes.clear();
         indexAlteracao = -1;
 
         if (diagramaAtual != null) {
@@ -967,16 +972,16 @@ public class AreaDeDiagramas {
 
         selecaoDeRelacionamentoAcontecendo = false;
 
-        // cursor e mover
-        painelOpcoesQuadroBranco.getComponent(0).setBackground(new Color(0xc7c7c7));
-        painelOpcoesQuadroBranco.getComponent(1).setBackground(Color.white);
+        /*// cursor e mover
+        painelAcoesQuadroBranco.getComponent(0).setBackground(new Color(0xc7c7c7));
+        painelAcoesQuadroBranco.getComponent(1).setBackground(Color.white);
 
         //undo e redo
-        painelOpcoesQuadroBranco.getComponent(2).setBackground(new Color(0xf2f2f2));
-        painelOpcoesQuadroBranco.getComponent(2).setEnabled(false);
+        painelAcoesQuadroBranco.getComponent(2).setBackground(new Color(0xf2f2f2));
+        painelAcoesQuadroBranco.getComponent(2).setEnabled(false);
 
-        painelOpcoesQuadroBranco.getComponent(3).setBackground(new Color(0xf2f2f2));
-        painelOpcoesQuadroBranco.getComponent(3).setEnabled(false);
+        painelAcoesQuadroBranco.getComponent(3).setBackground(new Color(0xf2f2f2));
+        painelAcoesQuadroBranco.getComponent(3).setEnabled(false);*/
 
 
         componentesHabilitados = false;
@@ -985,10 +990,7 @@ public class AreaDeDiagramas {
 
     }
 
-    public JPanel getPainelOpcoesQuadroBranco() {
-        return painelOpcoesQuadroBranco;
-    }
-
+    // TODO: ver se consegue remover isso
     public JPanel getPainelQuadroBranco() {
         return painelQuadroBranco;
     }
@@ -1035,7 +1037,7 @@ public class AreaDeDiagramas {
 
         // TODO: mudar isso
         for (ComponenteUML componenteUML : diagrama.getListaComponentesUML()) {
-            addComponenteAoQuadro(componenteUML, false);
+            addComponente(componenteUML, false);
         }
 
         setLabelDiretorioDiagrama(diagramaAtual.arquivoDiagrama.getAbsolutePath());
@@ -1112,7 +1114,7 @@ public class AreaDeDiagramas {
     }
 
     private void voltar() {
-        if (!diagramaAtual.diagramaEstaSalvo() && diagramaAtual.arquivoDiagrama != null) {
+        if (!diagramaAtual.diagramaEstaSalvo() && (diagramaAtual.arquivoDiagrama != null || !alteracoesDeComponentes.isEmpty())) {
             if (mostrarDialogSalvarAlteracoes()) {
                 gerenciadorInterfaceGrafica.mostrarMenuPrincipal();
             }
@@ -1357,56 +1359,66 @@ public class AreaDeDiagramas {
         return menuDiagramas;
     }
 
-    private JPanel getPainelAcoesQuadroBranco() {
-        /*
+    private void inicializarPainelAcoesQuadroBranco() {
+        GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
         JLabel labelCursor = new JLabel();
-        labelCursor.setIcon(new ImageIcon(AreaDeDiagramas.class.getResource("/imagens/img_cursor.png")));
+        labelCursor.setIcon(gerenciadorDeRecursos.getImagem("icone_cursor"));
         labelCursor.setOpaque(true);
-        labelCursor.setBackground(new Color(0xc7c7c7));
-        labelCursor.setToolTipText("Modificar Componente(s)");
+        labelCursor.setBackground(gerenciadorDeRecursos.getColor("gainsboro"));
+        labelCursor.setToolTipText(gerenciadorDeRecursos.getString("tooltip_modificar_componentes"));
+
+        // ----------------------------------------------------------------------------
 
         JLabel labelMover = new JLabel();
-        labelMover.setIcon(new ImageIcon(AreaDeDiagramas.class.getResource("/imagens/img_mover.png")));
+        labelMover.setIcon(gerenciadorDeRecursos.getImagem("icone_mover"));
         labelMover.setOpaque(true);
-        labelMover.setBackground(Color.white);
-        labelMover.setToolTipText("Movimentar Quadro");
+        labelMover.setBackground(gerenciadorDeRecursos.getColor("white"));
+        labelMover.setToolTipText(gerenciadorDeRecursos.getString("tooltip_mover_quadro"));
+
+        // ----------------------------------------------------------------------------
 
         JLabel labelUndo = new JLabel();
-        labelUndo.setIcon(new ImageIcon(AreaDeDiagramas.class.getResource("/imagens/img_undo_ativado.png")));
-        labelUndo.setDisabledIcon(new ImageIcon(AreaDeDiagramas.class.getResource("/imagens/img_undo_desativado.png")));
+        labelUndo.setIcon(gerenciadorDeRecursos.getImagem("icone_undo_ativado"));
+        labelUndo.setDisabledIcon(gerenciadorDeRecursos.getImagem("icone_undo_desativado"));
         labelUndo.setOpaque(true);
-        labelUndo.setBackground(new Color(0xf2f2f2));
+        labelUndo.setBackground(gerenciadorDeRecursos.getColor("anti_flash_white"));
         labelUndo.setEnabled(false);
-        labelUndo.setToolTipText("Desfazer");
+        labelUndo.setToolTipText(gerenciadorDeRecursos.getString("tooltip_desfazer_acao"));
+
+        // ----------------------------------------------------------------------------
 
         JLabel labelRedo = new JLabel();
-        labelRedo.setIcon(new ImageIcon(AreaDeDiagramas.class.getResource("/imagens/img_redo_ativado.png")));
-        labelRedo.setDisabledIcon(new ImageIcon(AreaDeDiagramas.class.getResource("/imagens/img_redo_desativado.png")));
+        labelRedo.setIcon(gerenciadorDeRecursos.getImagem("icone_redo_ativado"));
+        labelRedo.setDisabledIcon(gerenciadorDeRecursos.getImagem("icone_redo_desativado"));
         labelRedo.setOpaque(true);
-        labelRedo.setBackground(new Color(0xf2f2f2));
+        labelRedo.setBackground(gerenciadorDeRecursos.getColor("anti_flash_white"));
         labelRedo.setEnabled(false);
-        labelRedo.setToolTipText("Refazer");
+        labelRedo.setToolTipText(gerenciadorDeRecursos.getString("tooltip_refazer_acao"));
 
+        // ----------------------------------------------------------------------------
 
-        JLabel labelSeparadorOpcoes1 = new JLabel("");
-        labelSeparadorOpcoes1.setBorder(new CompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(0xe5e5e5)),
-                BorderFactory.createMatteBorder(0, 0, 0, 1, new Color(0xc2c2c2))));
+        JLabel labelSeparadorOpcoes = new JLabel("");
+        labelSeparadorOpcoes.setBorder(new CompoundBorder(
+            BorderFactory.createMatteBorder(0, 0, 0, 1, gerenciadorDeRecursos.getColor("platinum")),
+            BorderFactory.createMatteBorder(0, 0, 0, 1, gerenciadorDeRecursos.getColor("silver_sand")))
+        );
 
+        painelAcoesQuadroBranco.setLayout(new MigLayout("insets 5 10 5 10"));
+        painelAcoesQuadroBranco.setBackground(gerenciadorDeRecursos.getColor("white"));
+        painelAcoesQuadroBranco.add(labelCursor, "gapright 5");
+        painelAcoesQuadroBranco.add(labelMover, "gapright 5");
+        painelAcoesQuadroBranco.add(labelSeparadorOpcoes, "grow, gapright 5");
+        painelAcoesQuadroBranco.add(labelUndo, "gapright 5");
+        painelAcoesQuadroBranco.add(labelRedo, "gapright 5");
 
-        painelOpcoesQuadroBranco.add(labelCursor, "gapright 5");
-        painelOpcoesQuadroBranco.add(labelMover, "gapright 5");
-        painelOpcoesQuadroBranco.add(labelSeparadorOpcoes1, "grow, gapright 5");
-        painelOpcoesQuadroBranco.add(labelUndo, "gapright 5");
-        painelOpcoesQuadroBranco.add(labelRedo, "gapright 5");
+        // ----------------------------------------------------------------------------
 
-
-        mouseAdapter = new MouseAdapter() {
+        labelCursor.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                labelCursor.setBackground(new Color(0xc7c7c7));
-                labelMover.setBackground(Color.white);
+                labelCursor.setBackground(gerenciadorDeRecursos.getColor("gainsboro"));
+                labelMover.setBackground(gerenciadorDeRecursos.getColor("white"));
 
                 movimentacaoPermitida = false;
 
@@ -1416,27 +1428,23 @@ public class AreaDeDiagramas {
             @Override
             public void mouseEntered(MouseEvent e) {
                 if (movimentacaoPermitida) {
-                    labelCursor.setBackground(new Color(0xe5e5e5));
+                    labelCursor.setBackground(gerenciadorDeRecursos.getColor("platinum"));
                 }
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 if (movimentacaoPermitida) {
-                    labelCursor.setBackground(Color.white);
+                    labelCursor.setBackground(gerenciadorDeRecursos.getColor("white"));
                 }
             }
-        };
+        });
 
-        labelCursor.addMouseListener(mouseAdapter);
-
-        mouseAdapter = new MouseAdapter() {
-            boolean selecionado = false;
-
+        labelMover.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                labelMover.setBackground(new Color(0xc7c7c7));
-                labelCursor.setBackground(Color.white);
+                labelMover.setBackground(gerenciadorDeRecursos.getColor("gainsboro"));
+                labelCursor.setBackground(gerenciadorDeRecursos.getColor("white"));
 
                 movimentacaoPermitida = true;
 
@@ -1446,37 +1454,35 @@ public class AreaDeDiagramas {
             @Override
             public void mouseEntered(MouseEvent e) {
                 if (!movimentacaoPermitida) {
-                    labelMover.setBackground(new Color(0xe5e5e5));
+                    labelMover.setBackground(gerenciadorDeRecursos.getColor("platinum"));
                 }
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 if (!movimentacaoPermitida) {
-                    labelMover.setBackground(Color.white);
+                    labelMover.setBackground(gerenciadorDeRecursos.getColor("white"));
                 }
             }
 
-        };
-
-        labelMover.addMouseListener(mouseAdapter);
+        });
 
 
-        mouseAdapter = new MouseAdapter() {
+        labelUndo.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (labelUndo.isEnabled()) {
-                    listaDeAlteracoes.get(indexAlteracao).desfazerAlteracao();
+                    alteracoesDeComponentes.get(indexAlteracao).desfazerAlteracao();
                     indexAlteracao--;
 
                     if (indexAlteracao == -1) {
                         labelUndo.setEnabled(false);
-                        labelUndo.setBackground(new Color(0xf2f2f2));
+                        labelUndo.setBackground(gerenciadorDeRecursos.getColor("anti_flash_white"));
                     }
 
                     if (!labelRedo.isEnabled()) {
                         labelRedo.setEnabled(true);
-                        labelRedo.setBackground(Color.white);
+                        labelRedo.setBackground(gerenciadorDeRecursos.getColor("white"));
                     }
                 }
             }
@@ -1484,36 +1490,34 @@ public class AreaDeDiagramas {
             @Override
             public void mouseEntered(MouseEvent e) {
                 if (labelUndo.isEnabled()) {
-                    labelUndo.setBackground(new Color(0xe5e5e5));
+                    labelUndo.setBackground(gerenciadorDeRecursos.getColor("platinum"));
                 }
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 if (labelUndo.isEnabled()) {
-                    labelUndo.setBackground(Color.white);
+                    labelUndo.setBackground(gerenciadorDeRecursos.getColor("white"));
                 }
             }
 
-        };
-
-        labelUndo.addMouseListener(mouseAdapter);
+        });
 
 
-        mouseAdapter = new MouseAdapter() {
+        labelRedo.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (labelRedo.isEnabled()) {
                     indexAlteracao++;
-                    listaDeAlteracoes.get(indexAlteracao).refazerAlteracao();
+                    alteracoesDeComponentes.get(indexAlteracao).refazerAlteracao();
 
-                    if (indexAlteracao == listaDeAlteracoes.size() - 1) {
+                    if (indexAlteracao == alteracoesDeComponentes.size() - 1) {
                         labelRedo.setEnabled(false);
-                        labelRedo.setBackground(new Color(0xf2f2f2));
+                        labelRedo.setBackground(gerenciadorDeRecursos.getColor("anti_flash_white"));
                     }
 
                     if (!labelUndo.isEnabled()) {
-                        labelUndo.setBackground(Color.white);
+                        labelUndo.setBackground(gerenciadorDeRecursos.getColor("white"));
                         labelUndo.setEnabled(true);
                     }
 
@@ -1523,22 +1527,18 @@ public class AreaDeDiagramas {
             @Override
             public void mouseEntered(MouseEvent e) {
                 if (labelRedo.isEnabled()) {
-                    labelRedo.setBackground(new Color(0xe5e5e5));
+                    labelRedo.setBackground(gerenciadorDeRecursos.getColor("platinum"));
                 }
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 if (labelRedo.isEnabled()) {
-                    labelRedo.setBackground(Color.white);
+                    labelRedo.setBackground(gerenciadorDeRecursos.getColor("white"));
                 }
             }
 
-        };
-
-        labelRedo.addMouseListener(mouseAdapter);
-    }*/
-        return null;
+        });
     }
 
     private void inicializarDialogSalvarAlteracoes() {
