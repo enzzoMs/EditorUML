@@ -1398,8 +1398,9 @@ public abstract class RelacaoUML {
     public Point getPontoDeConexao(RelacaoGeneralizacao.AreasDeConexao areaDeConexao, ComponenteUML componenteUML) {
 
         Point pontoDeConexao = new Point();
+        int TAMANHO_LADO_AREA_DE_CONEXAO = 0;
 
-        int TAMANHO_LADO_AREA_DE_CONEXAO = componenteUML.getListaAreasDeConexao().get(0).getWidth();
+        //int TAMANHO_LADO_AREA_DE_CONEXAO = componenteUML.getListaAreasDeConexao().get(0).getWidth();
 
         pontoDeConexao = switch (areaDeConexao) {
             case PONTO_NO -> {
@@ -1487,7 +1488,8 @@ public abstract class RelacaoUML {
 
     private boolean verificarErroEmLinhasDeRelacao(ArrayList<JComponent> listaPaineisRelacao) {
         int TAMANHO_LINHA_DE_RELACIONAMENTO = 4;
-        int AREA_ACEITAVEL_DE_INTERSECCAO = (TAMANHO_LINHA_DE_RELACIONAMENTO * componenteOrigem.getListaAreasDeConexao().get(0).getWidth()/2)*2;
+        int AREA_ACEITAVEL_DE_INTERSECCAO= 0;
+        //int AREA_ACEITAVEL_DE_INTERSECCAO = (TAMANHO_LINHA_DE_RELACIONAMENTO * componenteOrigem.getListaAreasDeConexao().get(0).getWidth()/2)*2;
         int areaDeIntersecao = 0;
 
         for (JComponent painelLinha : listaPaineisRelacao) {

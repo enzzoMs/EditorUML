@@ -5,6 +5,7 @@ import componentes.alteracoes.AlteracaoDeComponenteUML;
 import componentes.alteracoes.ComponenteMovido;
 import componentes.alteracoes.ComponenteRemovido;
 import interfacegrafica.AreaDeDiagramas;
+import modelos.ModeloDeComponenteUML;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -14,9 +15,10 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 /**
- * TODO
+ * Classe base para componentes UML. Fornece métodos para a adição de recursos gráficos, garantindo
+ * que eles possam ser movimentados livremente no quadro branco.
  */
-public abstract class ComponenteUML {
+public abstract class ComponenteUML<T> {
     private final JPanel painelComponente = new JPanel(null);
     /**
      * Um painel transparente que intercepta os cliques no painelComponente e garante que o componente consiga ser
@@ -377,7 +379,7 @@ public abstract class ComponenteUML {
 
     public abstract String toString();
 
-    public abstract <T> void setModelo(T novoModelo);
+    public abstract void setModelo(ModeloDeComponenteUML<T> novoModelo);
 
     protected abstract void initFrameGerenciarComponente();
 }

@@ -4,7 +4,7 @@ import auxiliares.GerenciadorDeRecursos;
 
 import java.util.ArrayList;
 
-public class Classe {
+public class Classe implements ModeloDeComponenteUML<Classe>{
     private String nome = GerenciadorDeRecursos.getInstancia().getString("classe_nome_default");
     private String comentario = "";
     private boolean ehAbstrata;
@@ -28,7 +28,7 @@ public class Classe {
         this.metodos = metodos;
     }
 
-    public boolean ehIgual(Classe classe) {
+    public boolean ehDiferente(Classe classe) {
         boolean metodosSaoIguais = metodos.size() == classe.metodos.size();
 
         if (metodosSaoIguais) {
@@ -48,12 +48,12 @@ public class Classe {
         }
 
         return
-            nome.equals(classe.nome) &&
-            comentario.equals(classe.comentario) &&
-            ehAbstrata == classe.ehAbstrata &&
-            ehInterface == classe.ehInterface &&
-            numCharsQuebrarComentario == classe.numCharsQuebrarComentario &&
-            metodosSaoIguais && atributosSaoIguais;
+            !nome.equals(classe.nome) ||
+            !comentario.equals(classe.comentario) ||
+            ehAbstrata != classe.ehAbstrata ||
+            ehInterface != classe.ehInterface ||
+            numCharsQuebrarComentario != classe.numCharsQuebrarComentario ||
+            !metodosSaoIguais || !atributosSaoIguais;
     }
 
     public Classe copiar() {

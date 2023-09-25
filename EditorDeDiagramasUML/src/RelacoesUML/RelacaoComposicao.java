@@ -60,8 +60,9 @@ public class RelacaoComposicao extends RelacaoUML{
 
         Point pontoDeConexaoOrigem = super.getPontoDeConexao(super.getAreaDeConexaoOrigem(), super.getComponenteOrigem());
         Point localizacaoDaSeta;
+        int TAMANHO_LADO_AREA_DE_CONEXAO =0;
 
-        int TAMANHO_LADO_AREA_DE_CONEXAO = super.getComponenteDestino().getListaAreasDeConexao().get(0).getWidth();
+        //int TAMANHO_LADO_AREA_DE_CONEXAO = super.getComponenteDestino().getListaAreasDeConexao().get(0).getWidth();
 
         int larguraSeta;
         int alturaSeta;
@@ -559,8 +560,9 @@ public class RelacaoComposicao extends RelacaoUML{
 
         Point pontoDeConexao = super.getPontoDeConexao(areasDeConexao, componenteUML);
         Point localizacaoDoLabel;
+        int TAMANHO_LADO_AREA_DE_CONEXAO = 0;
 
-        int TAMANHO_LADO_AREA_DE_CONEXAO = componenteUML.getListaAreasDeConexao().get(0).getWidth();
+        //int TAMANHO_LADO_AREA_DE_CONEXAO = componenteUML.getListaAreasDeConexao().get(0).getWidth();
         int MARGEM = 15;
 
         int larguraSeta;

@@ -59,8 +59,9 @@ public class RelacaoRealizacao extends RelacaoUML {
 
         Point pontoDeConexaoDestino = super.getPontoDeConexao(super.getAreaDeConexaoDestino(), super.getComponenteDestino());
         Point localizacaoDaSeta;
+        int TAMANHO_LADO_AREA_DE_CONEXAO = 0;
 
-        int TAMANHO_LADO_AREA_DE_CONEXAO = super.getComponenteDestino().getListaAreasDeConexao().get(0).getWidth();
+        //int TAMANHO_LADO_AREA_DE_CONEXAO = super.getComponenteDestino().getListaAreasDeConexao().get(0).getWidth();
 
         int larguraSeta;
         int alturaSeta;
