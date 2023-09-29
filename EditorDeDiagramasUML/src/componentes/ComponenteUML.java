@@ -13,6 +13,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 /**
  * Classe base para componentes UML. Fornece métodos para a adição de recursos gráficos, garantindo
@@ -25,6 +26,7 @@ public abstract class ComponenteUML<T> {
      * arrastado pelo mouse do usuário.
      */
     private final JPanel glassPane = new JPanel();
+    private final ArrayList<Consumer<Boolean>> glassPaneListeners = new ArrayList<>();
     private final JFrame frameGerenciarComponente = new JFrame();
     private final JPanel painelOpcoesComponente = new JPanel();
     private final AreaDeDiagramas areaDeDiagramas;
@@ -56,18 +58,7 @@ public abstract class ComponenteUML<T> {
             frameGerenciarComponente.setLocationRelativeTo(null);
             frameGerenciarComponente.requestFocusInWindow();
 
-            // Removendo painel opcoes
-            if (painelOpcoesComponente.getParent() != null) {
-                int LARGURA_PAINEL_OPCOES = 40;
-
-                painelComponente.remove(painelOpcoesComponente);
-                painelComponente.setSize(
-                    painelComponente.getWidth() - LARGURA_PAINEL_OPCOES,
-                    painelComponente.getHeight()
-                );
-                painelComponente.revalidate();
-                painelComponente.repaint();
-            }
+            removerPainelDeOpcoes();
         });
 
         JDialog dialogExcluirComponente = getDialogExcluirComponente();
@@ -78,18 +69,7 @@ public abstract class ComponenteUML<T> {
             dialogExcluirComponente.setLocationRelativeTo(null);
             dialogExcluirComponente.setVisible(true);
 
-            // Removendo painel opcoes
-            if (painelOpcoesComponente.getParent() != null) {
-                int LARGURA_PAINEL_OPCOES = 40;
-
-                painelComponente.remove(painelOpcoesComponente);
-                painelComponente.setSize(
-                        painelComponente.getWidth() - LARGURA_PAINEL_OPCOES,
-                        painelComponente.getHeight()
-                );
-                painelComponente.revalidate();
-                painelComponente.repaint();
-            }
+            removerPainelDeOpcoes();
         });
 
         painelOpcoesComponente.add(botaoGerenciar, "wrap");
@@ -107,18 +87,9 @@ public abstract class ComponenteUML<T> {
                 if ((e.getXOnScreen() <= xPainelComponente ||
                         e.getXOnScreen() >= xPainelComponente + painelComponente.getBounds().width ||
                         e.getYOnScreen() <= yPainelComponente ||
-                        e.getYOnScreen() >= yPainelComponente + painelComponente.getBounds().height) &&
-                        painelOpcoesComponente.getParent() != null
+                        e.getYOnScreen() >= yPainelComponente + painelComponente.getBounds().height)
                 ) {
-                    int LARGURA_PAINEL_OPCOES = 40;
-
-                    painelComponente.remove(painelOpcoesComponente);
-                    painelComponente.setSize(
-                            painelComponente.getWidth() - LARGURA_PAINEL_OPCOES,
-                            painelComponente.getHeight()
-                    );
-                    painelComponente.revalidate();
-                    painelComponente.repaint();
+                    removerPainelDeOpcoes();
                 }
             }
         };
@@ -149,24 +120,45 @@ public abstract class ComponenteUML<T> {
                     painelComponente.add(painelOpcoesComponente);
                     painelComponente.revalidate();
                     painelComponente.repaint();
+
+                    for (Consumer<Boolean> listener : glassPaneListeners) {
+                        listener.accept(true);
+                    }
+                }
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                int xPainelComponente = painelComponente.getLocationOnScreen().x;
+                int yPainelComponente = painelComponente.getLocationOnScreen().y;
+
+                // Verificando se o evento ocorreu dentro dos limites do painelComponente
+                if ((e.getXOnScreen() <= xPainelComponente ||
+                        e.getXOnScreen() >= xPainelComponente + painelComponente.getBounds().width ||
+                        e.getYOnScreen() <= yPainelComponente ||
+                        e.getYOnScreen() >= yPainelComponente + painelComponente.getBounds().height)
+                ) {
+                    removerPainelDeOpcoes();
+
+                    for (Consumer<Boolean> listener : glassPaneListeners) {
+                        listener.accept(false);
+                    }
                 }
             }
         });
-
-        glassPane.addMouseListener(esconderPainelOpcoes);
 
         MouseAdapter adapterMoverComponente = (new MouseAdapter() {
             private int posicaoMouseX, posicaoMouseY, posicaoPainelX, posicaoPainelY;
 
             @Override
             public void mousePressed(MouseEvent e) {
-                    posicaoPainelX = painelComponente.getX();
-                    posicaoPainelY = painelComponente.getY();
+                posicaoPainelX = painelComponente.getX();
+                posicaoPainelY = painelComponente.getY();
 
-                    posicaoMouseX = e.getXOnScreen();
-                    posicaoMouseY = e.getYOnScreen();
+                posicaoMouseX = e.getXOnScreen();
+                posicaoMouseY = e.getYOnScreen();
 
-                    painelComponente.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+                painelComponente.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
             }
 
             @Override
@@ -211,6 +203,10 @@ public abstract class ComponenteUML<T> {
         initFrameGerenciarComponente();
     }
 
+    public void adicionarComponenteAoPainel(JComponent componente, int index) {
+        painelComponente.add(componente, index);
+    }
+
     public void adicionarComponenteAoPainel(JComponent componente) {
         painelComponente.add(componente);
     }
@@ -219,24 +215,34 @@ public abstract class ComponenteUML<T> {
         areaDeDiagramas.addAlteracaoDeComponente(alteracao);
     }
 
-    public void removerComponenteDoQuadroBranco() {
-        areaDeDiagramas.removerComponenteDoQuadro(this);
-    }
-
     public void adicionarComponenteAoQuadroBranco() {
         areaDeDiagramas.addComponente(this, false);
     }
 
-    public void setBounds(int largura, int altura) {
-        this.largura = largura;
-        this.altura = altura;
+    /**
+     * @param listener função que será chamada após um evento de saída ou entrada nos limites do Glass Pane. Recebe
+     * um booleano indicando o evento (true = entrada, false = saída).
+     */
+    public void adicionarEventListenerGlassPane(Consumer<Boolean> listener) {
+        glassPaneListeners.add(listener);
+    }
 
-        glassPane.setBounds(0, 0, largura, altura);
+    public void removerComponenteDoQuadroBranco() {
+        areaDeDiagramas.removerComponenteDoQuadro(this);
+    }
 
-        painelComponente.setSize(new Dimension(largura, altura));
+    public void removerPainelDeOpcoes() {
+        if (painelOpcoesComponente.getParent() != null) {
+            int LARGURA_PAINEL_OPCOES = 40;
 
-        painelComponente.revalidate();
-        painelComponente.repaint();
+            painelComponente.remove(painelOpcoesComponente);
+            painelComponente.setSize(
+                    painelComponente.getWidth() - LARGURA_PAINEL_OPCOES,
+                    painelComponente.getHeight()
+            );
+            painelComponente.revalidate();
+            painelComponente.repaint();
+        }
     }
 
     public JPanel getPainelComponente() {
@@ -253,11 +259,6 @@ public abstract class ComponenteUML<T> {
 
     public int getAltura() {
         return altura;
-    }
-
-    // TODO: ver esse metodo
-    public ArrayList<JPanel> getListaAreasDeConexao() {
-        return null;
     }
 
     private JDialog getDialogExcluirComponente() {
@@ -377,9 +378,21 @@ public abstract class ComponenteUML<T> {
         return dialogExcluirComponente;
     }
 
-    public abstract String toString();
+    public void setBounds(int largura, int altura) {
+        this.largura = largura;
+        this.altura = altura;
+
+        glassPane.setBounds(0, 0, largura, altura);
+
+        painelComponente.setSize(new Dimension(largura, altura));
+
+        painelComponente.revalidate();
+        painelComponente.repaint();
+    }
 
     public abstract void setModelo(ModeloDeComponenteUML<T> novoModelo);
+
+    public abstract String toString();
 
     protected abstract void initFrameGerenciarComponente();
 }

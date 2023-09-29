@@ -1,6 +1,7 @@
 package interfacegrafica;
 
 import componentes.AnotacaoUML;
+import componentes.PacoteUML;
 import componentes.alteracoes.AlteracaoDeComponenteUML;
 import componentes.alteracoes.ComponenteCriado;
 import diagrama.DiagramaUML;
@@ -9,6 +10,7 @@ import auxiliares.GerenciadorDeArquivos;
 import auxiliares.GerenciadorDeRecursos;
 import componentes.ComponenteUML;
 import componentes.ClasseUML;
+import modelos.Pacote;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -225,12 +227,12 @@ public class AreaDeDiagramas {
     public void addComponente(ComponenteUML componente, boolean centralizar) {
         diagramaAtual.addComponente(componente);
 
-
-        //if (!(componente instanceof PacoteUML)) {
-         //   painelQuadroBranco.add(componente.getPainelComponente(), 0);
-        //} else {
+        if (componente instanceof PacoteUML) {
+            // Os pacote ficam embaixo de todos os outros componentes
             painelQuadroBranco.add(componente.getPainelComponente());
-        //}
+        } else {
+            painelQuadroBranco.add(componente.getPainelComponente(), 0);
+        }
 
         if (centralizar) {
             // Centraliza o componente com relacao ao viewPort
@@ -797,29 +799,41 @@ public class AreaDeDiagramas {
             }
         });
 
-        /*
-        JLabel labelnovoPacote = new JLabel(new ImageIcon(AreaDeDiagramas.class.getResource("/imagens/img_novo_pacote.png")), JLabel.CENTER);
-        labelnovoPacote.setOpaque(true);
-        labelnovoPacote.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        labelnovoPacote.setBackground(new Color(0xe6e6e6));
+        // ----------------------------------------------------------------------------
 
-        labelnovoPacote.addMouseListener(new MouseAdapter() {
+        JLabel labelNovoPacote = new JLabel(gerenciadorDeRecursos.getImagem("componente_pacote"), JLabel.CENTER);
+        labelNovoPacote.setOpaque(true);
+        labelNovoPacote.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        labelNovoPacote.setBackground(gerenciadorDeRecursos.getColor("platinum"));
+
+        labelNovoPacote.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (!selecaoDeRelacionamentoAcontecendo) {
-                    PacoteUML novoPacote = new PacoteUML(diagramaAtual);
-                    diagramaAtual.addComponente(novoPacote);
+                    PacoteUML novoPacote = new PacoteUML(AreaDeDiagramas.this);
 
+                    addComponente(novoPacote, true);
 
-                    AreaDeDiagramas.this.addAlteracao(new ComponenteCriado(
-                            novoPacote.getPainelComponente().getX(),
-                            novoPacote.getPainelComponente().getY(),
-                            novoPacote));
+                    Rectangle boundsPainelComponente = novoPacote.getPainelComponente().getBounds();
+                    Pacote modeloPacote = new Pacote();
+                    modeloPacote.setBounds(new Rectangle(
+                        boundsPainelComponente.x, boundsPainelComponente.y,
+                        boundsPainelComponente.width, boundsPainelComponente.height)
+                    );
+                    novoPacote.setModelo(modeloPacote);
+                    novoPacote.setModeloAntesDeAlteracoes(modeloPacote.copiar());
 
+                    addAlteracaoDeComponente(
+                        new ComponenteCriado(
+                            novoPacote.getPainelComponente().getLocation(),
+                            novoPacote
+                        )
+                    );
                 }
             }
-        });*/
+        });
 
+        // ----------------------------------------------------------------------------
 
         MouseAdapter mouseAdapter = new MouseAdapter() {
             @Override
@@ -843,13 +857,9 @@ public class AreaDeDiagramas {
 
         labelNovaClasse.addMouseListener(mouseAdapter);
         labelNovaAnotacao.addMouseListener(mouseAdapter);
+        labelNovoPacote.addMouseListener(mouseAdapter);
 
-        /*labelNovaAnotacao.addMouseListener(mouseAdapter);
-        labelnovoPacote.addMouseListener(mouseAdapter);
-
-
-
-
+        /*
         JLabel labelRelacaoGeneralizacao = new JLabel(new ImageIcon(AreaDeDiagramas.class.getResource("/imagens/img_nova_generalizacao.png")));
         labelRelacaoGeneralizacao.setFont(robotoFont.getRobotoMedium(12));
         labelRelacaoGeneralizacao.setText("Generalização");
@@ -1319,11 +1329,11 @@ public class AreaDeDiagramas {
         menuComponentes.add(new JLabel() {
             { setBorder(bordaSeparadores); }
         }, "wrap, grow, gapbottom 5, growx");
-
+        menuComponentes.add(labelNovoPacote, "wrap, gapbottom 5, growx");
+        menuComponentes.add(new JLabel() {
+            { setBorder(bordaSeparadores); }
+        }, "wrap, grow, gapbottom 5, growx");
         /*
-        menuComponentesDiagramas.add(labelnovoPacote, "wrap, gapbottom 5, growx");
-        menuComponentesDiagramas.add(labelSeparador3, "wrap, grow, gapbottom 5, growx");
-
         menuComponentesDiagramas.add(labelRelacaoGeneralizacao, "wrap, gapbottom 5, growx");
         menuComponentesDiagramas.add(labelSeparador4, "wrap, grow, gapbottom 5, growx");
 
@@ -1397,6 +1407,14 @@ public class AreaDeDiagramas {
         painelAcoesQuadroBranco.add(labelSeparadorOpcoes, "grow, gapright 5");
         painelAcoesQuadroBranco.add(labelUndo, "gapright 5");
         painelAcoesQuadroBranco.add(labelRedo, "gapright 5");
+        painelAcoesQuadroBranco.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                for (ComponenteUML componente : diagramaAtual.getListaComponentesUML()) {
+                    componente.removerPainelDeOpcoes();
+                }
+            }
+        });
 
         // ----------------------------------------------------------------------------
 
@@ -1453,7 +1471,6 @@ public class AreaDeDiagramas {
 
         });
 
-
         labelUndo.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -1488,7 +1505,6 @@ public class AreaDeDiagramas {
             }
 
         });
-
 
         labelRedo.addMouseListener(new MouseAdapter() {
             @Override
