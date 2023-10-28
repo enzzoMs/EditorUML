@@ -12,9 +12,9 @@ import java.awt.*;
 public class ComponenteMovido implements AlteracaoDeComponenteUML {
     private final Point posicaoAntesDoMovimento;
     private final Point posicaoDepoisDoMovimento;
-    private final ComponenteUML componenteMovido;
+    private final ComponenteUML<?> componenteMovido;
 
-    public ComponenteMovido(Point posicaoAntesDoMovimento, Point posicaoDepoisDoMovimento, ComponenteUML componenteMovido) {
+    public ComponenteMovido(Point posicaoAntesDoMovimento, Point posicaoDepoisDoMovimento, ComponenteUML<?> componenteMovido) {
         this.posicaoAntesDoMovimento = posicaoAntesDoMovimento;
         this.posicaoDepoisDoMovimento = posicaoDepoisDoMovimento;
         this.componenteMovido = componenteMovido;

@@ -1,9 +1,9 @@
-package RelacoesUML;
+/*package RelacoesUML;
 
 import componentes.alteracoes.RelacaoModificada;
 import ClassesAuxiliares.RobotoFont;
 import componentes.ComponenteUML;
-import diagrama.DiagramaUML;
+import modelos.DiagramaUML;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -363,4 +363,4 @@ public class RelacaoRealizacao extends RelacaoUML {
     public void setSentidoDaSeta(String sentidoDaSeta) {
         this.sentidoDaSeta = sentidoDaSeta;
     }
-}
+}*/

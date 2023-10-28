@@ -1,6 +1,6 @@
 package interfacegrafica;
 
-import diagrama.DiagramaUML;
+import modelos.DiagramaUML;
 import auxiliares.GerenciadorDeRecursos;
 import net.miginfocom.swing.MigLayout;
 
@@ -29,7 +29,6 @@ public class GerenciadorInterfaceGrafica {
     private final AreaDeDiagramas areaDeDiagramas;
     private boolean mostrandoMenuPrincipal = false;
     private boolean mostrandoAreaDeDiagramas = false;
-
     private final JDialog JDialogSairDoAplicativo = new JDialog();
 
     public GerenciadorInterfaceGrafica() {
@@ -72,6 +71,7 @@ public class GerenciadorInterfaceGrafica {
 
     public void mostrarMenuPrincipal() {
         framePrincipal.setVisible(false);
+        setWindowTitle(GerenciadorDeRecursos.getInstancia().getString("app_titulo"));
         framePrincipal.remove(areaDeDiagramas.getPainelAreaDeDiagramas());
         framePrincipal.add(menuPrincipal.getPainelMenuPrincipal(), "north");
         framePrincipal.pack();
@@ -96,6 +96,10 @@ public class GerenciadorInterfaceGrafica {
 
     public void setWindowTitle(String titulo) {
         framePrincipal.setTitle(titulo);
+    }
+
+    public AreaDeDiagramas getAreaDeDiagramas() {
+        return areaDeDiagramas;
     }
 
     public boolean estaMostrandoMenuPrincipal() {

@@ -12,9 +12,9 @@ import java.awt.*;
 public class ComponenteCriado implements AlteracaoDeComponenteUML {
 
     private final Point posicaoDepoisDaCriacao;
-    private final ComponenteUML componenteCriado;
+    private final ComponenteUML<?> componenteCriado;
 
-    public ComponenteCriado(Point posicaoDepoisDaCriacao, ComponenteUML componenteCriado) {
+    public ComponenteCriado(Point posicaoDepoisDaCriacao, ComponenteUML<?> componenteCriado) {
         this.posicaoDepoisDaCriacao = posicaoDepoisDaCriacao;
         this.componenteCriado = componenteCriado;
     }

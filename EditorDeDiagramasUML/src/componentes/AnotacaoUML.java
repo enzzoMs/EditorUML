@@ -322,7 +322,7 @@ public class AnotacaoUML extends ComponenteUML<Anotacao> {
                 "\n// Texto\n" +
                 modeloAtual.getTexto().replaceAll("\n", "(novaLinha)") +
                 "\n// Numero de caracteres para quebra de linha\n" +
-                modeloAtual.getNumCharsQuebrarTexto();
+                modeloAtual.getNumCharsQuebrarTexto() + "\n";
     }
 }
 

@@ -27,7 +27,9 @@ public enum Visibilidade {
 
     public static Visibilidade getVisibilidadePorNome(String nome) {
         for (Visibilidade visibilidade : Visibilidade.values()) {
-            if (Objects.equals(visibilidade.getNome(), nome)) return visibilidade;
+            if (visibilidade.nome.equalsIgnoreCase(nome)) {
+                return visibilidade;
+            }
         }
 
         return null;

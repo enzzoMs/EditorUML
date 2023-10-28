@@ -1,6 +1,11 @@
 package auxiliares;
 
-import diagrama.DiagramaUML;
+import componentes.AnotacaoUML;
+import componentes.ClasseUML;
+import componentes.PacoteUML;
+import modelos.DiagramaUML;
+import interfacegrafica.AreaDeDiagramas;
+import modelos.*;
 import net.miginfocom.swing.MigLayout;
 
 import javax.imageio.ImageIO;
@@ -11,12 +16,10 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Objects;
 
 /**
@@ -67,7 +70,7 @@ public class GerenciadorDeArquivos {
             fileChooser.setSelectedFile(new File(gerenciadorDeRecursos.getString("diagrama_nome_default")));
         } else {
             fileChooser.setCurrentDirectory(diagrama.arquivoDiagrama);
-            fileChooser.setSelectedFile(diagrama.arquivoDiagrama);
+            fileChooser.setSelectedFile(new File(diagrama.arquivoDiagrama.getName().replace(".txt", "")));
         }
 
         fileChooser.setDialogTitle(gerenciadorDeRecursos.getString("salvar"));
@@ -124,7 +127,7 @@ public class GerenciadorDeArquivos {
      * @return O Diagrama reconstruído. Null caso nenhum arquivo seja escolhido ou um erro ocorreu durante o processo.
      * @see DiagramaUML
      */
-    public DiagramaUML abrirDiagrama(File diretorioAtual) {
+    public DiagramaUML abrirDiagrama(File diretorioAtual, AreaDeDiagramas areaDeDiagramas) {
         GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
         JFileChooser fileChooser = new JFileChooser();
@@ -146,8 +149,7 @@ public class GerenciadorDeArquivos {
         if (chooserResposta == JFileChooser.APPROVE_OPTION) {
             File arquivoDiagrama = new File(fileChooser.getSelectedFile().getAbsolutePath());
 
-            // TODO: este metodo deve lidar com mostrar o dialog de erro
-            return reconstruirDiagrama(arquivoDiagrama);
+            return reconstruirDiagrama(arquivoDiagrama, areaDeDiagramas);
         }
 
         return null;
@@ -219,186 +221,176 @@ public class GerenciadorDeArquivos {
         }
     }
 
-    private DiagramaUML reconstruirDiagrama(File arquivo) {
-        /*
-            Reconstroi um diagrama a partir de um aquivo de texto, criando e inicializando todos os objetos necessários no processo.
-            O método retorna um DiagramaUML contendo todos os objetos necessários, porém caso qualquer erro ocorra o usuário
-            será notificado através do JDialogErroAoAbrir e o método returna null.
-
-         */
-        /*
-
+    /**
+     * Reconstroi um diagrama a partir de um aquivo de texto, criando e inicializando todos os objetos necessários no processo.
+     * O método retorna um DiagramaUML contendo todos os objetos necessários, porém caso qualquer erro ocorra o usuário
+     * será notificado através de um Dialog e retornará null.
+     */
+    private DiagramaUML reconstruirDiagrama(File arquivo, AreaDeDiagramas areaDeDiagramas) {
         try {
             BufferedReader reader = new BufferedReader(new FileReader(arquivo));
 
             if (!reader.readLine().equals("UML APP")) {
-                return null;
+                throw new IllegalArgumentException();
             }
 
-            DiagramaUML novoDiagramaUML = new DiagramaUML(areaDeDiagramas);
+            DiagramaUML novoDiagramaUML = new DiagramaUML();
+            novoDiagramaUML.arquivoDiagrama = arquivo;
+            novoDiagramaUML.setDiagramaSalvo(true);
 
-
-
+            reader.readLine();
             int numComponentesUML = Integer.parseInt(reader.readLine());
 
-            for (int i = 0; i < numComponentesUML; i++) {
-                String tipoDeComponente = reader.readLine();
+            for (int indexComponente = 0; indexComponente < numComponentesUML; indexComponente++) {
+                switch (reader.readLine()) {
+                    case "CLASSE_UML" -> {
+                        ClasseUML novaClasseUML = new ClasseUML(areaDeDiagramas);
 
-                if (tipoDeComponente.equals("CLASSE_UML")) {
-                    ClasseUML novaClasseUML = new ClasseUML(novoDiagramaUML);
+                        reader.readLine();
+                        int posicaoX = Integer.parseInt(reader.readLine());
+                        int posicaoY = Integer.parseInt(reader.readLine());
 
-                    int posicaoX = Integer.parseInt(reader.readLine());
-                    int posicaoY = Integer.parseInt(reader.readLine());
-
-                    novaClasseUML.getPainelComponente().setLocation(
+                        novaClasseUML.getPainelComponente().setLocation(
                             posicaoX,
                             posicaoY
-                    );
+                        );
 
-                    String nomeClasse = reader.readLine();
-                    String comentario = reader.readLine();
-                    int limiteComentario = Integer.parseInt(reader.readLine());
-                    boolean ehAbstrata = Boolean.parseBoolean(reader.readLine());
-                    boolean ehInterface = Boolean.parseBoolean(reader.readLine());
+                        reader.readLine();
+                        String nomeClasse = reader.readLine();
+                        reader.readLine();
+                        String comentario = reader.readLine();
+                        reader.readLine();
+                        int limiteComentario = Integer.parseInt(reader.readLine());
+                        reader.readLine();
+                        boolean ehAbstrata = Boolean.parseBoolean(reader.readLine());
+                        reader.readLine();
+                        boolean ehInterface = Boolean.parseBoolean(reader.readLine());
 
-                    int numAtributos = Integer.parseInt(reader.readLine());
+                        reader.readLine();
+                        int numAtributos = Integer.parseInt(reader.readLine());
 
-                    ArrayList<Atributo> atributoArrayList = new ArrayList<>();
-                    Object[] arrayStringAtributos = new Object[numAtributos];
+                        ArrayList<Atributo> atributos = new ArrayList<>();
 
+                        for (int indexAtributo = 0; indexAtributo < numAtributos; indexAtributo++) {
+                            reader.readLine();
+                            String nomeAtributo = reader.readLine();
+                            reader.readLine();
+                            Visibilidade visibilidadeAtributo = Visibilidade.getVisibilidadePorNome(reader.readLine().trim());
+                            reader.readLine();
+                            String tipoAtributo = reader.readLine();
+                            reader.readLine();
+                            String valorPadraoAtributo = reader.readLine();
+                            reader.readLine();
+                            boolean atributoEhEstatico = Boolean.parseBoolean(reader.readLine());
 
-                    for (int j = 0; j < numAtributos; j++) {
-                        String visibilidadeAtributo = reader.readLine();
-                        String nomeAtributo = reader.readLine();
-                        String tipoAtributo = reader.readLine();
-                        String valorPadraoAtributo = reader.readLine();
-                        boolean atributoEhEstatico = Boolean.parseBoolean(reader.readLine());
-
-                        Atributo novoAtributo = new Atributo(nomeAtributo, tipoAtributo, valorPadraoAtributo,
-                                visibilidadeAtributo, atributoEhEstatico);
-
-                        atributoArrayList.add(novoAtributo);
-
-
-                        StringBuilder atributoEmString = new StringBuilder();
-
-                        atributoEmString.append(novoAtributo.ehEstatico() ? "<html><u>" : "");
-                        atributoEmString.append(novoAtributo.getVisibilidade());
-                        atributoEmString.append(novoAtributo.getNome());
-                        atributoEmString.append(novoAtributo.getTipo().equals("") ? "" : ": " + novoAtributo.getTipo());
-                        atributoEmString.append(novoAtributo.getValorPadrao().equals("") ? "" : " = " + novoAtributo.getValorPadrao());
-                        atributoEmString.append(novoAtributo.ehEstatico() ? "</u></html>" : "");
-
-                        arrayStringAtributos[j] = atributoEmString.toString();
-                    }
-
-                    novaClasseUML.setArrayListAtributos(atributoArrayList);
-
-
-                    int numMetodos = Integer.parseInt(reader.readLine());
-
-                    ArrayList<Metodo> metodoArrayList = new ArrayList<>();
-                    Object[] arrayStringMetodo = new Object[numMetodos];
-
-
-                    for (int j = 0; j < numMetodos; j++) {
-                        String visibilidadeMetodo = reader.readLine();
-                        String nomeMetodo = reader.readLine();
-                        String tipoMetodo = reader.readLine();
-                        boolean metodoEhAbstrato = Boolean.parseBoolean(reader.readLine());
-                        boolean metodoEhEstatico = Boolean.parseBoolean(reader.readLine());
-
-                        ArrayList<Parametro> parametroArrayList = new ArrayList<>();
-
-                        int numParametros = Integer.parseInt(reader.readLine());
-
-                        for (int k = 0; k < numParametros; k++) {
-                            String nomeParametro = reader.readLine();
-                            String tipoParametro = reader.readLine();
-                            String valorPadraoParametro = reader.readLine();
-
-                            parametroArrayList.add(new Parametro(nomeParametro, tipoParametro, valorPadraoParametro));
+                            atributos.add(new Atributo(
+                                nomeAtributo, tipoAtributo, valorPadraoAtributo,
+                                visibilidadeAtributo, atributoEhEstatico
+                            ));
                         }
 
-                        Metodo novoMetodo = new Metodo(nomeMetodo, visibilidadeMetodo, tipoMetodo,
-                                metodoEhEstatico, metodoEhAbstrato, parametroArrayList);
+                        reader.readLine();
+                        int numMetodos = Integer.parseInt(reader.readLine());
 
-                        metodoArrayList.add(novoMetodo);
+                        ArrayList<Metodo> metodos = new ArrayList<>();
 
+                        for (int indexMetodo = 0; indexMetodo < numMetodos; indexMetodo++) {
+                            reader.readLine();
+                            String nomeMetodo = reader.readLine();
+                            reader.readLine();
+                            Visibilidade visibilidadeMetodo = Visibilidade.getVisibilidadePorNome(reader.readLine());
+                            reader.readLine();
+                            String tipoMetodo = reader.readLine();
+                            reader.readLine();
+                            boolean metodoEhAbstrato = Boolean.parseBoolean(reader.readLine());
+                            reader.readLine();
+                            boolean metodoEhEstatico = Boolean.parseBoolean(reader.readLine());
 
-                        StringBuilder metodoEmString = new StringBuilder();
+                            ArrayList<Parametro> parametros = new ArrayList<>();
 
-                        metodoEmString.append("<html>");
-                        metodoEmString.append(novoMetodo.ehEstatico() ? "<u>" : "");
-                        metodoEmString.append(novoMetodo.ehAbstrato() ? "<i>" : "");
-                        metodoEmString.append(novoMetodo.getVisibilidade());
-                        metodoEmString.append(novoMetodo.getNome());
-                        metodoEmString.append("(");
-                        metodoEmString.append(novoMetodo.toStringParametros());
-                        metodoEmString.append(")");
-                        metodoEmString.append(novoMetodo.getTipo().equals("") ? "" : ": " + novoMetodo.getTipo());
-                        metodoEmString.append(novoMetodo.ehAbstrato() ? "</i>" : "");
-                        metodoEmString.append(novoMetodo.ehEstatico() ? "</u>" : "");
-                        metodoEmString.append("<html>");
+                            reader.readLine();
+                            int numParametros = Integer.parseInt(reader.readLine());
 
-                        arrayStringMetodo[j] = metodoEmString.toString();
+                            for (int indexParametro = 0; indexParametro < numParametros; indexParametro++) {
+                                reader.readLine();
+                                String nomeParametro = reader.readLine();
+                                reader.readLine();
+                                String tipoParametro = reader.readLine();
+                                reader.readLine();
+                                String valorPadraoParametro = reader.readLine();
+
+                                parametros.add(new Parametro(nomeParametro, tipoParametro, valorPadraoParametro));
+                            }
+
+                            Metodo novoMetodo = new Metodo(
+                                nomeMetodo, visibilidadeMetodo, tipoMetodo,
+                                metodoEhEstatico, metodoEhAbstrato, parametros
+                            );
+
+                            metodos.add(novoMetodo);
+                        }
+
+                        novaClasseUML.setModelo(new Classe(
+                                nomeClasse,
+                                comentario,
+                                ehAbstrata,
+                                ehInterface,
+                                limiteComentario,
+                                atributos,
+                                metodos
+                            )
+                        );
+
+                        novoDiagramaUML.addComponente(novaClasseUML);
                     }
+                    case "ANOTACAO_UML" -> {
+                        AnotacaoUML novaAnotacaoUML = new AnotacaoUML(areaDeDiagramas);
 
-                    novaClasseUML.setArrayListMetodos(metodoArrayList);
+                        reader.readLine();
+                        int posicaoX = Integer.parseInt(reader.readLine());
+                        int posicaoY = Integer.parseInt(reader.readLine());
 
-
-                    novaClasseUML.atualizarComponente(
-                            nomeClasse,
-                            comentario,
-                            ehAbstrata,
-                            arrayStringAtributos,
-                            arrayStringMetodo,
-                            limiteComentario,
-                            ehInterface
-                    );
-
-                    novoDiagramaUML.getListaComponentesUML().add(novaClasseUML);
-
-                } else if (tipoDeComponente.equals("ANOTACAO_UML")) {
-                    AnotacaoUML novaAnotacaoUML = new AnotacaoUML(novoDiagramaUML);
-
-                    int posicaoX = Integer.parseInt(reader.readLine());
-                    int posicaoY = Integer.parseInt(reader.readLine());
-
-                    novaAnotacaoUML.getPainelComponente().setLocation(
+                        novaAnotacaoUML.getPainelComponente().setLocation(
                             posicaoX,
                             posicaoY
-                    );
+                        );
 
-                    String textoAnotacao = reader.readLine().replaceAll("\\(novaLinha\\)", "\n");
-                    int limiteAnotacao = Integer.parseInt(reader.readLine());
+                        reader.readLine();
+                        String textoAnotacao = reader.readLine().replaceAll("\\(novaLinha\\)", "\n");
+                        reader.readLine();
+                        int limiteAnotacao = Integer.parseInt(reader.readLine());
 
-                    novaAnotacaoUML.atualizarComponente(textoAnotacao, limiteAnotacao);
+                        novaAnotacaoUML.setModelo(new Anotacao(textoAnotacao, limiteAnotacao));
 
-                    novoDiagramaUML.getListaComponentesUML().add(novaAnotacaoUML);
-                } else if (tipoDeComponente.equals("PACOTE_UML")) {
-                    PacoteUML novoPacoteUML = new PacoteUML(novoDiagramaUML);
+                        novoDiagramaUML.addComponente(novaAnotacaoUML);
+                    }
+                    case "PACOTE_UML" -> {
+                        PacoteUML novoPacoteUML = new PacoteUML(areaDeDiagramas);
 
-                    int posicaoX = Integer.parseInt(reader.readLine());
-                    int posicaoY = Integer.parseInt(reader.readLine());
+                        reader.readLine();
+                        int posicaoX = Integer.parseInt(reader.readLine());
+                        int posicaoY = Integer.parseInt(reader.readLine());
 
-                    novoPacoteUML.getPainelComponente().setLocation(
+                        novoPacoteUML.getPainelComponente().setLocation(
                             posicaoX,
                             posicaoY
-                    );
+                        );
 
-                    String nome = reader.readLine();
-                    int larguraAreaPacote = Integer.parseInt(reader.readLine());
-                    int alturaAreaPacote = Integer.parseInt(reader.readLine());
+                        reader.readLine();
+                        String nome = reader.readLine();
+                        reader.readLine();
+                        int larguraPacote = Integer.parseInt(reader.readLine());
+                        reader.readLine();
+                        int alturaPacote = Integer.parseInt(reader.readLine());
 
-                    novoPacoteUML.getPainelAreaPacote().setSize(larguraAreaPacote, alturaAreaPacote);
+                        novoPacoteUML.setModelo(new Pacote(
+                            nome,
+                            new Rectangle(posicaoX, posicaoY, larguraPacote, alturaPacote)
+                        ));
 
-                    novoPacoteUML.atualizarComponente(nome);
-
-                    novoDiagramaUML.getListaComponentesUML().add(novoPacoteUML);
-
+                        novoDiagramaUML.addComponente(novoPacoteUML);
+                    }
                 }
-
             }
 
             reader.close();
@@ -406,12 +398,11 @@ public class GerenciadorDeArquivos {
             return novoDiagramaUML;
 
         } catch (Exception e) {
-            JDialogErroAoAbrir.setLocationRelativeTo(null);
-            JDialogErroAoAbrir.setVisible(true);
+            dialogErro.setLocationRelativeTo(null);
+            dialogErro.setVisible(true);
 
             return null;
-        }*/
-        return null;
+        }
     }
 
     private void mostrarDialogErro(String mensagemErro) {
@@ -440,8 +431,11 @@ public class GerenciadorDeArquivos {
         JPanel painelMensagem = new JPanel(new MigLayout("insets 10 20 8 20"));
         painelMensagem.setOpaque(false);
 
-        JLabel labelErroMensagem = new JLabel("", JLabel.CENTER);
-        labelErroMensagem.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
+        JLabel labelErroMensagem = new JLabel(gerenciadorDeRecursos.getString("erro_ocorreu"), JLabel.CENTER);
+        labelErroMensagem.setFont(gerenciadorDeRecursos.getRobotoBlack(16));
+
+        JLabel labelErroDescricao = new JLabel(gerenciadorDeRecursos.getString("erro_abrir_arquivo_explicacao"), JLabel.CENTER);
+        labelErroDescricao.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
 
         painelMensagem.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createEmptyBorder(0, 25, 0, 25),
@@ -449,6 +443,7 @@ public class GerenciadorDeArquivos {
         ));
 
         painelMensagem.add(labelErroMensagem, "align center, wrap, gapbottom 5");
+        painelMensagem.add(labelErroDescricao, "align center, wrap, gapbottom 5, gaptop 8");
 
         // ----------------------------------------------------------------------------
 
@@ -494,6 +489,7 @@ public class GerenciadorDeArquivos {
 
         dialogErro.setTitle(gerenciadorDeRecursos.getString("erro_maiusculo"));
         dialogErro.setContentPane(painelErro);
+        dialogErro.pack();
         dialogErro.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         dialogErro.setResizable(false);
     }

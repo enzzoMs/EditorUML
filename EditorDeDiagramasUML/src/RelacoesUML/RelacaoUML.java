@@ -1,7 +1,7 @@
-package RelacoesUML;
+/*package RelacoesUML;
 
 import componentes.ComponenteUML;
-import diagrama.DiagramaUML;
+import modelos.DiagramaUML;
 
 import javax.swing.*;
 import java.awt.*;
@@ -1564,4 +1564,4 @@ public abstract class RelacaoUML {
 
     public abstract void adicionarComportamentoArelacao();
 
-}
+}*/

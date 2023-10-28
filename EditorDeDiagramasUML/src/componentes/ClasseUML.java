@@ -1710,7 +1710,7 @@ public class ClasseUML extends ComponenteUML<Classe> {
             informacoesClasse.append("\n// Atributo - Nome\n");
             informacoesClasse.append(atributo.getNome());
             informacoesClasse.append("\n// Atributo - Visibilidade\n");
-            informacoesClasse.append(atributo.getVisibilidade());
+            informacoesClasse.append(atributo.getVisibilidade().getNome());
             informacoesClasse.append("\n// Atributo - Tipo\n");
             informacoesClasse.append(atributo.getTipo());
             informacoesClasse.append("\n// Atributo - Valor Padrao\n");
@@ -1721,12 +1721,13 @@ public class ClasseUML extends ComponenteUML<Classe> {
 
         informacoesClasse.append("\n// Numero de metodos\n");
         informacoesClasse.append(modeloAtual.getMetodos().size());
+        informacoesClasse.append("\n");
 
         for (Metodo metodo : modeloAtual.getMetodos()) {
-            informacoesClasse.append("\n// Metodo - Nome\n");
+            informacoesClasse.append("// Metodo - Nome\n");
             informacoesClasse.append(metodo.getNome());
             informacoesClasse.append("\n// Metodo - Visibilidade\n");
-            informacoesClasse.append(metodo.getVisibilidade());
+            informacoesClasse.append(metodo.getVisibilidade().getNome());
             informacoesClasse.append("\n// Metodo - Tipo\n");
             informacoesClasse.append(metodo.getTipo());
             informacoesClasse.append("\n// Metodo - Eh Abstrato?\n");
@@ -1736,14 +1737,16 @@ public class ClasseUML extends ComponenteUML<Classe> {
 
             informacoesClasse.append("\n// Numero de parametros\n");
             informacoesClasse.append(metodo.getParametros().size());
+            informacoesClasse.append("\n");
 
             for (Parametro parametro : metodo.getParametros()) {
-                informacoesClasse.append("\n// Parametro - Nome\n");
+                informacoesClasse.append("// Parametro - Nome\n");
                 informacoesClasse.append(parametro.getNome());
                 informacoesClasse.append("\n// Parametro - Tipo\n");
                 informacoesClasse.append(parametro.getTipo());
                 informacoesClasse.append("\n// Parametro - Valor Padrao\n");
                 informacoesClasse.append(parametro.getValorPadrao());
+                informacoesClasse.append("\n");
             }
         }
 

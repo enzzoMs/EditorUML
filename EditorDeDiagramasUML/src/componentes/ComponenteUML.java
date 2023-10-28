@@ -216,7 +216,7 @@ public abstract class ComponenteUML<T> {
     }
 
     public void adicionarComponenteAoQuadroBranco() {
-        areaDeDiagramas.addComponente(this, false);
+        areaDeDiagramas.addComponenteAoQuadro(this, false);
     }
 
     /**

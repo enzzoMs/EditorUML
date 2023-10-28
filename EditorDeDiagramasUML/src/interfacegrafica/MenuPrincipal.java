@@ -1,7 +1,7 @@
 package interfacegrafica;
 
 import auxiliares.GerenciadorDeArquivos;
-import diagrama.DiagramaUML;
+import modelos.DiagramaUML;
 import net.miginfocom.swing.MigLayout;
 import auxiliares.GerenciadorDeRecursos;
 
@@ -114,7 +114,9 @@ public class MenuPrincipal {
 
             @Override
             public void mouseClicked(MouseEvent e) {
-                DiagramaUML diagrama = GerenciadorDeArquivos.getInstancia().abrirDiagrama(null);
+                DiagramaUML diagrama = GerenciadorDeArquivos.getInstancia().abrirDiagrama(
+                    null, gerenciadorInterfaceGrafica.getAreaDeDiagramas()
+                );
 
                 if (diagrama != null) {
                     gerenciadorInterfaceGrafica.mostrarAreaDeDiagramas(diagrama);

@@ -10,9 +10,9 @@ import java.awt.*;
  */
 public class ComponenteRemovido implements AlteracaoDeComponenteUML {
     private final Point posicaoAntesDaRemocao;
-    private final ComponenteUML componenteRemovido;
+    private final ComponenteUML<?> componenteRemovido;
 
-    public ComponenteRemovido(Point posicaoAntesDaRemocao, ComponenteUML componenteRemovido) {
+    public ComponenteRemovido(Point posicaoAntesDaRemocao, ComponenteUML<?> componenteRemovido) {
         this.posicaoAntesDaRemocao = posicaoAntesDaRemocao;
         this.componenteRemovido = componenteRemovido;
     }

@@ -284,7 +284,12 @@ public class PacoteUML extends ComponenteUML<Pacote> {
 
     public void atualizarComponentesGraficos() {
         JLabel labelNomePacote = (JLabel) painelNomePacote.getComponent(0);
+        painelNomePacote.removeAll();
+
         labelNomePacote.setText(modeloAtual.getNome());
+
+        // Removendo e adicionando de novo para que o PreferredSize seja atualizado
+        painelNomePacote.add(labelNomePacote, "north");
 
         painelNomePacote.setBounds(
             0, 0,
@@ -511,9 +516,9 @@ public class PacoteUML extends ComponenteUML<Pacote> {
                 super.getPainelComponente().getY() +
                 "\n// Nome\n" +
                 modeloAtual.getNome() +
-                "\n//Largura área do pacote\n" +
-                painelAreaPacote.getWidth() +
-                "\n/Altura área do pacote\n" +
-                painelAreaPacote.getHeight();
+                "\n//Largura\n" +
+                getLargura() +
+                "\n/Altura\n" +
+                getAltura() + "\n";
     }
 }

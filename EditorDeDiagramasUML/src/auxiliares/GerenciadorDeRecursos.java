@@ -1,6 +1,5 @@
 package auxiliares;
 
-import ClassesAuxiliares.RobotoFont;
 import interfacegrafica.MenuPrincipal;
 
 import javax.swing.*;
@@ -34,11 +33,11 @@ public class GerenciadorDeRecursos {
         try {
             GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 
-            InputStream fonte = RobotoFont.class.getResourceAsStream("/fontes/Roboto-Black.ttf");
+            InputStream fonte = GerenciadorDeRecursos.class.getResourceAsStream("/fontes/Roboto-Black.ttf");
             this.robotoBlack = Font.createFont(Font.TRUETYPE_FONT, fonte);
             graphicsEnvironment.registerFont(this.robotoBlack);
 
-            fonte = RobotoFont.class.getResourceAsStream("/fontes/Roboto-Medium.ttf");
+            fonte = GerenciadorDeRecursos.class.getResourceAsStream("/fontes/Roboto-Medium.ttf");
             robotoMedium = Font.createFont(Font.TRUETYPE_FONT, fonte);
             graphicsEnvironment.registerFont(robotoMedium);
 
