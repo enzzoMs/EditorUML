@@ -2,7 +2,7 @@
 
 import componentes.alteracoes.RelacaoModificada;
 import ClassesAuxiliares.RobotoFont;
-import componentes.ComponenteUML;
+import componentes.estruturas.ComponenteUML;
 import modelos.DiagramaUML;
 import net.miginfocom.swing.MigLayout;
 

@@ -1,12 +1,14 @@
 package modelos;
 
-import componentes.ComponenteUML;
+import componentes.estruturas.ComponenteUML;
+import componentes.relacoes.RelacaoUML;
 
 import java.io.File;
 import java.util.ArrayList;
 
 public class DiagramaUML {
     private final ArrayList<ComponenteUML<?>> componentesUML = new ArrayList<>();
+    private final ArrayList<RelacaoUML> relacoesUML = new ArrayList<>();
     private boolean diagramaSalvo = false;
     public File arquivoDiagrama;
 
@@ -14,8 +16,16 @@ public class DiagramaUML {
         componentesUML.add(novoComponente);
     }
 
+    public void addRelacao(RelacaoUML novaRelacao) {
+        relacoesUML.add(novaRelacao);
+    }
+
     public void removerComponente(ComponenteUML<?> componente) {
         componentesUML.remove(componente);
+    }
+
+    public void removerRelacao(RelacaoUML relacao) {
+        relacoesUML.remove(relacao);
     }
 
     public void setDiagramaSalvo(boolean diagramaSalvo) {
@@ -24,6 +34,10 @@ public class DiagramaUML {
 
     public ArrayList<ComponenteUML<?>> getComponentesUML() {
         return componentesUML;
+    }
+
+    public ArrayList<RelacaoUML> getRelacoesUML() {
+        return relacoesUML;
     }
 
     public boolean diagramaEstaSalvo() {

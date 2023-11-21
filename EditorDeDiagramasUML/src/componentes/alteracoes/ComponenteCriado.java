@@ -1,6 +1,6 @@
 package componentes.alteracoes;
 
-import componentes.ComponenteUML;
+import componentes.estruturas.ComponenteUML;
 
 import java.awt.*;
 

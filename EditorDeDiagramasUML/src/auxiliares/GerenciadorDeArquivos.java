@@ -1,8 +1,8 @@
 package auxiliares;
 
-import componentes.AnotacaoUML;
-import componentes.ClasseUML;
-import componentes.PacoteUML;
+import componentes.estruturas.AnotacaoUML;
+import componentes.estruturas.ClasseUML;
+import componentes.estruturas.PacoteUML;
 import modelos.DiagramaUML;
 import interfacegrafica.AreaDeDiagramas;
 import modelos.*;
