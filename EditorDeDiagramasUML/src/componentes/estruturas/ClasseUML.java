@@ -124,17 +124,6 @@ public class ClasseUML extends ComponenteUML<Classe> {
         });*/
     }
 
-
-    // TODO: isso vem de reconstruir componente e deve ser movido para um metodo melhor
-    /*
-    public void setArrayListAtributos(ArrayList<Atributo> novaArrayListAtributos) {
-        this.arrayListAtributos = novaArrayListAtributos;
-    }
-
-    public void setArrayListMetodos(ArrayList<Metodo> novaArrayListMetodos) {
-        this.arrayListMetodos = novaArrayListMetodos;
-    }*/
-
     private void atualizarComponentesGraficos() {
         GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 

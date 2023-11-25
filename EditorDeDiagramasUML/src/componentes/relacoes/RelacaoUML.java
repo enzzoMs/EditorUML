@@ -2,6 +2,8 @@ package componentes.relacoes;
 
 import auxiliares.GerenciadorDeRecursos;
 import interfacegrafica.AreaDeDiagramas;
+import modelos.OrientacaoDeRelacao;
+import modelos.TipoDeRelacao;
 
 import javax.swing.*;
 import java.awt.*;
@@ -108,10 +110,10 @@ public abstract class RelacaoUML {
             orientacaoDaRelacao = OrientacaoDeRelacao.SUL;
         } else if (ultimaLinha.getWidth() == TAMANHO_LINHAS_RELACAO && ultimaLinha.getY() == pontoFinal.y) {
             orientacaoDaRelacao = OrientacaoDeRelacao.NORTE;
-        } else if (ultimaLinha.getX() + ultimaLinha.getWidth() == pontoFinal.x) {
-            orientacaoDaRelacao = OrientacaoDeRelacao.LESTE;
-        } else {
+        } else if (ultimaLinha.getX() + TAMANHO_LINHAS_RELACAO / 2 == pontoFinal.x) {
             orientacaoDaRelacao = OrientacaoDeRelacao.OESTE;
+        } else {
+            orientacaoDaRelacao = OrientacaoDeRelacao.LESTE;
         }
     }
 
@@ -124,7 +126,7 @@ public abstract class RelacaoUML {
 
         calcularOrientacaoDaRelacao();
         aplicarEstiloDaRelacao();
-        updateLocalizacaoPontoDeExtensao();
+        atualizarLocalizacaoPontoDeExtensao();
     }
 
     public void excluirRelacao() {
@@ -132,7 +134,7 @@ public abstract class RelacaoUML {
         areaDeDiagramas.removerComponenteDoQuadro(pontoDeExtensao);
     }
 
-    public void updateLocalizacaoPontoDeExtensao() {
+    public void atualizarLocalizacaoPontoDeExtensao() {
         pontoDeExtensao.setLocation(getLocalizacaoDoPontoDeExtensao());
     }
 
@@ -200,7 +202,7 @@ public abstract class RelacaoUML {
 
         aplicarEstiloDaRelacao();
 
-        updateLocalizacaoPontoDeExtensao();
+        atualizarLocalizacaoPontoDeExtensao();
     }
 
     public void setEmMudancaDeSelecao(Consumer<Boolean> emMudancaDeSelecao) {
@@ -235,7 +237,7 @@ public abstract class RelacaoUML {
         return tipoDeRelacao;
     }
 
-    public JFrame getFrameGerenciarRelacao() {
+    protected JFrame getFrameGerenciarRelacao() {
         return frameGerenciarRelacao;
     }
 
@@ -263,9 +265,4 @@ public abstract class RelacaoUML {
     public abstract Point getLocalizacaoDoPontoDeExtensao();
 
     protected abstract void initFrameGerenciarRelacao();
-
-   /* public void excluirRelacao() {
-        diagramaUML.getAreaDeDiagramas().removerRelacaoDoQuadro(this);
-        listaPaineisRelacao.clear();
-    }*/
 }

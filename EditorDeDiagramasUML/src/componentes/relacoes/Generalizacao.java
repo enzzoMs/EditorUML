@@ -1,10 +1,8 @@
-package RelacoesUML;
+package componentes.relacoes;
 
 import auxiliares.GerenciadorDeRecursos;
-import componentes.relacoes.OrientacaoDeRelacao;
-import componentes.relacoes.RelacaoUML;
-import componentes.relacoes.TipoDeRelacao;
 import interfacegrafica.AreaDeDiagramas;
+import modelos.TipoDeRelacao;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -14,10 +12,10 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 /**
- * TODO
+ * Classe que representa uma relação UML do tipo "Generalização". Graficamente se trata de um
+ * componente simples, possuindo uma seta "oca" em uma das extremidades.
  */
 public class Generalizacao extends RelacaoUML {
-    private String sentidoDaSeta;
     private JPanel painelSeta;
     int[] pontosXDaSeta = { 0, 0, 0 };
     int[] pontosYDaSeta = { 0, 0, 0 };
@@ -28,7 +26,7 @@ public class Generalizacao extends RelacaoUML {
     ) {
         super(linhasDaRelacao, areaDeDiagramas, primeiroPontoDaRelacao, ultimoPontoDaRelacao, tipoDeRelacao);
         aplicarEstiloDaRelacao();
-        updateLocalizacaoPontoDeExtensao();
+        atualizarLocalizacaoPontoDeExtensao();
     }
 
     @Override
