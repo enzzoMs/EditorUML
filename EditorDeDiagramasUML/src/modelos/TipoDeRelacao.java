@@ -1,5 +1,6 @@
 package modelos;
 
 public enum TipoDeRelacao {
-    GENERALIZACAO
+    GENERALIZACAO,
+    REALIZACAO
 }

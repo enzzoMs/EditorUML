@@ -9,6 +9,7 @@ import componentes.estruturas.ComponenteUML;
 import componentes.estruturas.PacoteUML;
 import componentes.alteracoes.AlteracaoDeComponenteUML;
 import componentes.alteracoes.ComponenteCriado;
+import componentes.relacoes.Realizacao;
 import componentes.relacoes.RelacaoUML;
 import modelos.TipoDeRelacao;
 import modelos.DiagramaUML;
@@ -113,7 +114,7 @@ public class AreaDeDiagramas {
         painelInstrucoesRelacao.setLayout(new MigLayout("fill, insets 10 15 15 15"));
         painelInstrucoesRelacao.setBackground(gerenciadorDeRecursos.getColor("white"));
         painelInstrucoesRelacao.setBorder(BorderFactory.createMatteBorder(
-                2, 2, 2, 2, gerenciadorDeRecursos.getColor("dark_gray"))
+            2, 2, 2, 2, gerenciadorDeRecursos.getColor("dark_gray"))
         );
         painelInstrucoesRelacao.setVisible(false);
 
@@ -921,10 +922,37 @@ public class AreaDeDiagramas {
 
         // ----------------------------------------------------------------------------
 
+        JLabel labelNovaRealizacao = new JLabel(gerenciadorDeRecursos.getImagem("relacao_realizacao"));
+        labelNovaGeneralizacao.setFont(gerenciadorDeRecursos.getRobotoMedium(12));
+        labelNovaRealizacao.setText(gerenciadorDeRecursos.getString("relacao_realizacao"));
+        labelNovaRealizacao.setVerticalTextPosition(JLabel.BOTTOM);
+        labelNovaRealizacao.setHorizontalTextPosition(JLabel.CENTER);
+        labelNovaRealizacao.setOpaque(true);
+        labelNovaRealizacao.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        labelNovaRealizacao.setBackground(gerenciadorDeRecursos.getColor("platinum"));
+        labelNovaRealizacao.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!criacaoDeRelacaoAcontecendo) {
+                    setCriacaoDeRelacaoAcontecendo(true);
+                    tipoDeRelacaoSendoCriada = TipoDeRelacao.REALIZACAO;
+
+                    for (RelacaoUML relacao : diagramaAtual.getRelacoesUML()) {
+                        if (relacao.getTipoDeRelacao() == tipoDeRelacaoSendoCriada) {
+                            relacao.mostrarPontoDeExtensao(true);
+                        }
+                    }
+                }
+            }
+        });
+
+        // ----------------------------------------------------------------------------
+
         painelCriarRelacao.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 labelNovaGeneralizacao.setBackground(gerenciadorDeRecursos.getColor("platinum"));
+                labelNovaRealizacao.setBackground(gerenciadorDeRecursos.getColor("platinum"));
             }
         });
 
@@ -952,20 +980,11 @@ public class AreaDeDiagramas {
         labelNovaAnotacao.addMouseListener(mouseAdapter);
         labelNovoPacote.addMouseListener(mouseAdapter);
         labelNovaGeneralizacao.addMouseListener(mouseAdapter);
+        labelNovaRealizacao.addMouseListener(mouseAdapter);
 
         // ----------------------------------------------------------------------------
 
         /*
-
-        JLabel labelRelacaoRealizacao = new JLabel(new ImageIcon(AreaDeDiagramas.class.getResource("/imagens/img_nova_realizacao.png")));
-        labelRelacaoRealizacao.setFont(robotoFont.getRobotoMedium(12));
-        labelRelacaoRealizacao.setText("Realização");
-        labelRelacaoRealizacao.setVerticalTextPosition(JLabel.BOTTOM);
-        labelRelacaoRealizacao.setHorizontalTextPosition(JLabel.CENTER);
-        labelRelacaoRealizacao.setOpaque(true);
-        labelRelacaoRealizacao.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        labelRelacaoRealizacao.setBackground(new Color(0xe6e6e6));
-
 
         JLabel labelRelacaoDependencia = new JLabel(new ImageIcon(AreaDeDiagramas.class.getResource("/imagens/img_nova_dependencia.png")));
         labelRelacaoDependencia.setFont(robotoFont.getRobotoMedium(12));
@@ -1240,11 +1259,12 @@ public class AreaDeDiagramas {
         menuComponentes.add(new JLabel() {
             { setBorder(bordaSeparadores); }
         }, "wrap, grow, gapbottom 5, growx");
+        menuComponentes.add(labelNovaRealizacao, "wrap, gapbottom 5, growx");
+        menuComponentes.add(new JLabel() {
+            { setBorder(bordaSeparadores); }
+        }, "wrap, grow, gapbottom 5, growx");
 
         /*
-        menuComponentesDiagramas.add(labelRelacaoGeneralizacao, "wrap, gapbottom 5, growx");
-        menuComponentesDiagramas.add(labelSeparador4, "wrap, grow, gapbottom 5, growx");
-
         menuComponentesDiagramas.add(labelRelacaoRealizacao, "wrap, gapbottom 5, growx");
         menuComponentesDiagramas.add(labelSeparador5, "wrap, grow, gapbottom 5, growx");
 
@@ -1331,14 +1351,22 @@ public class AreaDeDiagramas {
                         } else {
                             RelacaoUML novaRelacao = switch (tipoDeRelacaoSendoCriada) {
                                 case GENERALIZACAO -> new Generalizacao(
-                                        linhasDaRelacao, AreaDeDiagramas.this,
-                                        primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
+                                    linhasDaRelacao, AreaDeDiagramas.this,
+                                    primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
+                                );
+                                case REALIZACAO -> new Realizacao(
+                                    linhasDaRelacao, AreaDeDiagramas.this,
+                                    primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
                                 );
                             };
 
-                            novaRelacao.setAoClicarPontoDeExtensao(relacao -> {
-                                criarPaineisDaRelacao(relacao.getLocalizacaoDeExtensao());
-                                relacaoParaEstender = relacao;
+                            novaRelacao.setAoClicarPontoDeExtensao(relacaoParaEstender -> {
+                                criarPaineisDaRelacao(relacaoParaEstender.getLocalizacaoDeExtensao());
+                                this.relacaoParaEstender = relacaoParaEstender;
+
+                                for (RelacaoUML relacao : diagramaAtual.getRelacoesUML()) {
+                                    relacao.mostrarPontoDeExtensao(false);
+                                }
                             });
 
                             diagramaAtual.addRelacao(novaRelacao);
@@ -1381,8 +1409,8 @@ public class AreaDeDiagramas {
                 if (criacaoDeRelacaoAcontecendo && !movimentacaoPermitida) {
                     indicadorRelacao.setVisible(true);
                     indicadorRelacao.setBounds(
-                            e.getX() - TAMANHO_INDICADOR/2, e.getY() - TAMANHO_INDICADOR/2,
-                            TAMANHO_INDICADOR, TAMANHO_INDICADOR
+                        e.getX() - TAMANHO_INDICADOR/2, e.getY() - TAMANHO_INDICADOR/2,
+                        TAMANHO_INDICADOR, TAMANHO_INDICADOR
                     );
                     indicadorRelacao.repaint();
                 }
@@ -1437,7 +1465,7 @@ public class AreaDeDiagramas {
             public void mouseMoved(MouseEvent e) {
                 if (criacaoDeRelacaoAcontecendo && !movimentacaoPermitida && permitirCriarRelacao) {
                     linhaHorizontalRelacao.setSize(
-                            Math.abs(primeiroClique.x - e.getX()), TAMANHO_LINHAS_RELACAO
+                        Math.abs(primeiroClique.x - e.getX()), TAMANHO_LINHAS_RELACAO
                     );
 
                     if (e.getX() < primeiroClique.x) {
@@ -1446,24 +1474,24 @@ public class AreaDeDiagramas {
                     } else {
                         linhaHorizontalRelacao.setLocation(primeiroClique.x - TAMANHO_LINHAS_RELACAO/2, primeiroClique.y);
                         linhaHorizontalRelacao.setSize(
-                                Math.abs(e.getX() - linhaHorizontalRelacao.getX()), TAMANHO_LINHAS_RELACAO
+                            Math.abs(e.getX() - linhaHorizontalRelacao.getX()), TAMANHO_LINHAS_RELACAO
                         );
                         linhaVerticalRelacao.setLocation(
-                                linhaHorizontalRelacao.getX() + linhaHorizontalRelacao.getWidth() - TAMANHO_LINHAS_RELACAO/2,
-                                primeiroClique.y
+                            linhaHorizontalRelacao.getX() + linhaHorizontalRelacao.getWidth() - TAMANHO_LINHAS_RELACAO/2,
+                            primeiroClique.y
                         );
                     }
 
                     linhaVerticalRelacao.setLocation(linhaVerticalRelacao.getX(), Math.min(e.getY(), primeiroClique.y));
                     linhaVerticalRelacao.setSize(
-                            TAMANHO_LINHAS_RELACAO, Math.abs(primeiroClique.y - e.getY())+ TAMANHO_LINHAS_RELACAO
+                        TAMANHO_LINHAS_RELACAO, Math.abs(primeiroClique.y - e.getY())+ TAMANHO_LINHAS_RELACAO
                     );
                 }
 
                 if (criacaoDeRelacaoAcontecendo) {
                     indicadorRelacao.setBounds(
-                            e.getX() - TAMANHO_INDICADOR/2, e.getY() - TAMANHO_INDICADOR/2,
-                            TAMANHO_INDICADOR, TAMANHO_INDICADOR
+                        e.getX() - TAMANHO_INDICADOR/2, e.getY() - TAMANHO_INDICADOR/2,
+                        TAMANHO_INDICADOR, TAMANHO_INDICADOR
                     );
                     revalidarQuadroBranco();
                 }
