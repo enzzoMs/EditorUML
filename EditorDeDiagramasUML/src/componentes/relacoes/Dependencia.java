@@ -1,6 +1,5 @@
 package componentes.relacoes;
 
-import auxiliares.GerenciadorDeRecursos;
 import interfacegrafica.AreaDeDiagramas;
 import modelos.TipoDeRelacao;
 
@@ -10,12 +9,12 @@ import java.awt.*;
 import java.util.ArrayList;
 
 /**
- * Classe que representa uma relação UML do tipo "Realização". Graficamente se trata de um
- * componente simples, possuindo uma seta "oca" em uma das extremidades e linhas tracejadas.
+ * Classe que representa uma relação UML do tipo "Dependência". Graficamente se trata de um
+ * componente simples, possuindo uma seta "aberta" em uma das extremidades e linhas tracejadas.
  */
-public class Realizacao extends RelacaoSimples {
+public class Dependencia extends RelacaoSimples {
 
-    public Realizacao(
+    public Dependencia(
         ArrayList<JPanel> linhasDaRelacao, AreaDeDiagramas areaDeDiagramas,
         Point primeiroPontoDaRelacao, Point ultimoPontoDaRelacao, TipoDeRelacao tipoDeRelacao
     ) {
@@ -47,11 +46,9 @@ public class Realizacao extends RelacaoSimples {
 
     @Override
     public void desenharSeta(Graphics2D g2, int[] pontosXDaSeta, int[] pontosYDaSeta) {
-        g2.setStroke(new BasicStroke(8));
+        g2.setStroke(new BasicStroke(3));
         g2.setColor(relacaoEstaSelecionada() ? COR_SELECIONAR : COR_PADRAO);
-        g2.drawPolygon(pontosXDaSeta, pontosYDaSeta, 3);
-
-        g2.setColor(GerenciadorDeRecursos.getInstancia().getColor("white"));
-        g2.fillPolygon(pontosXDaSeta, pontosYDaSeta, 3);
+        g2.drawLine(pontosXDaSeta[0], pontosYDaSeta[0], pontosXDaSeta[1], pontosYDaSeta[1]);
+        g2.drawLine(pontosXDaSeta[1], pontosYDaSeta[1], pontosXDaSeta[2], pontosYDaSeta[2]);
     }
 }

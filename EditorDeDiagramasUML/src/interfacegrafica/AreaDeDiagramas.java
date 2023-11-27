@@ -1,5 +1,6 @@
 package interfacegrafica;
 
+import componentes.relacoes.Dependencia;
 import componentes.relacoes.Generalizacao;
 import auxiliares.GerenciadorDeArquivos;
 import auxiliares.GerenciadorDeRecursos;
@@ -948,11 +949,38 @@ public class AreaDeDiagramas {
 
         // ----------------------------------------------------------------------------
 
+        JLabel labelNovaDependencia = new JLabel(gerenciadorDeRecursos.getImagem("relacao_dependencia"));
+        labelNovaDependencia.setFont(gerenciadorDeRecursos.getRobotoMedium(12));
+        labelNovaDependencia.setText(gerenciadorDeRecursos.getString("relacao_dependencia"));
+        labelNovaDependencia.setVerticalTextPosition(JLabel.BOTTOM);
+        labelNovaDependencia.setHorizontalTextPosition(JLabel.CENTER);
+        labelNovaDependencia.setOpaque(true);
+        labelNovaDependencia.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        labelNovaDependencia.setBackground(gerenciadorDeRecursos.getColor("platinum"));
+        labelNovaDependencia.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!criacaoDeRelacaoAcontecendo) {
+                    setCriacaoDeRelacaoAcontecendo(true);
+                    tipoDeRelacaoSendoCriada = TipoDeRelacao.DEPENDENCIA;
+
+                    for (RelacaoUML relacao : diagramaAtual.getRelacoesUML()) {
+                        if (relacao.getTipoDeRelacao() == tipoDeRelacaoSendoCriada) {
+                            relacao.mostrarPontoDeExtensao(true);
+                        }
+                    }
+                }
+            }
+        });
+
+        // ----------------------------------------------------------------------------
+
         painelCriarRelacao.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 labelNovaGeneralizacao.setBackground(gerenciadorDeRecursos.getColor("platinum"));
                 labelNovaRealizacao.setBackground(gerenciadorDeRecursos.getColor("platinum"));
+                labelNovaDependencia.setBackground(gerenciadorDeRecursos.getColor("platinum"));
             }
         });
 
@@ -981,19 +1009,11 @@ public class AreaDeDiagramas {
         labelNovoPacote.addMouseListener(mouseAdapter);
         labelNovaGeneralizacao.addMouseListener(mouseAdapter);
         labelNovaRealizacao.addMouseListener(mouseAdapter);
+        labelNovaDependencia.addMouseListener(mouseAdapter);
 
         // ----------------------------------------------------------------------------
 
         /*
-
-        JLabel labelRelacaoDependencia = new JLabel(new ImageIcon(AreaDeDiagramas.class.getResource("/imagens/img_nova_dependencia.png")));
-        labelRelacaoDependencia.setFont(robotoFont.getRobotoMedium(12));
-        labelRelacaoDependencia.setText("Dependência");
-        labelRelacaoDependencia.setVerticalTextPosition(JLabel.BOTTOM);
-        labelRelacaoDependencia.setHorizontalTextPosition(JLabel.CENTER);
-        labelRelacaoDependencia.setOpaque(true);
-        labelRelacaoDependencia.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        labelRelacaoDependencia.setBackground(new Color(0xe6e6e6));
 
         JLabel labelAssociacaoSimples = new JLabel(new ImageIcon(AreaDeDiagramas.class.getResource("/imagens/img_nova_associacao.png")));
         labelAssociacaoSimples.setFont(robotoFont.getRobotoMedium(12));
@@ -1234,8 +1254,9 @@ public class AreaDeDiagramas {
         // ----------------------------------------------------------------------------
 
         CompoundBorder bordaSeparadores = BorderFactory.createCompoundBorder(
-                BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(0xe5e5e5)),
-                BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(0xc2c2c2)));
+            BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(0xe5e5e5)),
+            BorderFactory.createMatteBorder(0, 0, 1, 0, new Color(0xc2c2c2))
+        );
 
         JPanel menuComponentes = new JPanel(new MigLayout("insets 15 15 15 15"));
         menuComponentes.setBackground(gerenciadorDeRecursos.getColor("white"));
@@ -1263,14 +1284,12 @@ public class AreaDeDiagramas {
         menuComponentes.add(new JLabel() {
             { setBorder(bordaSeparadores); }
         }, "wrap, grow, gapbottom 5, growx");
+        menuComponentes.add(labelNovaDependencia, "wrap, gapbottom 5, growx");
+        menuComponentes.add(new JLabel() {
+            { setBorder(bordaSeparadores); }
+        }, "wrap, grow, gapbottom 5, growx");
 
         /*
-        menuComponentesDiagramas.add(labelRelacaoRealizacao, "wrap, gapbottom 5, growx");
-        menuComponentesDiagramas.add(labelSeparador5, "wrap, grow, gapbottom 5, growx");
-
-        menuComponentesDiagramas.add(labelRelacaoDependencia, "wrap, gapbottom 5, growx");
-        menuComponentesDiagramas.add(labelSeparador6, "wrap, grow, gapbottom 5, growx");
-
         menuComponentesDiagramas.add(labelAssociacaoSimples, "wrap, gapbottom 5, growx");
         menuComponentesDiagramas.add(labelSeparador7, "wrap, grow, gapbottom 5, growx");
 
@@ -1355,6 +1374,10 @@ public class AreaDeDiagramas {
                                     primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
                                 );
                                 case REALIZACAO -> new Realizacao(
+                                    linhasDaRelacao, AreaDeDiagramas.this,
+                                    primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
+                                );
+                                case DEPENDENCIA -> new Dependencia(
                                     linhasDaRelacao, AreaDeDiagramas.this,
                                     primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
                                 );
@@ -1445,8 +1468,8 @@ public class AreaDeDiagramas {
                         painelQuadroBranco.remove(linhaHorizontalRelacao);
                     }
 
-                    revalidarQuadroBranco();
                     criarRelacao(e.getPoint());
+                    revalidarQuadroBranco();
 
                 } else if (criacaoDeRelacaoAcontecendo && !movimentacaoPermitida) {
                     criarPaineisDaRelacao(e.getPoint());
