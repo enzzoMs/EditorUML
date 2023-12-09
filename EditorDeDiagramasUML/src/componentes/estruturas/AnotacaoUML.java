@@ -1,10 +1,10 @@
 package componentes.estruturas;
 
 import auxiliares.GerenciadorDeRecursos;
-import componentes.alteracoes.ComponenteModificado;
+import componentes.alteracoes.estruturas.EstruturaModificada;
 import interfacegrafica.AreaDeDiagramas;
-import modelos.Anotacao;
-import modelos.ModeloDeComponenteUML;
+import componentes.modelos.estruturas.Anotacao;
+import componentes.modelos.ModeloDeComponenteUML;
 import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import javax.swing.border.CompoundBorder;
@@ -19,11 +19,11 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 /**
- * Classe que representa a parte gráfica de um componente UML do tipo "Anotação". Possui
+ * Classe que representa a parte gráfica de uma estrutura UML do tipo "Anotação". Possui
  * capacidade para representar um texto qualquer.
  * */
 
-public class AnotacaoUML extends ComponenteUML<Anotacao> {
+public class AnotacaoUML extends EstruturaUML<Anotacao> {
     private Anotacao modeloAtual = new Anotacao();
     private Anotacao modeloAntesDeAlteracoes;
     private final JPanel painelTextoAnotacao;
@@ -265,7 +265,7 @@ public class AnotacaoUML extends ComponenteUML<Anotacao> {
         });
         botaoAplicar.addActionListener(e -> {
             if (modeloAntesDeAlteracoes.ehDiferente(modeloAtual)) {
-                adicionarAlteracaoDeComponente(new ComponenteModificado<>(
+                adicionarAlteracaoDeComponente(new EstruturaModificada<>(
                     modeloAntesDeAlteracoes.copiar(),
                     modeloAtual.copiar(),
                     AnotacaoUML.this
@@ -290,7 +290,7 @@ public class AnotacaoUML extends ComponenteUML<Anotacao> {
             @Override
             public void componentHidden(ComponentEvent e) {
                 if (modeloAntesDeAlteracoes.ehDiferente(modeloAtual)) {
-                    adicionarAlteracaoDeComponente(new ComponenteModificado<>(
+                    adicionarAlteracaoDeComponente(new EstruturaModificada<>(
                         modeloAntesDeAlteracoes.copiar(),
                         modeloAtual.copiar(),
                         AnotacaoUML.this

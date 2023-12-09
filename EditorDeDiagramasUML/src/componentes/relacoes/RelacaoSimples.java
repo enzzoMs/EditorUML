@@ -1,6 +1,7 @@
-package componentes.relacoes;
+/*package componentes.relacoes;
 
 import auxiliares.GerenciadorDeRecursos;
+import componentes.alteracoes.relacoes.RelacaoRemovida;
 import interfacegrafica.AreaDeDiagramas;
 import modelos.TipoDeRelacao;
 import net.miginfocom.swing.MigLayout;
@@ -11,9 +12,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-/**
- * TODO
- */
+
 public abstract class RelacaoSimples extends RelacaoUML {
     private JPanel painelSeta;
     int[] pontosXDaSeta = { 0, 0, 0 };
@@ -301,5 +300,5 @@ public abstract class RelacaoSimples extends RelacaoUML {
         }
 
         return toStringGeneralizacao.toString();
-    }*/
-}
+    }
+}*/

@@ -1,6 +1,7 @@
 package componentes.relacoes;
 
 import auxiliares.GerenciadorDeRecursos;
+import componentes.modelos.relacoes.Relacao;
 import interfacegrafica.AreaDeDiagramas;
 import modelos.OrientacaoDeRelacao;
 import modelos.TipoDeRelacao;
@@ -10,46 +11,43 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.function.Consumer;
 
 /**
  * TODO
  */
 public abstract class RelacaoUML {
+    private Relacao modeloAtual = new Relacao();
     private final AreaDeDiagramas areaDeDiagramas;
     private final ArrayList<JPanel> linhasDaRelacao;
-    private Point pontoInicial;
-    private Point pontoFinal;
+    // TODO - o que eh lado A e B
+    private final JPanel painelSetaA;
+    private final JPanel painelSetaB;
+    private final Point[] pontosDaSetaA = { new Point(), new Point(), new Point() };
+    private final Point[] pontosDaSetaB = { new Point(), new Point(), new Point() };
+    private Point pontoLadoA;
+    private OrientacaoDeRelacao orientacaoLadoA;
+    private final OrientacaoDeRelacao orientacaoLadoB;
     private final JPanel pontoDeExtensao;
     private Consumer<RelacaoUML> aoClicarPontoDeExtensao;
-    private OrientacaoDeRelacao orientacaoDaRelacao;
     private final TipoDeRelacao tipoDeRelacao;
-    private boolean relacaoSelecionada;
-    private Consumer<Boolean> emMudancaDeSelecao;
     private final JFrame frameGerenciarRelacao = new JFrame();
+    private boolean relacaoSelecionada;
     public static final int TAMANHO_LINHAS_RELACAO = 4;
     public static final int TAMANHO_SETA = 14;
     public static final int TAMANHO_PONTO_DE_EXTENSAO = 14;
     public static final Color COR_PADRAO = GerenciadorDeRecursos.getInstancia().getColor("dark_charcoal");
     public static final Color COR_SELECIONAR = GerenciadorDeRecursos.getInstancia().getColor("red");
-    public static final Color COR_PONTO_DE_EXTENSAO = GerenciadorDeRecursos.getInstancia().getColor("green");
+    private static final Color COR_PONTO_DE_EXTENSAO = GerenciadorDeRecursos.getInstancia().getColor("green");
 
     public RelacaoUML(
         ArrayList<JPanel> linhasDaRelacao, AreaDeDiagramas areaDeDiagramas,
-        Point primeiroPontoDaRelacao, Point ultimoPontoDaRelacao, TipoDeRelacao tipoDeRelacao
+        Point pontoInicialDaRelacao, Point pontoFinalDaRelacao, TipoDeRelacao tipoDeRelacao
     ) {
         this.linhasDaRelacao = linhasDaRelacao;
         this.areaDeDiagramas = areaDeDiagramas;
         this.tipoDeRelacao = tipoDeRelacao;
-        this.pontoInicial = primeiroPontoDaRelacao;
-        this.pontoFinal = ultimoPontoDaRelacao;
-
-        GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
-
-        frameGerenciarRelacao.setResizable(false);
-        frameGerenciarRelacao.setTitle(gerenciadorDeRecursos.getString("configurar_relacao"));
-        frameGerenciarRelacao.setIconImage(gerenciadorDeRecursos.getImagem("icone_configurar_48").getImage());
+        this.pontoLadoA = pontoFinalDaRelacao;
 
         MouseAdapter adapterGerenciarRelacao = new MouseAdapter() {
             @Override
@@ -78,7 +76,27 @@ public abstract class RelacaoUML {
             linha.addMouseListener(adapterGerenciarRelacao);
         }
 
-        calcularOrientacaoDaRelacao();
+        painelSetaA = new JPanel() {
+            public void paintComponent(Graphics g) {
+                desenharSeta((Graphics2D) g, pontosDaSetaA);
+            }
+        };
+
+        painelSetaB = new JPanel() {
+            public void paintComponent(Graphics g) {
+                desenharSeta((Graphics2D) g, pontosDaSetaB);
+            }
+        };
+
+        painelSetaA.addMouseListener(adapterGerenciarRelacao);
+        painelSetaB.addMouseListener(adapterGerenciarRelacao);
+
+        // index 1 para que a seta fique embaixo do ponto de extensao
+        areaDeDiagramas.addComponenteAoQuadro(painelSetaA, 1);
+        areaDeDiagramas.addComponenteAoQuadro(painelSetaB, 1);
+
+        orientacaoLadoA = calcularOrientacaoDeLinha(pontoLadoA, linhasDaRelacao.getLast());
+        orientacaoLadoB = calcularOrientacaoDeLinha(pontoInicialDaRelacao, linhasDaRelacao.getFirst());
 
         pontoDeExtensao = new JPanel() {
             public void paintComponent(Graphics g) {
@@ -98,48 +116,203 @@ public abstract class RelacaoUML {
         pontoDeExtensao.setSize(TAMANHO_PONTO_DE_EXTENSAO, TAMANHO_PONTO_DE_EXTENSAO);
 
         areaDeDiagramas.addComponenteAoQuadro(pontoDeExtensao, 0);
-        areaDeDiagramas.revalidarQuadroBranco();
+
+        aplicarEstiloDasLinhas(linhasDaRelacao);
+
+        frameGerenciarRelacao.setResizable(false);
+        frameGerenciarRelacao.setTitle(GerenciadorDeRecursos.getInstancia().getString("configurar_relacao"));
+        frameGerenciarRelacao.setIconImage(GerenciadorDeRecursos.getInstancia().getImagem("icone_configurar_48").getImage());
+        frameGerenciarRelacao.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
 
         initFrameGerenciarRelacao();
     }
 
-    private void calcularOrientacaoDaRelacao() {
-        JPanel ultimaLinha = linhasDaRelacao.get(linhasDaRelacao.size() - 1);
+    private OrientacaoDeRelacao calcularOrientacaoDeLinha(Point pontoFinalDaLinha, JPanel linha) {
+        OrientacaoDeRelacao orientacaoDaLinha;
 
-        if (ultimaLinha.getWidth() == TAMANHO_LINHAS_RELACAO && ultimaLinha.getY() < pontoFinal.y) {
-            orientacaoDaRelacao = OrientacaoDeRelacao.SUL;
-        } else if (ultimaLinha.getWidth() == TAMANHO_LINHAS_RELACAO && ultimaLinha.getY() == pontoFinal.y) {
-            orientacaoDaRelacao = OrientacaoDeRelacao.NORTE;
-        } else if (ultimaLinha.getX() + TAMANHO_LINHAS_RELACAO / 2 == pontoFinal.x) {
-            orientacaoDaRelacao = OrientacaoDeRelacao.OESTE;
+        if (linha.getWidth() == TAMANHO_LINHAS_RELACAO && linha.getY() < pontoFinalDaLinha.y) {
+            orientacaoDaLinha = OrientacaoDeRelacao.SUL;
+        } else if (linha.getWidth() == TAMANHO_LINHAS_RELACAO && linha.getY() == pontoFinalDaLinha.y) {
+            orientacaoDaLinha = OrientacaoDeRelacao.NORTE;
+        } else if (linha.getX() + TAMANHO_LINHAS_RELACAO / 2 == pontoFinalDaLinha.x) {
+            orientacaoDaLinha = OrientacaoDeRelacao.OESTE;
         } else {
-            orientacaoDaRelacao = OrientacaoDeRelacao.LESTE;
+            orientacaoDaLinha = OrientacaoDeRelacao.LESTE;
+        }
+
+        return orientacaoDaLinha;
+    }
+
+    private void selecionarRelacao(boolean selecionar) {
+        relacaoSelecionada = selecionar;
+
+        for (JPanel linha : linhasDaRelacao) {
+            linha.setCursor(Cursor.getPredefinedCursor(selecionar ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
+            linha.setBackground(selecionar ? COR_SELECIONAR : COR_PADRAO);
+        }
+
+        painelSetaA.setCursor(Cursor.getPredefinedCursor(selecionar ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
+        painelSetaB.setCursor(Cursor.getPredefinedCursor(selecionar ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
+
+        aplicarEstiloDasLinhas(linhasDaRelacao);
+
+        areaDeDiagramas.revalidarQuadroBranco();
+    }
+
+    private void atualizarLocalizacaoPontoDeExtensao() {
+        Point localizacaoPontoDeExtensao = new Point();
+        Rectangle ancoraDoPonto = painelSetaA.isVisible() ? painelSetaA.getBounds() : linhasDaRelacao.getLast().getBounds();
+
+        switch (orientacaoLadoA) {
+            case SUL -> {
+                localizacaoPontoDeExtensao.x = ancoraDoPonto.x + ((ancoraDoPonto.width - TAMANHO_PONTO_DE_EXTENSAO)/2);
+                localizacaoPontoDeExtensao.y = ancoraDoPonto.y + ancoraDoPonto.height - TAMANHO_PONTO_DE_EXTENSAO/2;
+            }
+            case NORTE -> {
+                localizacaoPontoDeExtensao.x = ancoraDoPonto.x + ((ancoraDoPonto.width - TAMANHO_PONTO_DE_EXTENSAO)/2);
+                localizacaoPontoDeExtensao.y = ancoraDoPonto.y - TAMANHO_PONTO_DE_EXTENSAO/2;
+            }
+            case OESTE -> {
+                localizacaoPontoDeExtensao.x = ancoraDoPonto.x - TAMANHO_PONTO_DE_EXTENSAO/2;
+                localizacaoPontoDeExtensao.y = ancoraDoPonto.y + ((ancoraDoPonto.height - TAMANHO_PONTO_DE_EXTENSAO)/2);
+            }
+            case LESTE -> {
+                localizacaoPontoDeExtensao.x = ancoraDoPonto.x + ancoraDoPonto.width - TAMANHO_PONTO_DE_EXTENSAO/2;
+                localizacaoPontoDeExtensao.y = ancoraDoPonto.y + ((ancoraDoPonto.height - TAMANHO_PONTO_DE_EXTENSAO)/2);
+            }
+        }
+
+        pontoDeExtensao.setLocation(localizacaoPontoDeExtensao);
+    }
+
+    private void aoClicarPontoDeExtensao() {
+        if (painelSetaA.isVisible()) {
+            // Como o ponto de extensao fica na ponta da seta A, se ela estiver visivel eh necessario estender a
+            // linha da seta pelo tamanho da seta
+
+            JPanel linhaSetaA = linhasDaRelacao.getLast();
+            int TAMANHO_EXTRA = TAMANHO_SETA + TAMANHO_PONTO_DE_EXTENSAO/2;
+
+            switch (orientacaoLadoA) {
+                case SUL -> linhaSetaA.setSize(linhaSetaA.getWidth(), linhaSetaA.getHeight() + TAMANHO_EXTRA);
+                case NORTE -> linhaSetaA.setBounds(
+                    linhaSetaA.getX(), linhaSetaA.getY() - TAMANHO_EXTRA,
+                    linhaSetaA.getWidth(), linhaSetaA.getHeight() + TAMANHO_EXTRA
+                );
+                case OESTE -> linhaSetaA.setBounds(
+                    linhaSetaA.getX() - TAMANHO_EXTRA, linhaSetaA.getY(),
+                    linhaSetaA.getWidth() + TAMANHO_EXTRA, linhaSetaA.getHeight()
+                );
+                case LESTE -> linhaSetaA.setSize(linhaSetaA.getWidth() + TAMANHO_EXTRA, linhaSetaA.getHeight());
+            }
+
+            painelSetaA.setVisible(false);
+        }
+
+        mostrarPontoDeExtensao(false);
+        aoClicarPontoDeExtensao.accept(this);
+    }
+
+    private void atualizarPontosDeSeta(OrientacaoDeRelacao orientacaoDaSeta, Point[] pontosDaSeta) {
+        switch (orientacaoDaSeta) {
+            case SUL -> {
+                pontosDaSeta[0].x = 0; pontosDaSeta[1].x = TAMANHO_SETA/2; pontosDaSeta[2].x = TAMANHO_SETA;
+                pontosDaSeta[0].y = 0; pontosDaSeta[1].y = TAMANHO_SETA; pontosDaSeta[2].y = 0;
+            }
+            case NORTE -> {
+                pontosDaSeta[0].x = 0; pontosDaSeta[1].x = TAMANHO_SETA/2; pontosDaSeta[2].x = TAMANHO_SETA;
+                pontosDaSeta[0].y = TAMANHO_SETA; pontosDaSeta[1].y = 0; pontosDaSeta[2].y = TAMANHO_SETA;
+            }
+            case OESTE -> {
+                pontosDaSeta[0].x = TAMANHO_SETA; pontosDaSeta[1].x = 0; pontosDaSeta[2].x = TAMANHO_SETA;
+                pontosDaSeta[0].y = TAMANHO_SETA; pontosDaSeta[1].y = TAMANHO_SETA/2; pontosDaSeta[2].y = 0;
+            }
+            case LESTE -> {
+                pontosDaSeta[0].x = 0; pontosDaSeta[1].x  = TAMANHO_SETA; pontosDaSeta[2].x  = 0;
+                pontosDaSeta[0].y = TAMANHO_SETA; pontosDaSeta[1].y = TAMANHO_SETA/2; pontosDaSeta[2].y = 0;
+            }
+        }
+
+        int MARGEM = 10;
+        for (Point point : pontosDaSeta) {
+            point.x += MARGEM;
+            point.y += MARGEM;
         }
     }
 
-    public void inverterSentidoDaRelacao() {
-        Point temp = pontoInicial;
-        pontoInicial = pontoFinal;
-        pontoFinal = temp;
+    private void atualizarLocalizacaoDeSeta(JPanel painelSeta, JPanel linhaDaSeta, OrientacaoDeRelacao orientacaoDaSeta) {
+        Point localizacaoDaSeta = new Point();
 
-        Collections.reverse(linhasDaRelacao);
+        switch (orientacaoDaSeta) {
+            case SUL -> {
+                localizacaoDaSeta.x = linhaDaSeta.getX() - ((TAMANHO_SETA - TAMANHO_LINHAS_RELACAO)/2);
+                localizacaoDaSeta.y = linhaDaSeta.getY() + linhaDaSeta.getHeight();
+            }
+            case NORTE -> {
+                localizacaoDaSeta.x = linhaDaSeta.getX() - ((TAMANHO_SETA - TAMANHO_LINHAS_RELACAO)/2);
+                localizacaoDaSeta.y = linhaDaSeta.getY() - TAMANHO_SETA;
+            }
+            case OESTE -> {
+                localizacaoDaSeta.x = linhaDaSeta.getX() - TAMANHO_SETA;
+                localizacaoDaSeta.y = linhaDaSeta.getY() - ((TAMANHO_SETA - TAMANHO_LINHAS_RELACAO)/2);
+            }
+            case LESTE -> {
+                localizacaoDaSeta.x = linhaDaSeta.getX() + linhaDaSeta.getWidth();
+                localizacaoDaSeta.y = linhaDaSeta.getY() - ((TAMANHO_SETA - TAMANHO_LINHAS_RELACAO)/2);
+            }
+        }
 
-        calcularOrientacaoDaRelacao();
-        aplicarEstiloDaRelacao();
-        atualizarLocalizacaoPontoDeExtensao();
+        int MARGEM = 10;
+
+        painelSeta.setBounds(
+            localizacaoDaSeta.x - MARGEM, localizacaoDaSeta.y - MARGEM,
+            TAMANHO_SETA + MARGEM * 2, TAMANHO_SETA + MARGEM * 2
+        );
     }
 
-    public void excluirRelacao() {
-        areaDeDiagramas.removerRelacaoDoQuadro(this);
+    public void mostrarSetaLadoA(boolean mostrar) {
+        if (mostrar) {
+            atualizarPontosDeSeta(orientacaoLadoA, pontosDaSetaA);
+            atualizarLocalizacaoDeSeta(painelSetaA, linhasDaRelacao.getLast(), orientacaoLadoA);
+        }
+        painelSetaA.setVisible(mostrar);
+        modeloAtual.setMostrandoSetaA(mostrar);
+    }
+
+    public void mostrarSetaLadoB(boolean mostrar) {
+        if (mostrar) {
+            atualizarPontosDeSeta(orientacaoLadoB, pontosDaSetaB);
+            atualizarLocalizacaoDeSeta(painelSetaB, linhasDaRelacao.getFirst(), orientacaoLadoB);
+        }
+        painelSetaB.setVisible(mostrar);
+        modeloAtual.setMostrandoSetaB(mostrar);
+    }
+
+    public void inverterSeta() {
+       if (modeloAtual.estaMostrandoSetaA()) {
+           mostrarSetaLadoA(false);
+           mostrarSetaLadoB(true);
+
+       } else if (modeloAtual.estaMostrandoSetaB()) {
+           mostrarSetaLadoA(true);
+           mostrarSetaLadoB(false);
+       }
+    }
+
+    public void adicionarRelacaoAoQuadroBranco() {
+        areaDeDiagramas.addRelacaoAoQuadro(this);
+        areaDeDiagramas.addComponenteAoQuadro(pontoDeExtensao, 0);
+    }
+
+    public void removerRelacaoDoQuadroBranco() {
+        for (JPanel linha : linhasDaRelacao) {
+            areaDeDiagramas.removerComponenteDoQuadro(linha);
+        }
+
         areaDeDiagramas.removerComponenteDoQuadro(pontoDeExtensao);
-    }
-
-    public void atualizarLocalizacaoPontoDeExtensao() {
-        pontoDeExtensao.setLocation(getLocalizacaoDoPontoDeExtensao());
-    }
-
-    public void mostrarPontoDeExtensao(boolean mostrar) {
-        pontoDeExtensao.setVisible(mostrar);
+        areaDeDiagramas.removerComponenteDoQuadro(painelSetaA);
+        areaDeDiagramas.removerComponenteDoQuadro(painelSetaB);
+        areaDeDiagramas.removerRelacaoDoDiagrama(this);
     }
 
     public void mostrarFrameGerenciarRelacao(boolean mostrar) {
@@ -150,24 +323,15 @@ public abstract class RelacaoUML {
         }
     }
 
-    public void selecionarRelacao(boolean selecionar) {
-        for (JPanel linha : linhasDaRelacao) {
-            linha.setCursor(Cursor.getPredefinedCursor(selecionar ? Cursor.HAND_CURSOR : Cursor.DEFAULT_CURSOR));
-            linha.setBackground(selecionar ? COR_SELECIONAR : COR_PADRAO);
+    public void mostrarPontoDeExtensao(boolean mostrar) {
+        if (mostrar) {
+            atualizarLocalizacaoPontoDeExtensao();
         }
-
-        relacaoSelecionada = selecionar;
-
-        emMudancaDeSelecao.accept(selecionar);
-    }
-
-    public void aoClicarPontoDeExtensao() {
-        mostrarPontoDeExtensao(false);
-        aoClicarPontoDeExtensao.accept(this);
+        pontoDeExtensao.setVisible(mostrar);
     }
 
     public void estenderRelacao(ArrayList<JPanel> novosPaineis, Point ultimoPonto) {
-        this.pontoFinal = ultimoPonto;
+        pontoLadoA = ultimoPonto;
 
         MouseAdapter adapterGerenciarRelacao = new MouseAdapter() {
             @Override
@@ -198,15 +362,13 @@ public abstract class RelacaoUML {
 
         linhasDaRelacao.addAll(novosPaineis);
 
-        calcularOrientacaoDaRelacao();
+        orientacaoLadoA = calcularOrientacaoDeLinha(pontoLadoA, linhasDaRelacao.getLast());
 
-        aplicarEstiloDaRelacao();
+        mostrarSetaLadoA(modeloAtual.estaMostrandoSetaA());
 
         atualizarLocalizacaoPontoDeExtensao();
-    }
 
-    public void setEmMudancaDeSelecao(Consumer<Boolean> emMudancaDeSelecao) {
-        this.emMudancaDeSelecao = emMudancaDeSelecao;
+        aplicarEstiloDasLinhas(linhasDaRelacao);
     }
 
     public void setAoClicarPontoDeExtensao(Consumer<RelacaoUML> aoClicarPontoDeExtensao) {
@@ -217,16 +379,8 @@ public abstract class RelacaoUML {
         return relacaoSelecionada;
     }
 
-    public boolean relacaoEstaHabilitada() {
-        return areaDeDiagramas.componentesEstaoHabilitados();
-    }
-
     public ArrayList<JPanel> getLinhasDaRelacao() {
         return linhasDaRelacao;
-    }
-
-    public OrientacaoDeRelacao getOrientacaoDaRelacao() {
-        return orientacaoDaRelacao;
     }
 
     public AreaDeDiagramas getAreaDeDiagramas() {
@@ -246,13 +400,12 @@ public abstract class RelacaoUML {
      * com o inicio da primeira linha.
      */
     public Point getLocalizacaoDeExtensao() {
-        JPanel primeiraLinha = getLinhasDaRelacao().get(getLinhasDaRelacao().size() - 1);
-        Point localizacaoDeExtensao = primeiraLinha.getLocation();
+        Point localizacaoDeExtensao = linhasDaRelacao.getLast().getLocation();
 
-        switch (getOrientacaoDaRelacao()) {
+        switch (orientacaoLadoA) {
             case NORTE, OESTE -> localizacaoDeExtensao.x += TAMANHO_LINHAS_RELACAO;
             case SUL -> {
-                localizacaoDeExtensao.y += primeiraLinha.getHeight() - TAMANHO_LINHAS_RELACAO;
+                localizacaoDeExtensao.y += linhasDaRelacao.getLast().getHeight() - TAMANHO_LINHAS_RELACAO;
                 localizacaoDeExtensao.x += TAMANHO_LINHAS_RELACAO;
             }
         }
@@ -260,9 +413,17 @@ public abstract class RelacaoUML {
         return localizacaoDeExtensao;
     }
 
-    public abstract void aplicarEstiloDaRelacao();
+    /*
+    private mostrarMultiplicidadeLadoA()
+    private mostrarMultiplicidadeLadoB()
 
-    public abstract Point getLocalizacaoDoPontoDeExtensao();
+    private mostrarNome()
+
+    private mostrarDirecao()*/
+
+    protected abstract void aplicarEstiloDasLinhas(ArrayList<JPanel> linhas);
+
+    protected abstract void desenharSeta(Graphics2D g2, Point[] pontosDaSeta);
 
     protected abstract void initFrameGerenciarRelacao();
 }

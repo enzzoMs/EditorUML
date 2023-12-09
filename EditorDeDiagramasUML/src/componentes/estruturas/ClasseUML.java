@@ -1,9 +1,11 @@
 package componentes.estruturas;
 
 import auxiliares.GerenciadorDeRecursos;
-import componentes.alteracoes.ComponenteModificado;
+import componentes.alteracoes.estruturas.EstruturaModificada;
 import interfacegrafica.AreaDeDiagramas;
 import modelos.*;
+import componentes.modelos.estruturas.Classe;
+import componentes.modelos.ModeloDeComponenteUML;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -21,12 +23,12 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /**
- * Classe que representa a parte gráfica de um componente UML do tipo "Classe". Possui
+ * Classe que representa a parte gráfica de uma estrutura UML do tipo "Classe". Possui
  * capacidade para representar atributos, métodos e características de uma classe, como
  * nome ou se é abstrata. Além disso, é possível utilizar esse mesmo componente para
  * representar uma interface.
  */
-public class ClasseUML extends ComponenteUML<Classe> {
+public class ClasseUML extends EstruturaUML<Classe> {
     private Classe modeloAtual = new Classe();
     private Classe modeloAntesDeAlteracoes;
     private final JPanel painelNomeClasse = new JPanel();
@@ -443,7 +445,7 @@ public class ClasseUML extends ComponenteUML<Classe> {
             }
 
             if (modeloAntesDeAlteracoes.ehDiferente(modeloAtual)) {
-                adicionarAlteracaoDeComponente(new ComponenteModificado<>(
+                adicionarAlteracaoDeComponente(new EstruturaModificada<>(
                         modeloAntesDeAlteracoes.copiar(),
                         modeloAtual.copiar(),
                     ClasseUML.this
@@ -471,7 +473,7 @@ public class ClasseUML extends ComponenteUML<Classe> {
                 }
 
                 if (modeloAntesDeAlteracoes.ehDiferente(modeloAtual)) {
-                    adicionarAlteracaoDeComponente(new ComponenteModificado<>(
+                    adicionarAlteracaoDeComponente(new EstruturaModificada<>(
                         modeloAntesDeAlteracoes.copiar(),
                         modeloAtual.copiar(),
                         ClasseUML.this

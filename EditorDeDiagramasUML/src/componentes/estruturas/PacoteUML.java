@@ -1,10 +1,10 @@
 package componentes.estruturas;
 
 import auxiliares.GerenciadorDeRecursos;
-import componentes.alteracoes.ComponenteModificado;
+import componentes.alteracoes.estruturas.EstruturaModificada;
 import interfacegrafica.AreaDeDiagramas;
-import modelos.ModeloDeComponenteUML;
-import modelos.Pacote;
+import componentes.modelos.ModeloDeComponenteUML;
+import componentes.modelos.estruturas.Pacote;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -18,11 +18,11 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 /**
- * Classe que representa a parte gráfica de um componente UML do tipo "Pacote". Possui um nome e pode
+ * Classe que representa a parte gráfica de uma estrutura UML do tipo "Pacote". Possui um nome e pode
  * ser redimensionado para qualquer tamanho.
- * */
+ */
 
-public class PacoteUML extends ComponenteUML<Pacote> {
+public class PacoteUML extends EstruturaUML<Pacote> {
     private Pacote modeloAtual = new Pacote();
     private Pacote modeloAntesDeAlteracoes;
     private final JPanel painelNomePacote;
@@ -239,7 +239,7 @@ public class PacoteUML extends ComponenteUML<Pacote> {
                 ));
 
                 if (modeloAntesDeAlteracoes.ehDiferente(modeloAtual)) {
-                    adicionarAlteracaoDeComponente(new ComponenteModificado<>(
+                    adicionarAlteracaoDeComponente(new EstruturaModificada<>(
                         modeloAntesDeAlteracoes.copiar(),
                         modeloAtual.copiar(),
                         PacoteUML.this
@@ -412,7 +412,7 @@ public class PacoteUML extends ComponenteUML<Pacote> {
         });
         botaoAplicar.addActionListener(e -> {
             if (modeloAntesDeAlteracoes.ehDiferente(modeloAtual)) {
-                adicionarAlteracaoDeComponente(new ComponenteModificado<>(
+                adicionarAlteracaoDeComponente(new EstruturaModificada<>(
                     modeloAntesDeAlteracoes.copiar(),
                     modeloAtual.copiar(),
                     PacoteUML.this
@@ -436,7 +436,7 @@ public class PacoteUML extends ComponenteUML<Pacote> {
             @Override
             public void componentHidden(ComponentEvent e) {
                 if (modeloAntesDeAlteracoes.ehDiferente(modeloAtual)) {
-                    adicionarAlteracaoDeComponente(new ComponenteModificado<>(
+                    adicionarAlteracaoDeComponente(new EstruturaModificada<>(
                         modeloAntesDeAlteracoes.copiar(),
                         modeloAtual.copiar(),
                         PacoteUML.this
