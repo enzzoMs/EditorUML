@@ -3,12 +3,9 @@ package auxiliares;
 import componentes.estruturas.AnotacaoUML;
 import componentes.estruturas.ClasseUML;
 import componentes.estruturas.PacoteUML;
-import modelos.DiagramaUML;
+import componentes.modelos.estruturas.*;
+import diagrama.DiagramaUML;
 import interfacegrafica.AreaDeDiagramas;
-import modelos.*;
-import componentes.modelos.estruturas.Anotacao;
-import componentes.modelos.estruturas.Classe;
-import componentes.modelos.estruturas.Pacote;
 import net.miginfocom.swing.MigLayout;
 
 import javax.imageio.ImageIO;

@@ -2,9 +2,8 @@ package componentes.estruturas;
 
 import auxiliares.GerenciadorDeRecursos;
 import componentes.alteracoes.estruturas.EstruturaModificada;
+import componentes.modelos.estruturas.*;
 import interfacegrafica.AreaDeDiagramas;
-import modelos.*;
-import componentes.modelos.estruturas.Classe;
 import componentes.modelos.ModeloDeComponenteUML;
 import net.miginfocom.swing.MigLayout;
 

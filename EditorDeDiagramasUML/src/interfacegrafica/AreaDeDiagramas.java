@@ -9,8 +9,8 @@ import componentes.estruturas.EstruturaUML;
 import componentes.estruturas.PacoteUML;
 import componentes.alteracoes.AlteracaoDeComponenteUML;
 import componentes.alteracoes.estruturas.EstruturaCriada;
-import modelos.TipoDeRelacao;
-import modelos.DiagramaUML;
+import componentes.modelos.relacoes.TipoDeRelacao;
+import diagrama.DiagramaUML;
 import componentes.modelos.estruturas.Pacote;
 import net.miginfocom.swing.MigLayout;
 
@@ -315,6 +315,7 @@ public class AreaDeDiagramas {
         revalidarQuadroBranco();
     }
 
+    // TODO
     public void addRelacaoAoQuadro(RelacaoUML relacao) {
         for (JPanel linha : relacao.getLinhasDaRelacao()) {
             painelQuadroBranco.add(linha);
@@ -1336,7 +1337,7 @@ public class AreaDeDiagramas {
                                     linhasDaRelacao, AreaDeDiagramas.this,
                                     primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
                                 );
-                                case ASSOCIACAO -> new Dependencia(
+                                case ASSOCIACAO -> new Associacao(
                                     linhasDaRelacao, AreaDeDiagramas.this,
                                     primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
                                 );

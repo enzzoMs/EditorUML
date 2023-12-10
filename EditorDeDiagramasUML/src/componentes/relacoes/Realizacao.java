@@ -2,7 +2,7 @@ package componentes.relacoes;
 
 import auxiliares.GerenciadorDeRecursos;
 import interfacegrafica.AreaDeDiagramas;
-import modelos.TipoDeRelacao;
+import componentes.modelos.relacoes.TipoDeRelacao;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;

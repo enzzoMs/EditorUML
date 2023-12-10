@@ -368,7 +368,7 @@ public abstract class EstruturaUML<T> {
 
         // ----------------------------------------------------------------------------
 
-        JPanel painelExcluirComponente = new JPanel(new MigLayout("debug, insets 5 0 10 0"));
+        JPanel painelExcluirComponente = new JPanel(new MigLayout("insets 5 0 10 0"));
         painelExcluirComponente.setBackground(gerenciadorDeRecursos.getColor("white"));
 
         painelExcluirComponente.add(painelImgInterrogacao, "west");

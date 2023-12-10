@@ -453,10 +453,10 @@ public class RelacaoComposicao extends RelacaoUML{
 
 
         if (direcao.equals("De A até B")) {
-            labelNome.setIcon(new ImageIcon(RelacaoAssociacaoSimples.class.getResource("/imagens/img_seta_direcaoAB.png")));
+            labelNome.setIcon(new ImageIcon(RelacaoAssociacaoSimples.class.getResource("/imagens/seta_direcaoAB.png")));
             labelNome.setHorizontalTextPosition(JLabel.LEFT);
         } else if (direcao.equals("De B até A")) {
-            labelNome.setIcon(new ImageIcon(RelacaoAssociacaoSimples.class.getResource("/imagens/img_seta_direcaoBA.png")));
+            labelNome.setIcon(new ImageIcon(RelacaoAssociacaoSimples.class.getResource("/imagens/seta_direcaoBA.png")));
             labelNome.setHorizontalTextPosition(JLabel.RIGHT);
         } else {
             labelNome.setIcon(null);

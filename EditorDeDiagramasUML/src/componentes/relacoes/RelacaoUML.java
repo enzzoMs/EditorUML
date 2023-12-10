@@ -1,10 +1,11 @@
 package componentes.relacoes;
 
 import auxiliares.GerenciadorDeRecursos;
+import componentes.modelos.relacoes.DirecaoDeRelacao;
 import componentes.modelos.relacoes.Relacao;
 import interfacegrafica.AreaDeDiagramas;
-import modelos.OrientacaoDeRelacao;
-import modelos.TipoDeRelacao;
+import componentes.modelos.relacoes.OrientacaoDeSeta;
+import componentes.modelos.relacoes.TipoDeRelacao;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,14 +21,18 @@ public abstract class RelacaoUML {
     private Relacao modeloAtual = new Relacao();
     private final AreaDeDiagramas areaDeDiagramas;
     private final ArrayList<JPanel> linhasDaRelacao;
+    private final JLabel labelNome = new JLabel();
+    private final JLabel labelMultiplicidadeA = new JLabel();
+    private final JLabel labelMultiplicidadeB = new JLabel();
+
     // TODO - o que eh lado A e B
     private final JPanel painelSetaA;
     private final JPanel painelSetaB;
     private final Point[] pontosDaSetaA = { new Point(), new Point(), new Point() };
     private final Point[] pontosDaSetaB = { new Point(), new Point(), new Point() };
     private Point pontoLadoA;
-    private OrientacaoDeRelacao orientacaoLadoA;
-    private final OrientacaoDeRelacao orientacaoLadoB;
+    private OrientacaoDeSeta orientacaoLadoA;
+    private final OrientacaoDeSeta orientacaoLadoB;
     private final JPanel pontoDeExtensao;
     private Consumer<RelacaoUML> aoClicarPontoDeExtensao;
     private final TipoDeRelacao tipoDeRelacao;
@@ -91,10 +96,6 @@ public abstract class RelacaoUML {
         painelSetaA.addMouseListener(adapterGerenciarRelacao);
         painelSetaB.addMouseListener(adapterGerenciarRelacao);
 
-        // index 1 para que a seta fique embaixo do ponto de extensao
-        areaDeDiagramas.addComponenteAoQuadro(painelSetaA, 1);
-        areaDeDiagramas.addComponenteAoQuadro(painelSetaB, 1);
-
         orientacaoLadoA = calcularOrientacaoDeLinha(pontoLadoA, linhasDaRelacao.getLast());
         orientacaoLadoB = calcularOrientacaoDeLinha(pontoInicialDaRelacao, linhasDaRelacao.getFirst());
 
@@ -115,7 +116,17 @@ public abstract class RelacaoUML {
 
         pontoDeExtensao.setSize(TAMANHO_PONTO_DE_EXTENSAO, TAMANHO_PONTO_DE_EXTENSAO);
 
+        labelNome.setFont(GerenciadorDeRecursos.getInstancia().getRobotoBlack(15));
+        labelMultiplicidadeA.setFont(GerenciadorDeRecursos.getInstancia().getRobotoBlack(15));
+        labelMultiplicidadeB.setFont(GerenciadorDeRecursos.getInstancia().getRobotoBlack(15));
+
         areaDeDiagramas.addComponenteAoQuadro(pontoDeExtensao, 0);
+        // index 1 para que fiquem embaixo do ponto de extensao
+        areaDeDiagramas.addComponenteAoQuadro(painelSetaA, 1);
+        areaDeDiagramas.addComponenteAoQuadro(painelSetaB, 1);
+        areaDeDiagramas.addComponenteAoQuadro(labelNome, 1);
+        areaDeDiagramas.addComponenteAoQuadro(labelMultiplicidadeA, 1);
+        areaDeDiagramas.addComponenteAoQuadro(labelMultiplicidadeB, 1);
 
         aplicarEstiloDasLinhas(linhasDaRelacao);
 
@@ -127,17 +138,17 @@ public abstract class RelacaoUML {
         initFrameGerenciarRelacao();
     }
 
-    private OrientacaoDeRelacao calcularOrientacaoDeLinha(Point pontoFinalDaLinha, JPanel linha) {
-        OrientacaoDeRelacao orientacaoDaLinha;
+    private OrientacaoDeSeta calcularOrientacaoDeLinha(Point pontoFinalDaLinha, JPanel linha) {
+        OrientacaoDeSeta orientacaoDaLinha;
 
         if (linha.getWidth() == TAMANHO_LINHAS_RELACAO && linha.getY() < pontoFinalDaLinha.y) {
-            orientacaoDaLinha = OrientacaoDeRelacao.SUL;
+            orientacaoDaLinha = OrientacaoDeSeta.SUL;
         } else if (linha.getWidth() == TAMANHO_LINHAS_RELACAO && linha.getY() == pontoFinalDaLinha.y) {
-            orientacaoDaLinha = OrientacaoDeRelacao.NORTE;
+            orientacaoDaLinha = OrientacaoDeSeta.NORTE;
         } else if (linha.getX() + TAMANHO_LINHAS_RELACAO / 2 == pontoFinalDaLinha.x) {
-            orientacaoDaLinha = OrientacaoDeRelacao.OESTE;
+            orientacaoDaLinha = OrientacaoDeSeta.OESTE;
         } else {
-            orientacaoDaLinha = OrientacaoDeRelacao.LESTE;
+            orientacaoDaLinha = OrientacaoDeSeta.LESTE;
         }
 
         return orientacaoDaLinha;
@@ -161,7 +172,7 @@ public abstract class RelacaoUML {
 
     private void atualizarLocalizacaoPontoDeExtensao() {
         Point localizacaoPontoDeExtensao = new Point();
-        Rectangle ancoraDoPonto = painelSetaA.isVisible() ? painelSetaA.getBounds() : linhasDaRelacao.getLast().getBounds();
+        Rectangle ancoraDoPonto = modeloAtual.estaMostrandoSetaA() ? painelSetaA.getBounds() : linhasDaRelacao.getLast().getBounds();
 
         switch (orientacaoLadoA) {
             case SUL -> {
@@ -186,7 +197,7 @@ public abstract class RelacaoUML {
     }
 
     private void aoClicarPontoDeExtensao() {
-        if (painelSetaA.isVisible()) {
+        if (modeloAtual.estaMostrandoSetaA()) {
             // Como o ponto de extensao fica na ponta da seta A, se ela estiver visivel eh necessario estender a
             // linha da seta pelo tamanho da seta
 
@@ -213,7 +224,7 @@ public abstract class RelacaoUML {
         aoClicarPontoDeExtensao.accept(this);
     }
 
-    private void atualizarPontosDeSeta(OrientacaoDeRelacao orientacaoDaSeta, Point[] pontosDaSeta) {
+    private void atualizarPontosDeSeta(OrientacaoDeSeta orientacaoDaSeta, Point[] pontosDaSeta) {
         switch (orientacaoDaSeta) {
             case SUL -> {
                 pontosDaSeta[0].x = 0; pontosDaSeta[1].x = TAMANHO_SETA/2; pontosDaSeta[2].x = TAMANHO_SETA;
@@ -240,7 +251,7 @@ public abstract class RelacaoUML {
         }
     }
 
-    private void atualizarLocalizacaoDeSeta(JPanel painelSeta, JPanel linhaDaSeta, OrientacaoDeRelacao orientacaoDaSeta) {
+    private void atualizarLocalizacaoDeSeta(JPanel painelSeta, JPanel linhaDaSeta, OrientacaoDeSeta orientacaoDaSeta) {
         Point localizacaoDaSeta = new Point();
 
         switch (orientacaoDaSeta) {
@@ -288,6 +299,121 @@ public abstract class RelacaoUML {
         modeloAtual.setMostrandoSetaB(mostrar);
     }
 
+    public void mostrarNome(boolean mostrar) {
+        if (mostrar) {
+            atualizarLocalizacaoDoNome();
+        }
+
+        labelNome.setVisible(mostrar);
+    }
+
+    public void setNome(String nome) {
+        modeloAtual.setNome(nome);
+        labelNome.setText(nome);
+    }
+
+    private void atualizarLocalizacaoDoNome() {
+        JPanel maiorLinha = linhasDaRelacao.getFirst();
+
+        for (JPanel linha : linhasDaRelacao) {
+            int tamanhoDaLinha = 0;
+
+            if (linha.getWidth() == TAMANHO_LINHAS_RELACAO) {
+                // Se a linha for uma linha vertical
+                tamanhoDaLinha = linha.getHeight();
+            } else {
+                // Se a linha for horizontal
+                tamanhoDaLinha = linha.getWidth();
+            }
+
+            if (maiorLinha.getWidth() == TAMANHO_LINHAS_RELACAO) {
+                maiorLinha = (maiorLinha.getHeight() > tamanhoDaLinha)? maiorLinha : linha;
+            } else {
+                maiorLinha = (maiorLinha.getWidth() > tamanhoDaLinha)? maiorLinha : linha;
+            }
+        }
+
+        Point localizaoNome;
+
+        int MARGEM = 12;
+
+        if (maiorLinha.getWidth() == TAMANHO_LINHAS_RELACAO) {
+            // Se a linha do meio for uma linha vertical
+            localizaoNome = maiorLinha.getLocation();
+            localizaoNome.translate(
+                TAMANHO_LINHAS_RELACAO + MARGEM,
+                maiorLinha.getHeight() / 2 - labelNome.getPreferredSize().height / 2
+            );
+
+        } else {
+            // Se a linha for horizontal
+            localizaoNome = maiorLinha.getLocation();
+            localizaoNome.translate(
+                maiorLinha.getWidth() / 2 - labelNome.getPreferredSize().height / 2,
+                -labelNome.getPreferredSize().height
+            );
+        }
+
+        labelNome.setLocation(localizaoNome);
+        labelNome.setSize(labelNome.getPreferredSize());
+    }
+
+    public void mostrarMultiplicidadeLadoA(boolean mostrar) {
+        if (mostrar) {
+            atualizarLocalizacaoDeMultiplicidade(labelMultiplicidadeA, linhasDaRelacao.getLast(), orientacaoLadoA);
+        }
+
+        labelMultiplicidadeA.setVisible(mostrar);
+    }
+
+    public void setMultiplicidadeLadoA(String multiplicidade) {
+        modeloAtual.setMultiplicidadeLadoA(multiplicidade);
+        labelMultiplicidadeA.setText(multiplicidade);
+    }
+
+    public void mostrarMultiplicidadeLadoB(boolean mostrar) {
+        if (mostrar) {
+            atualizarLocalizacaoDeMultiplicidade(labelMultiplicidadeB, linhasDaRelacao.getFirst(), orientacaoLadoB);
+        }
+
+        labelMultiplicidadeB.setVisible(mostrar);
+    }
+
+    public void setMultiplicidadeLadoB(String multiplicidade) {
+        modeloAtual.setMultiplicidadeLadoB(multiplicidade);
+        labelMultiplicidadeB.setText(multiplicidade);
+    }
+
+    private void atualizarLocalizacaoDeMultiplicidade(
+        JLabel labelMultiplicidade, JPanel linhaDaMultiplicidade, OrientacaoDeSeta orientacaoDaLinha
+    ) {
+        Point localizacaoMultiplicidade = linhaDaMultiplicidade.getLocation();
+
+        int MARGEM = 12;
+
+        switch (orientacaoDaLinha) {
+            case NORTE -> localizacaoMultiplicidade.translate(
+                TAMANHO_LINHAS_RELACAO + MARGEM,
+                MARGEM
+            );
+            case SUL -> localizacaoMultiplicidade.translate(
+                TAMANHO_LINHAS_RELACAO + MARGEM,
+                linhaDaMultiplicidade.getHeight() - labelMultiplicidade.getPreferredSize().height - MARGEM
+            );
+            case OESTE -> localizacaoMultiplicidade.translate(
+                MARGEM,
+                labelMultiplicidade.getPreferredSize().height - MARGEM
+            );
+            case LESTE -> localizacaoMultiplicidade.translate(
+                linhaDaMultiplicidade.getWidth() - labelMultiplicidade.getPreferredSize().width - MARGEM,
+                labelMultiplicidade.getPreferredSize().height - MARGEM
+            );
+        }
+
+        labelMultiplicidade.setLocation(localizacaoMultiplicidade);
+        labelMultiplicidade.setSize(labelMultiplicidade.getPreferredSize());
+    }
+
     public void inverterSeta() {
        if (modeloAtual.estaMostrandoSetaA()) {
            mostrarSetaLadoA(false);
@@ -312,6 +438,9 @@ public abstract class RelacaoUML {
         areaDeDiagramas.removerComponenteDoQuadro(pontoDeExtensao);
         areaDeDiagramas.removerComponenteDoQuadro(painelSetaA);
         areaDeDiagramas.removerComponenteDoQuadro(painelSetaB);
+        areaDeDiagramas.removerComponenteDoQuadro(labelNome);
+        areaDeDiagramas.removerComponenteDoQuadro(labelMultiplicidadeA);
+        areaDeDiagramas.removerComponenteDoQuadro(labelMultiplicidadeB);
         areaDeDiagramas.removerRelacaoDoDiagrama(this);
     }
 
@@ -368,11 +497,39 @@ public abstract class RelacaoUML {
 
         atualizarLocalizacaoPontoDeExtensao();
 
+        if (!modeloAtual.getNome().isEmpty()) {
+            atualizarLocalizacaoDoNome();
+        }
+
+        if (!modeloAtual.getMultiplicidadeLadoA().isEmpty()) {
+            atualizarLocalizacaoDeMultiplicidade(labelMultiplicidadeA, linhasDaRelacao.getLast(), orientacaoLadoA);
+        }
+
+        if (!modeloAtual.getMultiplicidadeLadoB().isEmpty()) {
+            atualizarLocalizacaoDeMultiplicidade(labelMultiplicidadeB, linhasDaRelacao.getFirst(), orientacaoLadoB);
+        }
+
         aplicarEstiloDasLinhas(linhasDaRelacao);
     }
 
     public void setAoClicarPontoDeExtensao(Consumer<RelacaoUML> aoClicarPontoDeExtensao) {
         this.aoClicarPontoDeExtensao = aoClicarPontoDeExtensao;
+    }
+
+    public void mostrarDirecao(DirecaoDeRelacao direacao) {
+        switch (direacao) {
+            case A_ATE_B -> {
+                labelNome.setIcon(GerenciadorDeRecursos.getInstancia().getImagem("misc_seta_direcaoAB"));
+                labelNome.setHorizontalTextPosition(JLabel.LEFT);
+                labelNome.setSize(labelNome.getPreferredSize());
+            }
+            case B_ATE_A -> {
+                labelNome.setIcon(GerenciadorDeRecursos.getInstancia().getImagem("misc_seta_direcaoBA"));
+                labelNome.setHorizontalTextPosition(JLabel.RIGHT);
+                labelNome.setSize(labelNome.getPreferredSize());
+            }
+            default -> labelNome.setIcon(null);
+        }
     }
 
     public boolean relacaoEstaSelecionada() {
@@ -412,14 +569,6 @@ public abstract class RelacaoUML {
 
         return localizacaoDeExtensao;
     }
-
-    /*
-    private mostrarMultiplicidadeLadoA()
-    private mostrarMultiplicidadeLadoB()
-
-    private mostrarNome()
-
-    private mostrarDirecao()*/
 
     protected abstract void aplicarEstiloDasLinhas(ArrayList<JPanel> linhas);
 

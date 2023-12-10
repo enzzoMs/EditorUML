@@ -2,8 +2,6 @@ package componentes.modelos.estruturas;
 
 import auxiliares.GerenciadorDeRecursos;
 import componentes.modelos.ModeloDeComponenteUML;
-import modelos.Atributo;
-import modelos.Metodo;
 
 import java.util.ArrayList;
 
