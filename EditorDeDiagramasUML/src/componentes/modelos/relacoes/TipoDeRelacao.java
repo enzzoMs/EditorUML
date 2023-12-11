@@ -4,5 +4,6 @@ public enum TipoDeRelacao {
     GENERALIZACAO,
     REALIZACAO,
     DEPENDENCIA,
-    ASSOCIACAO
+    ASSOCIACAO,
+    AGREGACAO
 }

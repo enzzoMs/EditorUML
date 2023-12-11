@@ -903,6 +903,7 @@ public class AreaDeDiagramas {
         JLabel labelNovaRealizacao = getLabelDeRelacao("relacao_realizacao", "relacao_realizacao", TipoDeRelacao.REALIZACAO);
         JLabel labelNovaDependencia = getLabelDeRelacao("relacao_dependencia", "relacao_dependencia", TipoDeRelacao.DEPENDENCIA);
         JLabel labelNovaAssociacao = getLabelDeRelacao("relacao_associacao", "relacao_associacao", TipoDeRelacao.ASSOCIACAO);
+        JLabel labelNovaAgregacao = getLabelDeRelacao("relacao_agregacao", "relacao_agregacao", TipoDeRelacao.AGREGACAO);
 
         // ----------------------------------------------------------------------------
 
@@ -913,6 +914,7 @@ public class AreaDeDiagramas {
                 labelNovaRealizacao.setBackground(gerenciadorDeRecursos.getColor("platinum"));
                 labelNovaDependencia.setBackground(gerenciadorDeRecursos.getColor("platinum"));
                 labelNovaAssociacao.setBackground(gerenciadorDeRecursos.getColor("platinum"));
+                labelNovaAgregacao.setBackground(gerenciadorDeRecursos.getColor("platinum"));
             }
         });
 
@@ -943,236 +945,7 @@ public class AreaDeDiagramas {
         labelNovaRealizacao.addMouseListener(mouseAdapter);
         labelNovaDependencia.addMouseListener(mouseAdapter);
         labelNovaAssociacao.addMouseListener(mouseAdapter);
-
-        // ----------------------------------------------------------------------------
-
-        /*
-
-        JLabel labelAgregacao = new JLabel(new ImageIcon(AreaDeDiagramas.class.getResource("/imagens/img_nova_agregacao.png")));
-        labelAgregacao.setFont(robotoFont.getRobotoMedium(12));
-        labelAgregacao.setText("Agregação");
-        labelAgregacao.setVerticalTextPosition(JLabel.BOTTOM);
-        labelAgregacao.setHorizontalTextPosition(JLabel.CENTER);
-        labelAgregacao.setOpaque(true);
-        labelAgregacao.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        labelAgregacao.setBackground(new Color(0xe6e6e6));
-
-
-        JLabel labelComposicao = new JLabel(new ImageIcon(AreaDeDiagramas.class.getResource("/imagens/img_nova_composicao.png")));
-        labelComposicao.setFont(robotoFont.getRobotoMedium(12));
-        labelComposicao.setText("Composição");
-        labelComposicao.setVerticalTextPosition(JLabel.BOTTOM);
-        labelComposicao.setHorizontalTextPosition(JLabel.CENTER);
-        labelComposicao.setOpaque(true);
-        labelComposicao.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
-        labelComposicao.setBackground(new Color(0xe6e6e6));*/
-
-        /*labelRelacaoGeneralizacao.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    diagramaAtual.getListaRelacaoes().add(new RelacaoGeneralizacao(diagramaAtual));
-                    setSelecaoDeRelacionamentoAcontecendo(true);
-
-                    for (ComponenteUML componenteUML : diagramaAtual.getListaComponentesUML()) {
-                        componenteUML.mostrarAreasDeConexao(true);
-                    }
-
-                    painelCancelarRelacionamento.setVisible(true);
-                }
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    JLabel source = (JLabel) e.getSource();
-
-                    source.setBackground(new Color(0xcccccc));
-                }
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    JLabel source = (JLabel) e.getSource();
-
-                    source.setBackground(new Color(0xe6e6e6));
-                }
-            }
-        });
-
-
-        labelRelacaoRealizacao.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    diagramaAtual.getListaRelacaoes().add(new RelacaoRealizacao(diagramaAtual));
-                    setSelecaoDeRelacionamentoAcontecendo(true);
-
-                    for (ComponenteUML componenteUML : diagramaAtual.getListaComponentesUML()) {
-                        componenteUML.mostrarAreasDeConexao(true);
-                    }
-
-                    painelCancelarRelacionamento.setVisible(true);
-                }
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    JLabel source = (JLabel) e.getSource();
-
-                    source.setBackground(new Color(0xcccccc));
-                }
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    JLabel source = (JLabel) e.getSource();
-
-                    source.setBackground(new Color(0xe6e6e6));
-                }
-            }
-        });
-
-        labelRelacaoDependencia.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    diagramaAtual.getListaRelacaoes().add(new RelacaoDependencia(diagramaAtual));
-                    setSelecaoDeRelacionamentoAcontecendo(true);
-
-                    for (ComponenteUML componenteUML : diagramaAtual.getListaComponentesUML()) {
-                        componenteUML.mostrarAreasDeConexao(true);
-                    }
-
-                    painelCancelarRelacionamento.setVisible(true);
-                }
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    JLabel source = (JLabel) e.getSource();
-
-                    source.setBackground(new Color(0xcccccc));
-                }
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    JLabel source = (JLabel) e.getSource();
-
-                    source.setBackground(new Color(0xe6e6e6));
-                }
-            }
-        });
-
-        labelAssociacaoSimples.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    diagramaAtual.getListaRelacaoes().add(new RelacaoAssociacaoSimples(diagramaAtual));
-                    setSelecaoDeRelacionamentoAcontecendo(true);
-
-                    for (ComponenteUML componenteUML : diagramaAtual.getListaComponentesUML()) {
-                        componenteUML.mostrarAreasDeConexao(true);
-                    }
-
-                    painelCancelarRelacionamento.setVisible(true);
-                }
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    JLabel source = (JLabel) e.getSource();
-
-                    source.setBackground(new Color(0xcccccc));
-                }
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    JLabel source = (JLabel) e.getSource();
-
-                    source.setBackground(new Color(0xe6e6e6));
-                }
-            }
-        });
-
-        labelAgregacao.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    diagramaAtual.getListaRelacaoes().add(new RelacaoAgregacao(diagramaAtual));
-                    setSelecaoDeRelacionamentoAcontecendo(true);
-
-                    for (ComponenteUML componenteUML : diagramaAtual.getListaComponentesUML()) {
-                        componenteUML.mostrarAreasDeConexao(true);
-                    }
-
-                    painelCancelarRelacionamento.setVisible(true);
-                }
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    JLabel source = (JLabel) e.getSource();
-
-                    source.setBackground(new Color(0xcccccc));
-                }
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    JLabel source = (JLabel) e.getSource();
-
-                    source.setBackground(new Color(0xe6e6e6));
-                }
-            }
-        });
-
-
-        labelComposicao.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    diagramaAtual.getListaRelacaoes().add(new RelacaoComposicao(diagramaAtual));
-                    setSelecaoDeRelacionamentoAcontecendo(true);
-
-                    for (ComponenteUML componenteUML : diagramaAtual.getListaComponentesUML()) {
-                        componenteUML.mostrarAreasDeConexao(true);
-                    }
-
-                    painelCancelarRelacionamento.setVisible(true);
-                }
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    JLabel source = (JLabel) e.getSource();
-
-                    source.setBackground(new Color(0xcccccc));
-                }
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                if (!selecaoDeRelacionamentoAcontecendo) {
-                    JLabel source = (JLabel) e.getSource();
-
-                    source.setBackground(new Color(0xe6e6e6));
-                }
-            }
-        });*/
-
+        labelNovaAgregacao.addMouseListener(mouseAdapter);
 
         // ----------------------------------------------------------------------------
 
@@ -1187,44 +960,18 @@ public class AreaDeDiagramas {
             BorderFactory.createMatteBorder(0, 0, 0, 2, gerenciadorDeRecursos.getColor("platinum"))
         );
 
-        // TODO mudar isso
-        menuComponentes.add(labelNovaClasse, "wrap, gapbottom 5, growx");
-        menuComponentes.add(new JLabel() {
-            { setBorder(bordaSeparadores); }
-        }, "wrap, grow, gapbottom 5, growx");
-        menuComponentes.add(labelNovaAnotacao, "wrap, gapbottom 5, growx");
-        menuComponentes.add(new JLabel() {
-            { setBorder(bordaSeparadores); }
-        }, "wrap, grow, gapbottom 5, growx");
-        menuComponentes.add(labelNovoPacote, "wrap, gapbottom 5, growx");
-        menuComponentes.add(new JLabel() {
-            { setBorder(bordaSeparadores); }
-        }, "wrap, grow, gapbottom 5, growx");
-        menuComponentes.add(labelNovaGeneralizacao, "wrap, gapbottom 5, growx");
-        menuComponentes.add(new JLabel() {
-            { setBorder(bordaSeparadores); }
-        }, "wrap, grow, gapbottom 5, growx");
-        menuComponentes.add(labelNovaRealizacao, "wrap, gapbottom 5, growx");
-        menuComponentes.add(new JLabel() {
-            { setBorder(bordaSeparadores); }
-        }, "wrap, grow, gapbottom 5, growx");
-        menuComponentes.add(labelNovaDependencia, "wrap, gapbottom 5, growx");
-        menuComponentes.add(new JLabel() {
-            { setBorder(bordaSeparadores); }
-        }, "wrap, grow, gapbottom 5, growx");
-        menuComponentes.add(labelNovaAssociacao, "wrap, gapbottom 5, growx");
-        menuComponentes.add(new JLabel() {
-            { setBorder(bordaSeparadores); }
-        }, "wrap, grow, gapbottom 5, growx");
-        /*
-        menuComponentesDiagramas.add(labelAssociacaoSimples, "wrap, gapbottom 5, growx");
-        menuComponentesDiagramas.add(labelSeparador7, "wrap, grow, gapbottom 5, growx");
+        JLabel[] labelComponentes = {
+            labelNovaClasse, labelNovaAnotacao, labelNovoPacote, labelNovaGeneralizacao, labelNovaRealizacao,
+            labelNovaDependencia, labelNovaAssociacao, labelNovaAgregacao
+        };
 
-        menuComponentesDiagramas.add(labelAgregacao, "wrap, gapbottom 5, growx");
-        menuComponentesDiagramas.add(labelSeparador8, "wrap, grow, gapbottom 5, growx");
-
-        menuComponentesDiagramas.add(labelComposicao, "wrap, growx");*/
-
+        for (JLabel labelComponente : labelComponentes) {
+            menuComponentes.add(labelComponente, "wrap, gapbottom 5, growx");
+            menuComponentes.add(new JLabel() {
+                { setBorder(bordaSeparadores); }
+            }, "wrap, grow, gapbottom 5, growx");
+        }
+        //menuComponentesDiagramas.add(labelComposicao, "wrap, growx");*/
 
         return menuComponentes;
     }
@@ -1338,6 +1085,10 @@ public class AreaDeDiagramas {
                                     primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
                                 );
                                 case ASSOCIACAO -> new Associacao(
+                                    linhasDaRelacao, AreaDeDiagramas.this,
+                                    primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
+                                );
+                                case AGREGACAO -> new Agregacao(
                                     linhasDaRelacao, AreaDeDiagramas.this,
                                     primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
                                 );
