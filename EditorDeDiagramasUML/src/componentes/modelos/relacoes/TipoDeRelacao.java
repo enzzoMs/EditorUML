@@ -5,5 +5,6 @@ public enum TipoDeRelacao {
     REALIZACAO,
     DEPENDENCIA,
     ASSOCIACAO,
-    AGREGACAO
+    AGREGACAO,
+    COMPOSICAO
 }

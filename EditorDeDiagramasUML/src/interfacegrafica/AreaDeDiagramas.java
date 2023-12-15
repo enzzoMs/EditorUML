@@ -904,6 +904,7 @@ public class AreaDeDiagramas {
         JLabel labelNovaDependencia = getLabelDeRelacao("relacao_dependencia", "relacao_dependencia", TipoDeRelacao.DEPENDENCIA);
         JLabel labelNovaAssociacao = getLabelDeRelacao("relacao_associacao", "relacao_associacao", TipoDeRelacao.ASSOCIACAO);
         JLabel labelNovaAgregacao = getLabelDeRelacao("relacao_agregacao", "relacao_agregacao", TipoDeRelacao.AGREGACAO);
+        JLabel labelNovaComposicao = getLabelDeRelacao("relacao_composicao", "relacao_composicao", TipoDeRelacao.COMPOSICAO);
 
         // ----------------------------------------------------------------------------
 
@@ -915,6 +916,7 @@ public class AreaDeDiagramas {
                 labelNovaDependencia.setBackground(gerenciadorDeRecursos.getColor("platinum"));
                 labelNovaAssociacao.setBackground(gerenciadorDeRecursos.getColor("platinum"));
                 labelNovaAgregacao.setBackground(gerenciadorDeRecursos.getColor("platinum"));
+                labelNovaComposicao.setBackground(gerenciadorDeRecursos.getColor("platinum"));
             }
         });
 
@@ -946,6 +948,7 @@ public class AreaDeDiagramas {
         labelNovaDependencia.addMouseListener(mouseAdapter);
         labelNovaAssociacao.addMouseListener(mouseAdapter);
         labelNovaAgregacao.addMouseListener(mouseAdapter);
+        labelNovaComposicao.addMouseListener(mouseAdapter);
 
         // ----------------------------------------------------------------------------
 
@@ -962,17 +965,19 @@ public class AreaDeDiagramas {
 
         JLabel[] labelComponentes = {
             labelNovaClasse, labelNovaAnotacao, labelNovoPacote, labelNovaGeneralizacao, labelNovaRealizacao,
-            labelNovaDependencia, labelNovaAssociacao, labelNovaAgregacao
+            labelNovaDependencia, labelNovaAssociacao, labelNovaAgregacao, labelNovaComposicao
         };
 
-        for (JLabel labelComponente : labelComponentes) {
-            menuComponentes.add(labelComponente, "wrap, gapbottom 5, growx");
-            menuComponentes.add(new JLabel() {
-                { setBorder(bordaSeparadores); }
-            }, "wrap, grow, gapbottom 5, growx");
+        for (int i = 0; i < labelComponentes.length; i++) {
+            if (i + 1 < labelComponentes.length) {
+                menuComponentes.add(labelComponentes[i], "wrap, gapbottom 5, growx");
+                menuComponentes.add(new JLabel() {
+                    { setBorder(bordaSeparadores); }
+                }, "wrap, grow, gapbottom 5, growx");
+            } else {
+                menuComponentes.add(labelComponentes[i], "wrap, growx");
+            }
         }
-        //menuComponentesDiagramas.add(labelComposicao, "wrap, growx");*/
-
         return menuComponentes;
     }
 
@@ -1089,6 +1094,10 @@ public class AreaDeDiagramas {
                                     primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
                                 );
                                 case AGREGACAO -> new Agregacao(
+                                    linhasDaRelacao, AreaDeDiagramas.this,
+                                    primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
+                                );
+                                case COMPOSICAO -> new Composicao(
                                     linhasDaRelacao, AreaDeDiagramas.this,
                                     primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
                                 );

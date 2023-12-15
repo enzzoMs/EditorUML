@@ -14,9 +14,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-public class Agregacao extends RelacaoUML {
+public class Composicao extends RelacaoUML{
 
-    public Agregacao(
+    public Composicao(
         ArrayList<JPanel> linhasDaRelacao, AreaDeDiagramas areaDeDiagramas,
         Point primeiroPontoDaRelacao, Point ultimoPontoDaRelacao, TipoDeRelacao tipoDeRelacao
     ) {
@@ -30,9 +30,9 @@ public class Agregacao extends RelacaoUML {
     @Override
     protected void desenharSeta(Graphics2D g2, Point[] pontosDaSeta) {
         // A seta nesse caso na verdade vai ser um diamente
-        
+
         Point[] pontosDoDiamante = {
-            new Point(), pontosDaSeta[0].getLocation(), pontosDaSeta[1].getLocation(), pontosDaSeta[2].getLocation()
+                new Point(), pontosDaSeta[0].getLocation(), pontosDaSeta[1].getLocation(), pontosDaSeta[2].getLocation()
         };
 
         int MARGEM = 2;
@@ -56,7 +56,7 @@ public class Agregacao extends RelacaoUML {
         g2.setColor(relacaoEstaSelecionada() ? COR_SELECIONAR : COR_PADRAO);
         g2.drawPolygon(pontosXDoDiamente, pontosYDoDiamante, 4);
 
-        g2.setColor(GerenciadorDeRecursos.getInstancia().getColor("white"));
+        g2.setColor(GerenciadorDeRecursos.getInstancia().getColor("dark_charcoal"));
         g2.fillPolygon(pontosXDoDiamente, pontosYDoDiamante, 4);
     }
 
@@ -64,19 +64,19 @@ public class Agregacao extends RelacaoUML {
     protected void initFrameGerenciarRelacao() {
         GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
-        JLabel labelAgregacao = new JLabel(gerenciadorDeRecursos.getString("relacao_agregacao_maiuscula"), JLabel.CENTER);
-        labelAgregacao.setFont(gerenciadorDeRecursos.getRobotoBlack(16));
-        labelAgregacao.setPreferredSize(new Dimension(
-                labelAgregacao.getPreferredSize().width * 2,
-                labelAgregacao.getPreferredSize().height
+        JLabel labelComposicao = new JLabel(gerenciadorDeRecursos.getString("relacao_composicao_maiuscula"), JLabel.CENTER);
+        labelComposicao.setFont(gerenciadorDeRecursos.getRobotoBlack(16));
+        labelComposicao.setPreferredSize(new Dimension(
+                labelComposicao.getPreferredSize().width * 2,
+                labelComposicao.getPreferredSize().height
         ));
 
-        JPanel painelAgregacao = new JPanel(new MigLayout("insets 20 40 20 40","[grow]"));
-        painelAgregacao.setBorder(BorderFactory.createMatteBorder(
+        JPanel painelComposicao = new JPanel(new MigLayout("insets 20 40 20 40","[grow]"));
+        painelComposicao.setBorder(BorderFactory.createMatteBorder(
                 0, 0, 3, 0, gerenciadorDeRecursos.getColor("black")
         ));
-        painelAgregacao.add(labelAgregacao, "align center");
-        painelAgregacao.setOpaque(false);
+        painelComposicao.add(labelComposicao, "align center");
+        painelComposicao.setOpaque(false);
 
         // ----------------------------------------------------------------------------
 
@@ -298,7 +298,7 @@ public class Agregacao extends RelacaoUML {
         JPanel painelGerenciarRelacao = new JPanel(new MigLayout("insets 20 0 10 0", "","[grow, fill]"));
         painelGerenciarRelacao.setBackground(gerenciadorDeRecursos.getColor("white"));
 
-        painelGerenciarRelacao.add(painelAgregacao, "grow, wrap, gapleft 20, gapright 20");
+        painelGerenciarRelacao.add(painelComposicao, "grow, wrap, gapleft 20, gapright 20");
         painelGerenciarRelacao.add(painelInteriorGerenciarRelacao, "grow, wrap, gapleft 20, gapright 20");
 
         getFrameGerenciarRelacao().add(painelGerenciarRelacao);
