@@ -1,6 +1,7 @@
 package componentes.relacoes;
 
 import auxiliares.GerenciadorDeRecursos;
+import componentes.alteracoes.relacoes.RelacaoRemovida;
 import componentes.modelos.relacoes.DirecaoDeRelacao;
 import interfacegrafica.AreaDeDiagramas;
 import componentes.modelos.relacoes.TipoDeRelacao;
@@ -266,6 +267,7 @@ public class Associacao extends RelacaoUML{
             public void mouseClicked(MouseEvent e) {
                 mostrarFrameGerenciarRelacao(false);
                 removerRelacaoDoQuadroBranco();
+                getAreaDeDiagramas().addAlteracaoDeComponente(new RelacaoRemovida(Associacao.this));
             }
         });
 

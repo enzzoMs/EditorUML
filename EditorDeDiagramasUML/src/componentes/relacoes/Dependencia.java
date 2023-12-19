@@ -1,6 +1,7 @@
 package componentes.relacoes;
 
 import auxiliares.GerenciadorDeRecursos;
+import componentes.alteracoes.relacoes.RelacaoRemovida;
 import interfacegrafica.AreaDeDiagramas;
 import componentes.modelos.relacoes.TipoDeRelacao;
 import net.miginfocom.swing.MigLayout;
@@ -138,6 +139,7 @@ public class Dependencia extends RelacaoUML {
             public void mouseClicked(MouseEvent e) {
                 mostrarFrameGerenciarRelacao(false);
                 removerRelacaoDoQuadroBranco();
+                getAreaDeDiagramas().addAlteracaoDeComponente(new RelacaoRemovida(Dependencia.this));
             }
         });
 

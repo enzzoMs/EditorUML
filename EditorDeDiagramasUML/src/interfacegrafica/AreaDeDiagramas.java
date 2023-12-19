@@ -1,5 +1,6 @@
 package interfacegrafica;
 
+import componentes.alteracoes.relacoes.RelacaoCriada;
 import componentes.relacoes.*;
 import auxiliares.GerenciadorDeArquivos;
 import auxiliares.GerenciadorDeRecursos;
@@ -315,14 +316,13 @@ public class AreaDeDiagramas {
         revalidarQuadroBranco();
     }
 
-    // TODO
-    public void addRelacaoAoQuadro(RelacaoUML relacao) {
-        for (JPanel linha : relacao.getLinhasDaRelacao()) {
-            painelQuadroBranco.add(linha);
-        }
-
-        diagramaAtual.addRelacao(relacao);
+    public void addComponenteAoQuadro(JComponent componente) {
+        painelQuadroBranco.add(componente);
         revalidarQuadroBranco();
+    }
+
+    public void addRelacaoAoDiagrama(RelacaoUML relacao) {
+        diagramaAtual.addRelacao(relacao);
     }
 
     public void removerEstruturaDoQuadro(EstruturaUML<?> componente) {
@@ -398,6 +398,9 @@ public class AreaDeDiagramas {
         if (diagramaAtual != null) {
             while (!diagramaAtual.getComponentesUML().isEmpty()) {
                 removerEstruturaDoQuadro(diagramaAtual.getComponentesUML().get(0));
+            }
+            for (int i = 0; i < diagramaAtual.getRelacoesUML().size(); i++) {
+                diagramaAtual.getRelacoesUML().get(i).removerRelacaoDoQuadroBranco();
             }
         }
 
@@ -1044,6 +1047,12 @@ public class AreaDeDiagramas {
                         painelCancelarRelacao.setVisible(false);
                         permitirCriarRelacao = false;
 
+                        if (relacaoParaEstender != null) {
+                            relacaoParaEstender.estenderRelacao(null, null);
+                            relacaoParaEstender.mostrarPontoDeExtensao(true);
+                            relacaoParaEstender = null;
+                        }
+
                         revalidarQuadroBranco();
                     }
                 });
@@ -1070,52 +1079,59 @@ public class AreaDeDiagramas {
                         linhasDaRelacao.add(linhaVerticalRelacao);
                     }
 
-                    if (!linhasDaRelacao.isEmpty()) {
-                        if (relacaoParaEstender != null) {
+                    if (!linhasDaRelacao.isEmpty() && relacaoParaEstender == null) {
+                        RelacaoUML novaRelacao = switch (tipoDeRelacaoSendoCriada) {
+                            case GENERALIZACAO -> new Generalizacao(
+                                linhasDaRelacao, AreaDeDiagramas.this,
+                                primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
+                            );
+                            case REALIZACAO -> new Realizacao(
+                                linhasDaRelacao, AreaDeDiagramas.this,
+                                primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
+                            );
+                            case DEPENDENCIA -> new Dependencia(
+                                linhasDaRelacao, AreaDeDiagramas.this,
+                                primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
+                            );
+                            case ASSOCIACAO -> new Associacao(
+                                linhasDaRelacao, AreaDeDiagramas.this,
+                                primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
+                            );
+                            case AGREGACAO -> new Agregacao(
+                                linhasDaRelacao, AreaDeDiagramas.this,
+                                primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
+                            );
+                            case COMPOSICAO -> new Composicao(
+                                linhasDaRelacao, AreaDeDiagramas.this,
+                                primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
+                            );
+                        };
+
+                        novaRelacao.setAoClicarPontoDeExtensao(relacaoParaEstender -> {
+                            criarPaineisDaRelacao(relacaoParaEstender.getLocalizacaoDeExtensao());
+                            this.relacaoParaEstender = relacaoParaEstender;
+
+                            for (RelacaoUML relacao : diagramaAtual.getRelacoesUML()) {
+                                relacao.mostrarPontoDeExtensao(false);
+                            }
+                        });
+
+                        diagramaAtual.addRelacao(novaRelacao);
+
+                        addAlteracaoDeComponente(new RelacaoCriada(novaRelacao));
+
+                        novaRelacao.mostrarPontoDeExtensao(true);
+                    }
+
+                    if (relacaoParaEstender != null) {
+                        if (!linhasDaRelacao.isEmpty()) {
                             relacaoParaEstender.estenderRelacao(linhasDaRelacao, ultimoClique);
-                            relacaoParaEstender.mostrarPontoDeExtensao(true);
-                            relacaoParaEstender = null;
                         } else {
-                            RelacaoUML novaRelacao = switch (tipoDeRelacaoSendoCriada) {
-                                case GENERALIZACAO -> new Generalizacao(
-                                    linhasDaRelacao, AreaDeDiagramas.this,
-                                    primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
-                                );
-                                case REALIZACAO -> new Realizacao(
-                                    linhasDaRelacao, AreaDeDiagramas.this,
-                                    primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
-                                );
-                                case DEPENDENCIA -> new Dependencia(
-                                    linhasDaRelacao, AreaDeDiagramas.this,
-                                    primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
-                                );
-                                case ASSOCIACAO -> new Associacao(
-                                    linhasDaRelacao, AreaDeDiagramas.this,
-                                    primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
-                                );
-                                case AGREGACAO -> new Agregacao(
-                                    linhasDaRelacao, AreaDeDiagramas.this,
-                                    primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
-                                );
-                                case COMPOSICAO -> new Composicao(
-                                    linhasDaRelacao, AreaDeDiagramas.this,
-                                    primeiroClique, ultimoClique, tipoDeRelacaoSendoCriada
-                                );
-                            };
-
-                            novaRelacao.setAoClicarPontoDeExtensao(relacaoParaEstender -> {
-                                criarPaineisDaRelacao(relacaoParaEstender.getLocalizacaoDeExtensao());
-                                this.relacaoParaEstender = relacaoParaEstender;
-
-                                for (RelacaoUML relacao : diagramaAtual.getRelacoesUML()) {
-                                    relacao.mostrarPontoDeExtensao(false);
-                                }
-                            });
-
-                            diagramaAtual.addRelacao(novaRelacao);
-
-                            novaRelacao.mostrarPontoDeExtensao(true);
+                            relacaoParaEstender.estenderRelacao(null, null);
                         }
+
+                        relacaoParaEstender.mostrarPontoDeExtensao(true);
+                        relacaoParaEstender = null;
                     }
                 }
             }
@@ -1367,7 +1383,15 @@ public class AreaDeDiagramas {
         labelUndo.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (labelUndo.isEnabled()) {
+                int numeroDeFramesVisiveis = 0;
+
+                for (Frame frame : Frame.getFrames()) {
+                    if (frame.isVisible()) {
+                        numeroDeFramesVisiveis++;
+                    }
+                }
+
+                if (labelUndo.isEnabled() && !criacaoDeRelacaoAcontecendo && numeroDeFramesVisiveis == 1) {
                     alteracoesDeComponentes.get(indexAlteracao).desfazerAlteracao();
                     indexAlteracao--;
 
@@ -1405,7 +1429,15 @@ public class AreaDeDiagramas {
         labelRedo.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (labelRedo.isEnabled()) {
+                int numeroDeFramesVisiveis = 0;
+
+                for (Frame frame : Frame.getFrames()) {
+                    if (frame.isVisible()) {
+                        numeroDeFramesVisiveis++;
+                    }
+                }
+
+                if (labelRedo.isEnabled() && !criacaoDeRelacaoAcontecendo && numeroDeFramesVisiveis == 1) {
                     indexAlteracao++;
                     alteracoesDeComponentes.get(indexAlteracao).refazerAlteracao();
 
