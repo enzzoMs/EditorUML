@@ -220,12 +220,12 @@ public abstract class EstruturaUML<T> {
         painelComponente.add(componente);
     }
 
-    public void adicionarAlteracaoDeComponente(AlteracaoDeComponenteUML alteracao) {
-        areaDeDiagramas.addAlteracaoDeComponente(alteracao);
+    public void adicionarComponenteAoQuadroBranco() {
+        areaDeDiagramas.addEstruturaAoQuadro(this, false);
     }
 
-    public void adicionarComponenteAoQuadroBranco() {
-        areaDeDiagramas.addComponenteAoQuadro(this, false);
+    public void adicionarAlteracaoDeComponente(AlteracaoDeComponenteUML alteracao) {
+        areaDeDiagramas.addAlteracaoDeComponente(alteracao);
     }
 
     /**
@@ -288,7 +288,7 @@ public abstract class EstruturaUML<T> {
         JPanel painelMensagem = new JPanel(new MigLayout("insets 10 20 8 20"));
         painelMensagem.setOpaque(false);
 
-        JLabel labelMensagem = new JLabel(gerenciadorDeRecursos.getString("excluir_componente_pergunta"));
+        JLabel labelMensagem = new JLabel(gerenciadorDeRecursos.getString("componente_excluir_pergunta"));
         labelMensagem.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
 
         painelMensagem.setBorder(BorderFactory.createCompoundBorder(
@@ -306,7 +306,7 @@ public abstract class EstruturaUML<T> {
             BorderFactory.createMatteBorder(1, 1, 1, 1, gerenciadorDeRecursos.getColor("raisin_black"))
         );
 
-        JLabel labelRespostaSim = new JLabel(gerenciadorDeRecursos.getString("sim"));
+        JLabel labelRespostaSim = new JLabel(gerenciadorDeRecursos.getString("geral_sim"));
         labelRespostaSim.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
         labelRespostaSim.setForeground(gerenciadorDeRecursos.getColor("black"));
 
@@ -320,7 +320,7 @@ public abstract class EstruturaUML<T> {
             BorderFactory.createMatteBorder(1, 1, 1, 1, gerenciadorDeRecursos.getColor("raisin_black"))
         );
 
-        JLabel labelRespostaNao = new JLabel(gerenciadorDeRecursos.getString("nao"));
+        JLabel labelRespostaNao = new JLabel(gerenciadorDeRecursos.getString("geral_nao"));
         labelRespostaNao.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
         labelRespostaNao.setForeground(gerenciadorDeRecursos.getColor("black"));
 
@@ -378,7 +378,7 @@ public abstract class EstruturaUML<T> {
 
         // ----------------------------------------------------------------------------
 
-        dialogExcluirComponente.setTitle(gerenciadorDeRecursos.getString("excluir_componente"));
+        dialogExcluirComponente.setTitle(gerenciadorDeRecursos.getString("componente_excluir"));
         dialogExcluirComponente.setContentPane(painelExcluirComponente);
         dialogExcluirComponente.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         dialogExcluirComponente.setResizable(false);

@@ -12,38 +12,6 @@ public class DiagramaUML {
     private boolean diagramaSalvo = false;
     public File arquivoDiagrama;
 
-    public void addComponente(EstruturaUML<?> novoComponente) {
-        estruturasUML.add(novoComponente);
-    }
-
-    public void addRelacao(RelacaoUML novaRelacao) {
-        relacoesUML.add(novaRelacao);
-    }
-
-    public void removerComponente(EstruturaUML<?> componente) {
-        estruturasUML.remove(componente);
-    }
-
-    public void removerRelacao(RelacaoUML relacao) {
-        relacoesUML.remove(relacao);
-    }
-
-    public void setDiagramaSalvo(boolean diagramaSalvo) {
-        this.diagramaSalvo = diagramaSalvo;
-    }
-
-    public ArrayList<EstruturaUML<?>> getEstruturasUML() {
-        return estruturasUML;
-    }
-
-    public ArrayList<RelacaoUML> getRelacoesUML() {
-        return relacoesUML;
-    }
-
-    public boolean diagramaEstaSalvo() {
-        return diagramaSalvo;
-    }
-
     /**
      * Desconstrói o diagrama em uma String contendo as informações de cada componente.
      */
@@ -63,6 +31,38 @@ public class DiagramaUML {
         }
 
         return diagramaEmString.toString();
+    }
+
+    public void addComponente(EstruturaUML<?> novoComponente) {
+        estruturasUML.add(novoComponente);
+    }
+
+    public void addRelacao(RelacaoUML novaRelacao) {
+        relacoesUML.add(novaRelacao);
+    }
+
+    public void removerComponente(EstruturaUML<?> componente) {
+        estruturasUML.remove(componente);
+    }
+
+    public void removerRelacao(RelacaoUML relacao) {
+        relacoesUML.remove(relacao);
+    }
+
+    public ArrayList<EstruturaUML<?>> getEstruturasUML() {
+        return estruturasUML;
+    }
+
+    public ArrayList<RelacaoUML> getRelacoesUML() {
+        return relacoesUML;
+    }
+
+    public boolean diagramaEstaSalvo() {
+        return diagramaSalvo;
+    }
+
+    public void setDiagramaSalvo(boolean diagramaSalvo) {
+        this.diagramaSalvo = diagramaSalvo;
     }
 }
 

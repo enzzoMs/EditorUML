@@ -3,9 +3,9 @@ package componentes.modelos.estruturas;
 import auxiliares.GerenciadorDeRecursos;
 
 public enum Visibilidade {
-    PUBLICO("+", GerenciadorDeRecursos.getInstancia().getString("publico")),
-    PRIVADO("-", GerenciadorDeRecursos.getInstancia().getString("privado")),
-    PROTEGIDO("#", GerenciadorDeRecursos.getInstancia().getString("protegido"));
+    PUBLICO("+", GerenciadorDeRecursos.getInstancia().getString("estrutura_classe_visibilidade_publico")),
+    PRIVADO("-", GerenciadorDeRecursos.getInstancia().getString("estrutura_classe_visibilidade_privado")),
+    PROTEGIDO("#", GerenciadorDeRecursos.getInstancia().getString("estrutura_classe_visibilidade_protegido"));
 
     private final String simbolo;
     private final String nome;

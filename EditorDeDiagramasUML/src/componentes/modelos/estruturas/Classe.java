@@ -6,7 +6,7 @@ import componentes.modelos.ModeloDeComponenteUML;
 import java.util.ArrayList;
 
 public class Classe implements ModeloDeComponenteUML<Classe> {
-    private String nome = GerenciadorDeRecursos.getInstancia().getString("classe_nome_default");
+    private String nome = GerenciadorDeRecursos.getInstancia().getString("estrutura_classe_nome_default");
     private String comentario = "";
     private boolean ehAbstrata;
     private boolean ehInterface;

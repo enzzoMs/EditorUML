@@ -21,7 +21,6 @@ import java.awt.event.MouseEvent;
  * Classe que representa a parte gráfica de uma estrutura UML do tipo "Pacote". Possui um nome e pode
  * ser redimensionado para qualquer tamanho.
  */
-
 public class PacoteUML extends EstruturaUML<Pacote> {
     private Pacote modeloAtual = new Pacote();
     private Pacote modeloAntesDeAlteracoes;
@@ -282,7 +281,7 @@ public class PacoteUML extends EstruturaUML<Pacote> {
         modeloAntesDeAlteracoes = modeloAtual.copiar();
     }
 
-    public void atualizarComponentesGraficos() {
+    private void atualizarComponentesGraficos() {
         JLabel labelNomePacote = (JLabel) painelNomePacote.getComponent(0);
         painelNomePacote.removeAll();
 
@@ -318,6 +317,59 @@ public class PacoteUML extends EstruturaUML<Pacote> {
         atualizarPontosDeRedimensionamento();
     }
 
+    private void atualizarPontosDeRedimensionamento() {
+        JPanel painelRedimensionarEsquerdo = pontosDeRedimensionamento[0];
+        JPanel painelRedimensionarDireito = pontosDeRedimensionamento[1];
+        JPanel painelRedimensionarSuperior = pontosDeRedimensionamento[2];
+        JPanel painelRedimensionarInferior = pontosDeRedimensionamento[3];
+
+        painelRedimensionarEsquerdo.setBounds(
+                0,
+                (getAltura() + painelNomePacote.getBounds().height)/2 - painelRedimensionarEsquerdo.getPreferredSize().height/2,
+                painelRedimensionarEsquerdo.getPreferredSize().width,
+                painelRedimensionarEsquerdo.getPreferredSize().height
+        );
+
+
+        painelRedimensionarDireito.setBounds(
+                getLargura() - painelRedimensionarDireito.getPreferredSize().width,
+                (getAltura() + painelNomePacote.getBounds().height)/2 - painelRedimensionarDireito.getPreferredSize().height/2,
+                painelRedimensionarDireito.getPreferredSize().width,
+                painelRedimensionarDireito.getPreferredSize().height
+        );
+
+        painelRedimensionarSuperior.setBounds(
+                getLargura()/2 - painelRedimensionarSuperior.getPreferredSize().width/2,
+                painelNomePacote.getBounds().height,
+                painelRedimensionarSuperior.getPreferredSize().width,
+                painelRedimensionarSuperior.getPreferredSize().height
+        );
+
+
+        painelRedimensionarInferior.setBounds(
+                getLargura()/2 - painelRedimensionarInferior.getPreferredSize().width/2,
+                getAltura() - painelRedimensionarInferior.getPreferredSize().height,
+                painelRedimensionarInferior.getPreferredSize().width,
+                painelRedimensionarInferior.getPreferredSize().height
+        );
+
+        getPainelComponente().revalidate();
+        getPainelComponente().repaint();
+    }
+
+    private void mostrarPontosDeRedimensionamento(boolean mostrar) {
+        for (JPanel painelPontoDeRedimensionamento : pontosDeRedimensionamento) {
+            painelPontoDeRedimensionamento.setVisible(mostrar);
+        }
+
+        getPainelComponente().revalidate();
+        getPainelComponente().repaint();
+    }
+
+    public void setModeloAntesDeAlteracoes(Pacote modeloAntesDeAlteracoes) {
+        this.modeloAntesDeAlteracoes = modeloAntesDeAlteracoes;
+    }
+
     @Override
     public void setModelo(ModeloDeComponenteUML<Pacote> novoModelo) {
         modeloAtual = novoModelo.copiar();
@@ -327,24 +379,20 @@ public class PacoteUML extends EstruturaUML<Pacote> {
         getPainelComponente().setLocation(boundsAtual.x, boundsAtual.y);
 
         setBounds(boundsAtual.width, boundsAtual.height);
-        
+
         painelAreaPacote.setBounds(
-            0, painelNomePacote.getHeight(),
-            boundsAtual.width, boundsAtual.height - painelNomePacote.getHeight()
+                0, painelNomePacote.getHeight(),
+                boundsAtual.width, boundsAtual.height - painelNomePacote.getHeight()
         );
 
         atualizarComponentesGraficos();
-    }
-
-    public void setModeloAntesDeAlteracoes(Pacote modeloAntesDeAlteracoes) {
-        this.modeloAntesDeAlteracoes = modeloAntesDeAlteracoes;
     }
 
     @Override
     protected void initFrameGerenciarComponente() {
         GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
-        JLabel labelPacote = new JLabel(gerenciadorDeRecursos.getString("pacote_maiuscula"), JLabel.CENTER);
+        JLabel labelPacote = new JLabel(gerenciadorDeRecursos.getString("estrutura_pacote_maiuscula"), JLabel.CENTER);
         labelPacote.setFont(gerenciadorDeRecursos.getRobotoBlack(14));
         // Aumentando o label para que o frame não fique pequeno demais
         labelPacote.setPreferredSize(new Dimension(labelPacote.getPreferredSize().width*4, labelPacote.getPreferredSize().height));
@@ -359,13 +407,13 @@ public class PacoteUML extends EstruturaUML<Pacote> {
         JPanel painelGerenciarPacote = new JPanel(new MigLayout("insets 20 10 15 10", "[grow, fill]"));
         painelGerenciarPacote.setBackground(gerenciadorDeRecursos.getColor("white"));
 
-        JLabel labelNomePacote = new JLabel(gerenciadorDeRecursos.getString("nome"));
+        JLabel labelNomePacote = new JLabel(gerenciadorDeRecursos.getString("geral_nome"));
         labelNomePacote.setFont(gerenciadorDeRecursos.getRobotoMedium(15));
 
-        JTextField textFieldNomePacote = new JTextField(gerenciadorDeRecursos.getString("pacote_nome_default"));
+        JTextField textFieldNomePacote = new JTextField(gerenciadorDeRecursos.getString("estrutura_pacote_nome_default"));
         textFieldNomePacote.setBorder(BorderFactory.createCompoundBorder(
-            textFieldNomePacote.getBorder(),
-            BorderFactory.createEmptyBorder(5, 5, 5, 5))
+                textFieldNomePacote.getBorder(),
+                BorderFactory.createEmptyBorder(5, 5, 5, 5))
         );
         textFieldNomePacote.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
         textFieldNomePacote.setForeground(gerenciadorDeRecursos.getColor("outer_space_gray"));
@@ -391,7 +439,7 @@ public class PacoteUML extends EstruturaUML<Pacote> {
 
         // ----------------------------------------------------------------------------
 
-        JButton botaoAplicar = new JButton(gerenciadorDeRecursos.getString("aplicar_maiuscula"));
+        JButton botaoAplicar = new JButton(gerenciadorDeRecursos.getString("estrutura_aplicar_alteracoes_maiuscula"));
         botaoAplicar.setFont(gerenciadorDeRecursos.getRobotoBlack(13));
         botaoAplicar.setForeground(gerenciadorDeRecursos.getColor("white"));
         botaoAplicar.setBackground(gerenciadorDeRecursos.getColor("black"));
@@ -413,9 +461,9 @@ public class PacoteUML extends EstruturaUML<Pacote> {
         botaoAplicar.addActionListener(e -> {
             if (modeloAntesDeAlteracoes.ehDiferente(modeloAtual)) {
                 adicionarAlteracaoDeComponente(new EstruturaModificada<>(
-                    modeloAntesDeAlteracoes.copiar(),
-                    modeloAtual.copiar(),
-                    PacoteUML.this
+                        modeloAntesDeAlteracoes.copiar(),
+                        modeloAtual.copiar(),
+                        PacoteUML.this
                 ));
 
                 atualizarComponentesGraficos();
@@ -437,9 +485,9 @@ public class PacoteUML extends EstruturaUML<Pacote> {
             public void componentHidden(ComponentEvent e) {
                 if (modeloAntesDeAlteracoes.ehDiferente(modeloAtual)) {
                     adicionarAlteracaoDeComponente(new EstruturaModificada<>(
-                        modeloAntesDeAlteracoes.copiar(),
-                        modeloAtual.copiar(),
-                        PacoteUML.this
+                            modeloAntesDeAlteracoes.copiar(),
+                            modeloAtual.copiar(),
+                            PacoteUML.this
                     ));
 
                     atualizarComponentesGraficos();
@@ -458,55 +506,6 @@ public class PacoteUML extends EstruturaUML<Pacote> {
 
         super.getFrameGerenciarComponente().add(painelGerenciarComponente);
         super.getFrameGerenciarComponente().pack();
-    }
-
-    private void atualizarPontosDeRedimensionamento() {
-        JPanel painelRedimensionarEsquerdo = pontosDeRedimensionamento[0];
-        JPanel painelRedimensionarDireito = pontosDeRedimensionamento[1];
-        JPanel painelRedimensionarSuperior = pontosDeRedimensionamento[2];
-        JPanel painelRedimensionarInferior = pontosDeRedimensionamento[3];
-
-        painelRedimensionarEsquerdo.setBounds(
-            0,
-            (getAltura() + painelNomePacote.getBounds().height)/2 - painelRedimensionarEsquerdo.getPreferredSize().height/2,
-            painelRedimensionarEsquerdo.getPreferredSize().width,
-            painelRedimensionarEsquerdo.getPreferredSize().height
-        );
-
-
-        painelRedimensionarDireito.setBounds(
-            getLargura() - painelRedimensionarDireito.getPreferredSize().width,
-            (getAltura() + painelNomePacote.getBounds().height)/2 - painelRedimensionarDireito.getPreferredSize().height/2,
-            painelRedimensionarDireito.getPreferredSize().width,
-           painelRedimensionarDireito.getPreferredSize().height
-       );
-
-       painelRedimensionarSuperior.setBounds(
-           getLargura()/2 - painelRedimensionarSuperior.getPreferredSize().width/2,
-           painelNomePacote.getBounds().height,
-           painelRedimensionarSuperior.getPreferredSize().width,
-           painelRedimensionarSuperior.getPreferredSize().height
-       );
-
-
-       painelRedimensionarInferior.setBounds(
-           getLargura()/2 - painelRedimensionarInferior.getPreferredSize().width/2,
-           getAltura() - painelRedimensionarInferior.getPreferredSize().height,
-           painelRedimensionarInferior.getPreferredSize().width,
-           painelRedimensionarInferior.getPreferredSize().height
-       );
-
-       getPainelComponente().revalidate();
-       getPainelComponente().repaint();
-   }
-
-    private void mostrarPontosDeRedimensionamento(boolean mostrar) {
-        for (JPanel painelPontoDeRedimensionamento : pontosDeRedimensionamento) {
-            painelPontoDeRedimensionamento.setVisible(mostrar);
-        }
-
-        getPainelComponente().revalidate();
-        getPainelComponente().repaint();
     }
 
     @Override

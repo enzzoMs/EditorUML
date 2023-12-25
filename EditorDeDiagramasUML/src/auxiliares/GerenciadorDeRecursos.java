@@ -14,7 +14,6 @@ import java.util.ResourceBundle;
  * Singleton que gerencia o acesso a Strings, Cores, Imagens e Fontes, possuindo métodos para garantir a recuperação
  * de qualquer um deles.
  */
-
 public class GerenciadorDeRecursos {
     private static GerenciadorDeRecursos instancia;
     private final ResourceBundle bundleCores;
@@ -33,17 +32,20 @@ public class GerenciadorDeRecursos {
         try {
             GraphicsEnvironment graphicsEnvironment = GraphicsEnvironment.getLocalGraphicsEnvironment();
 
-            InputStream fonte = GerenciadorDeRecursos.class.getResourceAsStream("/fontes/Roboto-Black.ttf");
-            this.robotoBlack = Font.createFont(Font.TRUETYPE_FONT, fonte);
-            graphicsEnvironment.registerFont(this.robotoBlack);
+            try (InputStream fonte = GerenciadorDeRecursos.class.getResourceAsStream("/fontes/Roboto-Black.ttf")) {
+                robotoBlack = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(fonte));
+                graphicsEnvironment.registerFont(this.robotoBlack);
+            }
 
-            fonte = GerenciadorDeRecursos.class.getResourceAsStream("/fontes/Roboto-Medium.ttf");
-            robotoMedium = Font.createFont(Font.TRUETYPE_FONT, fonte);
+            try (InputStream fonte = GerenciadorDeRecursos.class.getResourceAsStream("/fontes/Roboto-Medium.ttf")) {
+                robotoMedium = Font.createFont(Font.TRUETYPE_FONT, Objects.requireNonNull(fonte));
+                graphicsEnvironment.registerFont(this.robotoMedium);
+            }
+
             graphicsEnvironment.registerFont(robotoMedium);
 
-        } catch (IOException | FontFormatException e) {
+        } catch (IOException | FontFormatException | NullPointerException e) {
             System.out.println("Falha ao carregar fonte");
-            e.printStackTrace();
         }
     }
 

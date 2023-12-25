@@ -6,7 +6,6 @@ import componentes.estruturas.EstruturaUML;
 import java.awt.*;
 
 public class EstruturaCriada implements AlteracaoDeComponenteUML {
-
     private final Point posicaoDepoisDaCriacao;
     private final EstruturaUML<?> estruturaCriada;
 

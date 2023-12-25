@@ -6,7 +6,7 @@ import componentes.modelos.ModeloDeComponenteUML;
 import java.awt.*;
 
 public class Pacote implements ModeloDeComponenteUML<Pacote> {
-    private String nome = GerenciadorDeRecursos.getInstancia().getString("pacote_nome_default");
+    private String nome = GerenciadorDeRecursos.getInstancia().getString("estrutura_pacote_nome_default");
     private Rectangle bounds;
 
     public Pacote() {}

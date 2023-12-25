@@ -30,10 +30,10 @@ import java.util.Objects;
 /**
  * Singleton que lida com o acesso a arquivos, fornecendo recursos especificamente para abrir, salvar ou
  * exportar DiagramasUML.
+ * @see DiagramaUML
  */
 public class GerenciadorDeArquivos {
     private static GerenciadorDeArquivos instancia;
-
     private final JDialog dialogErro = new JDialog();
 
     private GerenciadorDeArquivos() {
@@ -88,7 +88,7 @@ public class GerenciadorDeArquivos {
 
             @Override
             public String getDescription() {
-                return gerenciadorDeRecursos.getString("diretorio");
+                return gerenciadorDeRecursos.getString("geral_diretorio");
             }
         });
 
@@ -146,7 +146,7 @@ public class GerenciadorDeArquivos {
         fileChooser.setDialogTitle(gerenciadorDeRecursos.getString("diagrama_abrir"));
         fileChooser.setAcceptAllFileFilterUsed(false);
         fileChooser.setFileFilter(new FileNameExtensionFilter(
-            gerenciadorDeRecursos.getString("arquivo_de_texto"), "txt")
+            gerenciadorDeRecursos.getString("geral_arquivo_de_texto"), "txt")
         );
 
         int chooserResposta = fileChooser.showOpenDialog(null);
@@ -187,11 +187,11 @@ public class GerenciadorDeArquivos {
 
             @Override
             public String getDescription() {
-                return gerenciadorDeRecursos.getString("diretorio");
+                return gerenciadorDeRecursos.getString("geral_diretorio");
             }
         });
 
-        int respostaChooser = fileChooser.showDialog(null, gerenciadorDeRecursos.getString("exportar"));
+        int respostaChooser = fileChooser.showDialog(null, gerenciadorDeRecursos.getString("geral_exportar"));
 
         if (respostaChooser == JFileChooser.APPROVE_OPTION) {
             String caminhoArquivo = fileChooser.getSelectedFile().getAbsolutePath();
@@ -531,7 +531,7 @@ public class GerenciadorDeArquivos {
             1, 1, 1, 1, gerenciadorDeRecursos.getColor("raisin_black")
         ));
 
-        JLabel labelRespostaOK = new JLabel(gerenciadorDeRecursos.getString("ok_maiusculo"));
+        JLabel labelRespostaOK = new JLabel(gerenciadorDeRecursos.getString("geral_ok_maiusculo"));
         labelRespostaOK.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
         labelRespostaOK.setForeground(gerenciadorDeRecursos.getColor("black"));
 

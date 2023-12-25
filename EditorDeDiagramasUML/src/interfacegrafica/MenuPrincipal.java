@@ -138,7 +138,7 @@ public class MenuPrincipal {
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelSairAplicativo = new JLabel(gerenciadorDeRecursos.getString("sair"));
+        JLabel labelSairAplicativo = new JLabel(gerenciadorDeRecursos.getString("geral_sair"));
         labelSairAplicativo.setFont(gerenciadorDeRecursos.getRobotoMedium(16));
         labelSairAplicativo.setForeground(gerenciadorDeRecursos.getColor("white"));
         labelSairAplicativo.setHorizontalAlignment(JLabel.CENTER);
@@ -178,7 +178,6 @@ public class MenuPrincipal {
         painelMenuPrincipal.add(painelAbrirDiagrama, "grow, wrap, gapbottom 8");
         painelMenuPrincipal.add(painelSairAplicativo, "grow");
     }
-
 
     public JPanel getPainelMenuPrincipal() {
         return painelMenuPrincipal;

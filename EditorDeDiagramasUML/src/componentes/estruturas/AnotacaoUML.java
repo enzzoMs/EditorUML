@@ -21,8 +21,7 @@ import java.util.ArrayList;
 /**
  * Classe que representa a parte gráfica de uma estrutura UML do tipo "Anotação". Possui
  * capacidade para representar um texto qualquer.
- * */
-
+ */
 public class AnotacaoUML extends EstruturaUML<Anotacao> {
     private Anotacao modeloAtual = new Anotacao();
     private Anotacao modeloAntesDeAlteracoes;
@@ -83,7 +82,7 @@ public class AnotacaoUML extends EstruturaUML<Anotacao> {
         super.setBounds(LARGURA_MINIMA, ALTURA_MINIMA);
     }
 
-    public void atualizarComponentesGraficos() {
+    private void atualizarComponentesGraficos() {
         GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
         // Realizando as quebras de linha do texto
@@ -162,7 +161,7 @@ public class AnotacaoUML extends EstruturaUML<Anotacao> {
     protected void initFrameGerenciarComponente() {
         GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
-        JLabel labelAnotacao = new JLabel(gerenciadorDeRecursos.getString("anotacao_maiuscula"), JLabel.CENTER);
+        JLabel labelAnotacao = new JLabel(gerenciadorDeRecursos.getString("estrutura_anotacao_maiuscula"), JLabel.CENTER);
         labelAnotacao.setFont(gerenciadorDeRecursos.getRobotoBlack(14));
 
         JPanel painelLabelAnotacao = new JPanel(new MigLayout("insets 20 40 20 40","[grow]"));
@@ -177,7 +176,7 @@ public class AnotacaoUML extends EstruturaUML<Anotacao> {
         JPanel painelGerenciarAnotacao = new JPanel(new MigLayout("insets 20 10 15 10", "[grow, fill]"));
         painelGerenciarAnotacao.setBackground(gerenciadorDeRecursos.getColor("white"));
 
-        JLabel labelTextoAnotacao = new JLabel(gerenciadorDeRecursos.getString("texto"));
+        JLabel labelTextoAnotacao = new JLabel(gerenciadorDeRecursos.getString("estrutura_anotacao_texto"));
         labelTextoAnotacao.setFont(gerenciadorDeRecursos.getRobotoMedium(15));
 
         // ----------------------------------------------------------------------------
@@ -217,7 +216,7 @@ public class AnotacaoUML extends EstruturaUML<Anotacao> {
             BorderFactory.createMatteBorder(0, 0, 1, 0, gerenciadorDeRecursos.getColor("silver_sand"))
         ));
 
-        JLabel labelQuebrarAnotacao = new JLabel(gerenciadorDeRecursos.getString("quebrar_texto"));
+        JLabel labelQuebrarAnotacao = new JLabel(gerenciadorDeRecursos.getString("estrutura_classe_comentarios_quebrar_texto"));
         labelQuebrarAnotacao.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
         labelQuebrarAnotacao.setForeground(gerenciadorDeRecursos.getColor("outer_space_gray"));
 
@@ -244,7 +243,7 @@ public class AnotacaoUML extends EstruturaUML<Anotacao> {
 
         // ----------------------------------------------------------------------------
 
-        JButton botaoAplicar = new JButton(gerenciadorDeRecursos.getString("aplicar_maiuscula"));
+        JButton botaoAplicar = new JButton(gerenciadorDeRecursos.getString("estrutura_aplicar_alteracoes_maiuscula"));
         botaoAplicar.setFont(gerenciadorDeRecursos.getRobotoBlack(13));
         botaoAplicar.setForeground(gerenciadorDeRecursos.getColor("white"));
         botaoAplicar.setBackground(gerenciadorDeRecursos.getColor("black"));

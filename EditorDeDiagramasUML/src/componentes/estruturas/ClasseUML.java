@@ -105,24 +105,6 @@ public class ClasseUML extends EstruturaUML<Classe> {
         );
 
         super.setBounds(largura, altura);
-        // TODO: mudar a implementacao disso para outro lugar
-        /*
-        JLabel labelUndo = (JLabel) diagramaUML.getAreaDeDiagramas().getPainelOpcoesQuadroBranco().getComponent(3);
-        JLabel labelRedo = (JLabel) diagramaUML.getAreaDeDiagramas().getPainelOpcoesQuadroBranco().getComponent(4);
-
-        labelRedo.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                ClasseUML.this.getFrameGerenciarComponente().setVisible(false);
-            }
-        });
-
-        labelUndo.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                ClasseUML.this.getFrameGerenciarComponente().setVisible(false);
-            }
-        });*/
     }
 
     private void atualizarComponentesGraficos() {
@@ -146,7 +128,7 @@ public class ClasseUML extends EstruturaUML<Classe> {
         painelNomeClasse.removeAll();
 
         if (modeloAtual.ehInterface()) {
-            JLabel labelInterface = new JLabel(gerenciadorDeRecursos.getString("interface_uml"), JLabel.CENTER);
+            JLabel labelInterface = new JLabel(gerenciadorDeRecursos.getString("estrutura_classe_interface_uml"), JLabel.CENTER);
             labelInterface.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
             labelInterface.setForeground(gerenciadorDeRecursos.getColor("white"));
 
@@ -291,236 +273,13 @@ public class ClasseUML extends EstruturaUML<Classe> {
         return linhasComentario;
     }
 
-    @Override
-    public void setModelo(ModeloDeComponenteUML<Classe> novoModelo) {
-        modeloAtual = (Classe) novoModelo;
-        atualizarComponentesGraficos();
-    }
-
-    @Override
-    protected void initFrameGerenciarComponente() {
-        GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
-
-        JPanel painelGerenciarComponente = new JPanel(
-            new MigLayout("insets 0 0 20 0, fill", "","[grow, fill][grow, fill][]")
-        );
-        painelGerenciarComponente.setBackground(gerenciadorDeRecursos.getColor("white"));
-
-        // ----------------------------------------------------------------------------
-
-        JPanel[] paineisGerenciarComponente = {
-            getPainelGerenciarClasse(),
-            getPainelGerenciarAtributos(),
-            getPainelGerenciarMetodos()
-        };
-
-        // ----------------------------------------------------------------------------
-
-        String[] labelOpcoesNavegacao = {
-            gerenciadorDeRecursos.getString("classe_maiuscula"),
-            gerenciadorDeRecursos.getString("atributos_maiuscula"),
-            gerenciadorDeRecursos.getString("metodos_maiuscula")
-        };
-
-        JPanel[] paineisOpcoesNavegacao = new JPanel[labelOpcoesNavegacao.length];
-
-        MatteBorder bordaAtiva = BorderFactory.createMatteBorder(
-            0, 0, 3, 0, gerenciadorDeRecursos.getColor("black")
-        );
-        MatteBorder bordaDesativada = BorderFactory.createMatteBorder(
-            0, 0, 3, 0, gerenciadorDeRecursos.getColor("anti_flash_white")
-        );
-
-        for (int i = 0; i < labelOpcoesNavegacao.length; i++) {
-            JButton botaoOpcao = new JButton(labelOpcoesNavegacao[i]);
-            botaoOpcao.setFont(gerenciadorDeRecursos.getRobotoBlack(14));
-            botaoOpcao.setFocusable(false);
-            botaoOpcao.setForeground(gerenciadorDeRecursos.getColor("spanish_gray"));
-            botaoOpcao.setBorder(BorderFactory.createEmptyBorder());
-            botaoOpcao.setRolloverEnabled(false);
-            botaoOpcao.setContentAreaFilled(false);
-            botaoOpcao.addMouseListener(new MouseAdapter() {
-
-                // Se a cor do texto for preta então o texto está selecionado
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    JButton sourceButton = (JButton) e.getSource();
-
-                    if (sourceButton.getForeground().getRGB() != gerenciadorDeRecursos.getColor("black").getRGB()) {
-                        sourceButton.setForeground(gerenciadorDeRecursos.getColor("granite_gray"));
-                    }
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    JButton sourceButton = (JButton) e.getSource();
-
-                    if (sourceButton.getForeground().getRGB() != gerenciadorDeRecursos.getColor("black").getRGB()) {
-                        sourceButton.setForeground(gerenciadorDeRecursos.getColor("spanish_gray"));
-                    }
-                }
-            });
-
-            JPanel painelBotaoOpcao = new JPanel(new MigLayout("insets 20 40 20 40"));
-            painelBotaoOpcao.setBorder(bordaDesativada);
-            painelBotaoOpcao.add(botaoOpcao);
-            painelBotaoOpcao.setOpaque(false);
-
-            paineisOpcoesNavegacao[i] = (painelBotaoOpcao);
-        }
-
-        // A primeira opcao está selecionada por padrão
-        paineisOpcoesNavegacao[0].getComponent(0).setForeground(gerenciadorDeRecursos.getColor("black"));
-        paineisOpcoesNavegacao[0].setBorder(bordaAtiva);
-
-        // ----------------------------------------------------------------------------
-
-        for (int i = 0; i < paineisOpcoesNavegacao.length; i++) {
-            JPanel painelOpcao = paineisOpcoesNavegacao[i];
-            JPanel painelGerenciarOpcao = paineisGerenciarComponente[i];
-            int indexOpcao = i;
-
-            ((JButton) painelOpcao.getComponent(0)).addActionListener(e -> {
-                if (painelGerenciarOpcao.getParent() == null) {
-
-                    for (int j = 0; j < paineisOpcoesNavegacao.length; j++) {
-                        paineisOpcoesNavegacao[j].setBorder(
-                            j == indexOpcao ? bordaAtiva : bordaDesativada
-                        );
-
-                        paineisOpcoesNavegacao[j].getComponent(0).setForeground(
-                            gerenciadorDeRecursos.getColor(j == indexOpcao ? "black" : "spanish_gray")
-                        );
-                    }
-
-                    painelGerenciarComponente.remove(painelGerenciarComponente.getComponent(1));
-                    painelGerenciarComponente.add(painelGerenciarOpcao, "grow, wrap", 1);
-
-                    painelGerenciarComponente.revalidate();
-                    painelGerenciarComponente.repaint();
-                }
-            });
-        }
-
-        // ----------------------------------------------------------------------------
-
-        JPanel opcoesNavegacao = new JPanel(new MigLayout("insets 0 0 0 0, fill"));
-        opcoesNavegacao.setBackground(gerenciadorDeRecursos.getColor("white"));
-
-        opcoesNavegacao.add(paineisOpcoesNavegacao[0], "split 3, gapright 0, grow");
-        opcoesNavegacao.add(paineisOpcoesNavegacao[1], "gapright 0, grow");
-        opcoesNavegacao.add(paineisOpcoesNavegacao[2], "grow");
-
-        // ----------------------------------------------------------------------------
-
-        JDialog dialogErroNomeClasse = getDialogErroNomeClasse();
-
-        // ----------------------------------------------------------------------------
-
-        JButton botaoAplicar = new JButton(gerenciadorDeRecursos.getString("aplicar_maiuscula"));
-        botaoAplicar.setFont(gerenciadorDeRecursos.getRobotoBlack(13));
-        botaoAplicar.setForeground(gerenciadorDeRecursos.getColor("white"));
-        botaoAplicar.setBackground(gerenciadorDeRecursos.getColor("black"));
-        botaoAplicar.setBorder(new EmptyBorder(12, 20, 12, 20));
-        botaoAplicar.setOpaque(false);
-        botaoAplicar.setFocusable(false);
-        botaoAplicar.setHorizontalTextPosition(JButton.LEFT);
-        botaoAplicar.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                botaoAplicar.setBackground(gerenciadorDeRecursos.getColor("raisin_black"));
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                botaoAplicar.setBackground(gerenciadorDeRecursos.getColor("black"));
-            }
-        });
-        botaoAplicar.addActionListener(e -> {
-            if (modeloAtual.getNome().isEmpty()) {
-                dialogErroNomeClasse.setLocationRelativeTo(null);
-                dialogErroNomeClasse.setVisible(true);
-                return;
-            }
-
-            if (modeloAntesDeAlteracoes.ehDiferente(modeloAtual)) {
-                adicionarAlteracaoDeComponente(new EstruturaModificada<>(
-                        modeloAntesDeAlteracoes.copiar(),
-                        modeloAtual.copiar(),
-                    ClasseUML.this
-                ));
-
-                atualizarComponentesGraficos();
-                modeloAntesDeAlteracoes = modeloAtual.copiar();
-            }
-        });
-
-        // ----------------------------------------------------------------------------
-
-        getFrameGerenciarComponente().addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentShown(ComponentEvent e) {
-                modeloAntesDeAlteracoes = modeloAtual.copiar();
-            }
-
-            @Override
-            public void componentHidden(ComponentEvent e) {
-                if (modeloAtual.getNome().isEmpty()) {
-                    dialogErroNomeClasse.setLocationRelativeTo(null);
-                    dialogErroNomeClasse.setVisible(true);
-                    return;
-                }
-
-                if (modeloAntesDeAlteracoes.ehDiferente(modeloAtual)) {
-                    adicionarAlteracaoDeComponente(new EstruturaModificada<>(
-                        modeloAntesDeAlteracoes.copiar(),
-                        modeloAtual.copiar(),
-                        ClasseUML.this
-                    ));
-
-                    atualizarComponentesGraficos();
-
-                    modeloAntesDeAlteracoes = modeloAtual.copiar();
-                }
-            }
-        });
-
-        // ----------------------------------------------------------------------------
-
-        painelGerenciarComponente.add(opcoesNavegacao, "north");
-
-        // Encontra o maior painel possivel para que a janela nao seja redimensionada depois
-        int maiorLarguraPossivel = Math.max(paineisGerenciarComponente[0].getPreferredSize().width,
-                Math.max(paineisGerenciarComponente[1].getPreferredSize().width,
-                paineisGerenciarComponente[2].getPreferredSize().width));
-
-        int maiotAlturaPossivel = Math.max(paineisGerenciarComponente[0].getPreferredSize().height,
-                Math.max(paineisGerenciarComponente[1].getPreferredSize().height,
-                paineisGerenciarComponente[2].getPreferredSize().height));
-
-
-        JPanel painelTamanhoMaximo = new JPanel();
-        painelTamanhoMaximo.setPreferredSize(new Dimension(maiorLarguraPossivel, maiotAlturaPossivel));
-
-
-        painelGerenciarComponente.add(painelTamanhoMaximo, "grow, wrap");
-
-        painelGerenciarComponente.add(botaoAplicar, "align right, gaptop:push, gapbottom 0");
-
-        super.getFrameGerenciarComponente().add(painelGerenciarComponente);
-        super.getFrameGerenciarComponente().pack();
-
-        painelGerenciarComponente.remove(painelTamanhoMaximo);
-        painelGerenciarComponente.add(paineisGerenciarComponente[0], "grow, wrap", 1);
-    }
-
     private JPanel getPainelGerenciarClasse() {
         GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
-        JLabel labelNomeClasse = new JLabel(gerenciadorDeRecursos.getString("nome_da_classe"));
+        JLabel labelNomeClasse = new JLabel(gerenciadorDeRecursos.getString("estrutura_classe_nome_da_classe"));
         labelNomeClasse.setFont(gerenciadorDeRecursos.getRobotoMedium(15));
 
-        JTextField textFieldNomeClasse = new JTextField(gerenciadorDeRecursos.getString("classe_nome_default"));
+        JTextField textFieldNomeClasse = new JTextField(gerenciadorDeRecursos.getString("estrutura_classe_nome_default"));
 
         Border bordaTextField = BorderFactory.createCompoundBorder(
                 textFieldNomeClasse.getBorder(),
@@ -549,7 +308,7 @@ public class ClasseUML extends EstruturaUML<Classe> {
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelComentarioClasse = new JLabel(gerenciadorDeRecursos.getString("comentarios"));
+        JLabel labelComentarioClasse = new JLabel(gerenciadorDeRecursos.getString("estrutura_classe_comentarios"));
         labelComentarioClasse.setFont(gerenciadorDeRecursos.getRobotoMedium(15));
 
         JTextArea textAreaComentarioClasse = new JTextArea(8, 7);
@@ -578,7 +337,7 @@ public class ClasseUML extends EstruturaUML<Classe> {
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelQuebrarComentario = new JLabel(gerenciadorDeRecursos.getString("quebrar_texto"));
+        JLabel labelQuebrarComentario = new JLabel(gerenciadorDeRecursos.getString("estrutura_classe_comentarios_quebrar_texto"));
         labelQuebrarComentario.setFont(gerenciadorDeRecursos.getRobotoMedium(13));
         labelQuebrarComentario.setForeground(gerenciadorDeRecursos.getColor("outer_space_gray"));
 
@@ -593,9 +352,7 @@ public class ClasseUML extends EstruturaUML<Classe> {
         spinnerNumCaracteres.setForeground(gerenciadorDeRecursos.getColor("onyx"));
         ((JSpinner.DefaultEditor) spinnerNumCaracteres.getEditor()).getTextField().setEditable(false);
         ((JSpinner.DefaultEditor) spinnerNumCaracteres.getEditor()).getTextField().setFocusable(false);
-        spinnerNumCaracteres.addChangeListener(e -> {
-            modeloAtual.setNumCharsQuebrarComentario((int) spinnerNumCaracteres.getValue());
-        });
+        spinnerNumCaracteres.addChangeListener(e -> modeloAtual.setNumCharsQuebrarComentario((int) spinnerNumCaracteres.getValue()));
 
         // ----------------------------------------------------------------------------
 
@@ -609,7 +366,7 @@ public class ClasseUML extends EstruturaUML<Classe> {
 
         // ----------------------------------------------------------------------------
 
-        JCheckBox checkBoxAbstrata = new JCheckBox(gerenciadorDeRecursos.getString("abstrata"));
+        JCheckBox checkBoxAbstrata = new JCheckBox(gerenciadorDeRecursos.getString("estrutura_classe_abstrata"));
         checkBoxAbstrata.setBorder(bordaTextField);
         checkBoxAbstrata.setFont(gerenciadorDeRecursos.getRobotoMedium(15));
         checkBoxAbstrata.setForeground(gerenciadorDeRecursos.getColor("black"));
@@ -617,7 +374,7 @@ public class ClasseUML extends EstruturaUML<Classe> {
 
         // ----------------------------------------------------------------------------
 
-        JCheckBox checkBoxInterface = new JCheckBox(gerenciadorDeRecursos.getString("interface"));
+        JCheckBox checkBoxInterface = new JCheckBox(gerenciadorDeRecursos.getString("estrutura_classe_interface"));
         checkBoxInterface.setBorder(bordaTextField);
         checkBoxInterface.setFont(gerenciadorDeRecursos.getRobotoMedium(15));
         checkBoxInterface.setForeground(gerenciadorDeRecursos.getColor("black"));
@@ -678,11 +435,11 @@ public class ClasseUML extends EstruturaUML<Classe> {
         JTextField textFieldTipoAtributo = new JTextField();
         JTextField textFieldValorAtributo = new JTextField();
         JComboBox<String> comboBoxVisibilidadeAtributo = new JComboBox<>();
-        JCheckBox checkBoxAtributoEstatico = new JCheckBox(gerenciadorDeRecursos.getString("estatico"));
+        JCheckBox checkBoxAtributoEstatico = new JCheckBox(gerenciadorDeRecursos.getString("estrutura_classe_estatico"));
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelNomeAtributo = new JLabel(gerenciadorDeRecursos.getString("nome"));
+        JLabel labelNomeAtributo = new JLabel(gerenciadorDeRecursos.getString("geral_nome"));
         labelNomeAtributo.setFont(gerenciadorDeRecursos.getRobotoMedium(15));
         labelNomeAtributo.setForeground(gerenciadorDeRecursos.getColor("spanish_gray"));
 
@@ -698,7 +455,7 @@ public class ClasseUML extends EstruturaUML<Classe> {
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelTipoAtributo = new JLabel(gerenciadorDeRecursos.getString("tipo"));
+        JLabel labelTipoAtributo = new JLabel(gerenciadorDeRecursos.getString("estrutura_classe_tipo"));
         labelTipoAtributo.setFont(gerenciadorDeRecursos.getRobotoMedium(15));
         labelTipoAtributo.setForeground(gerenciadorDeRecursos.getColor("spanish_gray"));
 
@@ -709,7 +466,7 @@ public class ClasseUML extends EstruturaUML<Classe> {
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelValorAtributo = new JLabel(gerenciadorDeRecursos.getString("valor_padrao"));
+        JLabel labelValorAtributo = new JLabel(gerenciadorDeRecursos.getString("estrutura_classe_valor_padrao"));
         labelValorAtributo.setFont(gerenciadorDeRecursos.getRobotoMedium(15));
         labelValorAtributo.setForeground(gerenciadorDeRecursos.getColor("spanish_gray"));
 
@@ -757,7 +514,7 @@ public class ClasseUML extends EstruturaUML<Classe> {
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelVisibilidadeAtributo = new JLabel(gerenciadorDeRecursos.getString("visibilidade"));
+        JLabel labelVisibilidadeAtributo = new JLabel(gerenciadorDeRecursos.getString("estrutura_classe_visibilidade"));
         labelVisibilidadeAtributo.setFont(gerenciadorDeRecursos.getRobotoMedium(15));
         labelVisibilidadeAtributo.setForeground(gerenciadorDeRecursos.getColor("spanish_gray"));
 
@@ -819,22 +576,18 @@ public class ClasseUML extends EstruturaUML<Classe> {
         JPanel painelGerenciarAtributos = new JPanel(new MigLayout("insets 30 30 15 30", "[grow, fill][grow, fill]"));
         painelGerenciarAtributos.setBackground(gerenciadorDeRecursos.getColor("white"));
 
-        Consumer<Integer> emExcluirAtributo = (Integer indexAtributoExcluido) -> {
-            modeloAtual.getAtributos().remove((int) indexAtributoExcluido);
-        };
+        Consumer<Integer> emExcluirAtributo = (Integer indexAtributoExcluido) -> modeloAtual.getAtributos().remove((int) indexAtributoExcluido);
 
         Consumer<Void> emNovoAtributo = (Void) -> {
             Atributo novoAtributo = new Atributo();
             modeloAtual.getAtributos().add(novoAtributo);
         };
 
-        Consumer<Void> emAcimaAtributo = (Void) -> {
+        Consumer<Void> emAcimaAtributo = (Void) ->
             Collections.swap(modeloAtual.getAtributos(), jListGerenciarAtributos.getSelectedIndex(), jListGerenciarAtributos.getSelectedIndex() - 1);
-        };
 
-        Consumer<Void> emAbaixoAtributo = (Void) -> {
+        Consumer<Void> emAbaixoAtributo = (Void) ->
             Collections.swap(modeloAtual.getAtributos(), jListGerenciarAtributos.getSelectedIndex(), jListGerenciarAtributos.getSelectedIndex() + 1);
-        };
 
         JPanel painelOpcoesListaAtributos = getPainelOpcoesListaDeElementos(
             jListGerenciarAtributos, (DefaultListModel<String>) jListGerenciarAtributos.getModel(),
@@ -976,12 +729,12 @@ public class ClasseUML extends EstruturaUML<Classe> {
         JTextField textFieldNomeMetodo = new JTextField();
         JTextField textFieldTipoMetodo = new JTextField();
         JComboBox<String> comboBoxVisibilidadeMetodo = new JComboBox<>();
-        JCheckBox checkBoxMetodoEstatico = new JCheckBox(gerenciadorDeRecursos.getString("estatico"));
-        JCheckBox checkBoxMetodoAbstrato = new JCheckBox(gerenciadorDeRecursos.getString("abstrata"));
+        JCheckBox checkBoxMetodoEstatico = new JCheckBox(gerenciadorDeRecursos.getString("estrutura_classe_estatico"));
+        JCheckBox checkBoxMetodoAbstrato = new JCheckBox(gerenciadorDeRecursos.getString("estrutura_classe_abstrata"));
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelNomeMetodo = new JLabel(gerenciadorDeRecursos.getString("nome"));
+        JLabel labelNomeMetodo = new JLabel(gerenciadorDeRecursos.getString("geral_nome"));
         labelNomeMetodo.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
         labelNomeMetodo.setForeground(gerenciadorDeRecursos.getColor("spanish_gray"));
 
@@ -997,7 +750,7 @@ public class ClasseUML extends EstruturaUML<Classe> {
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelTipoMetodo = new JLabel(gerenciadorDeRecursos.getString("tipo"));
+        JLabel labelTipoMetodo = new JLabel(gerenciadorDeRecursos.getString("estrutura_classe_tipo"));
         labelTipoMetodo.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
         labelTipoMetodo.setForeground(gerenciadorDeRecursos.getColor("spanish_gray"));
 
@@ -1043,7 +796,7 @@ public class ClasseUML extends EstruturaUML<Classe> {
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelVisibilidadeMetodo= new JLabel(gerenciadorDeRecursos.getString("visibilidade"));
+        JLabel labelVisibilidadeMetodo= new JLabel(gerenciadorDeRecursos.getString("estrutura_classe_visibilidade"));
         labelVisibilidadeMetodo.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
         labelVisibilidadeMetodo.setForeground(gerenciadorDeRecursos.getColor("spanish_gray"));
 
@@ -1108,22 +861,19 @@ public class ClasseUML extends EstruturaUML<Classe> {
 
         // ----------------------------------------------------------------------------
 
-        Consumer<Integer> emExcluirMetodo = (Integer indexMetodoExcluido) -> {
+        Consumer<Integer> emExcluirMetodo = (Integer indexMetodoExcluido) ->
             modeloAtual.getMetodos().remove((int) indexMetodoExcluido);
-        };
 
         Consumer<Void> emNovoMetodo = (Void) -> {
             Metodo novoMetodo = new Metodo();
             modeloAtual.getMetodos().add(novoMetodo);
         };
 
-        Consumer<Void> emAcimaMetodo = (Void) -> {
+        Consumer<Void> emAcimaMetodo = (Void) ->
             Collections.swap(modeloAtual.getMetodos(), jListGerenciarMetodos.getSelectedIndex(), jListGerenciarMetodos.getSelectedIndex() - 1);
-        };
 
-        Consumer<Void> emAbaixoMetodo = (Void) -> {
+        Consumer<Void> emAbaixoMetodo = (Void) ->
             Collections.swap(modeloAtual.getMetodos(), jListGerenciarMetodos.getSelectedIndex(), jListGerenciarMetodos.getSelectedIndex() + 1);
-        };
 
         JPanel painelOpcoesListaMetodos = getPainelOpcoesListaDeElementos(
             jListGerenciarMetodos, (DefaultListModel<String>) jListGerenciarMetodos.getModel(),
@@ -1195,7 +945,7 @@ public class ClasseUML extends EstruturaUML<Classe> {
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelParametros = new JLabel(gerenciadorDeRecursos.getString("parametros"));
+        JLabel labelParametros = new JLabel(gerenciadorDeRecursos.getString("estrutura_classe_parametros"));
         labelParametros.setFont(gerenciadorDeRecursos.getRobotoBlack(15));
 
         JLabel labelSeparadorParametros = new JLabel();
@@ -1205,7 +955,7 @@ public class ClasseUML extends EstruturaUML<Classe> {
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelNomeParametro = new JLabel(gerenciadorDeRecursos.getString("nome"));
+        JLabel labelNomeParametro = new JLabel(gerenciadorDeRecursos.getString("geral_nome"));
         labelNomeParametro.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
         labelNomeParametro.setForeground(gerenciadorDeRecursos.getColor("spanish_gray"));
 
@@ -1216,7 +966,7 @@ public class ClasseUML extends EstruturaUML<Classe> {
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelTipoParametro = new JLabel(gerenciadorDeRecursos.getString("tipo"));
+        JLabel labelTipoParametro = new JLabel(gerenciadorDeRecursos.getString("estrutura_classe_tipo"));
         labelTipoParametro.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
         labelTipoParametro.setForeground(gerenciadorDeRecursos.getColor("spanish_gray"));
 
@@ -1227,7 +977,7 @@ public class ClasseUML extends EstruturaUML<Classe> {
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelValorPadraoParametro = new JLabel(gerenciadorDeRecursos.getString("valor_padrao"));
+        JLabel labelValorPadraoParametro = new JLabel(gerenciadorDeRecursos.getString("estrutura_classe_valor_padrao"));
         labelValorPadraoParametro.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
         labelValorPadraoParametro.setForeground(gerenciadorDeRecursos.getColor("spanish_gray"));
 
@@ -1635,7 +1385,7 @@ public class ClasseUML extends EstruturaUML<Classe> {
             BorderFactory.createMatteBorder(1, 1, 1, 1, gerenciadorDeRecursos.getColor("raisin_black"))
         );
 
-        JLabel labelRespostaOK = new JLabel(gerenciadorDeRecursos.getString("ok_maiusculo"));
+        JLabel labelRespostaOK = new JLabel(gerenciadorDeRecursos.getString("geral_ok_maiusculo"));
         labelRespostaOK.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
         labelRespostaOK.setForeground(gerenciadorDeRecursos.getColor("black"));
 
@@ -1673,6 +1423,229 @@ public class ClasseUML extends EstruturaUML<Classe> {
         dialogErroNomeClasse.pack();
 
         return dialogErroNomeClasse;
+    }
+
+    @Override
+    public void setModelo(ModeloDeComponenteUML<Classe> novoModelo) {
+        modeloAtual = (Classe) novoModelo;
+        atualizarComponentesGraficos();
+    }
+
+    @Override
+    protected void initFrameGerenciarComponente() {
+        GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
+
+        JPanel painelGerenciarComponente = new JPanel(
+                new MigLayout("insets 0 0 20 0, fill", "","[grow, fill][grow, fill][]")
+        );
+        painelGerenciarComponente.setBackground(gerenciadorDeRecursos.getColor("white"));
+
+        // ----------------------------------------------------------------------------
+
+        JPanel[] paineisGerenciarComponente = {
+                getPainelGerenciarClasse(),
+                getPainelGerenciarAtributos(),
+                getPainelGerenciarMetodos()
+        };
+
+        // ----------------------------------------------------------------------------
+
+        String[] labelOpcoesNavegacao = {
+                gerenciadorDeRecursos.getString("estrutura_classe_maiuscula"),
+                gerenciadorDeRecursos.getString("estrutura_classe_atributos_maiuscula"),
+                gerenciadorDeRecursos.getString("estrutura_classe_metodos_maiuscula")
+        };
+
+        JPanel[] paineisOpcoesNavegacao = new JPanel[labelOpcoesNavegacao.length];
+
+        MatteBorder bordaAtiva = BorderFactory.createMatteBorder(
+                0, 0, 3, 0, gerenciadorDeRecursos.getColor("black")
+        );
+        MatteBorder bordaDesativada = BorderFactory.createMatteBorder(
+                0, 0, 3, 0, gerenciadorDeRecursos.getColor("anti_flash_white")
+        );
+
+        for (int i = 0; i < labelOpcoesNavegacao.length; i++) {
+            JButton botaoOpcao = new JButton(labelOpcoesNavegacao[i]);
+            botaoOpcao.setFont(gerenciadorDeRecursos.getRobotoBlack(14));
+            botaoOpcao.setFocusable(false);
+            botaoOpcao.setForeground(gerenciadorDeRecursos.getColor("spanish_gray"));
+            botaoOpcao.setBorder(BorderFactory.createEmptyBorder());
+            botaoOpcao.setRolloverEnabled(false);
+            botaoOpcao.setContentAreaFilled(false);
+            botaoOpcao.addMouseListener(new MouseAdapter() {
+
+                // Se a cor do texto for preta então o texto está selecionado
+                @Override
+                public void mouseEntered(MouseEvent e) {
+                    JButton sourceButton = (JButton) e.getSource();
+
+                    if (sourceButton.getForeground().getRGB() != gerenciadorDeRecursos.getColor("black").getRGB()) {
+                        sourceButton.setForeground(gerenciadorDeRecursos.getColor("granite_gray"));
+                    }
+                }
+
+                @Override
+                public void mouseExited(MouseEvent e) {
+                    JButton sourceButton = (JButton) e.getSource();
+
+                    if (sourceButton.getForeground().getRGB() != gerenciadorDeRecursos.getColor("black").getRGB()) {
+                        sourceButton.setForeground(gerenciadorDeRecursos.getColor("spanish_gray"));
+                    }
+                }
+            });
+
+            JPanel painelBotaoOpcao = new JPanel(new MigLayout("insets 20 40 20 40"));
+            painelBotaoOpcao.setBorder(bordaDesativada);
+            painelBotaoOpcao.add(botaoOpcao);
+            painelBotaoOpcao.setOpaque(false);
+
+            paineisOpcoesNavegacao[i] = (painelBotaoOpcao);
+        }
+
+        // A primeira opcao está selecionada por padrão
+        paineisOpcoesNavegacao[0].getComponent(0).setForeground(gerenciadorDeRecursos.getColor("black"));
+        paineisOpcoesNavegacao[0].setBorder(bordaAtiva);
+
+        // ----------------------------------------------------------------------------
+
+        for (int i = 0; i < paineisOpcoesNavegacao.length; i++) {
+            JPanel painelOpcao = paineisOpcoesNavegacao[i];
+            JPanel painelGerenciarOpcao = paineisGerenciarComponente[i];
+            int indexOpcao = i;
+
+            ((JButton) painelOpcao.getComponent(0)).addActionListener(e -> {
+                if (painelGerenciarOpcao.getParent() == null) {
+
+                    for (int j = 0; j < paineisOpcoesNavegacao.length; j++) {
+                        paineisOpcoesNavegacao[j].setBorder(
+                                j == indexOpcao ? bordaAtiva : bordaDesativada
+                        );
+
+                        paineisOpcoesNavegacao[j].getComponent(0).setForeground(
+                                gerenciadorDeRecursos.getColor(j == indexOpcao ? "black" : "spanish_gray")
+                        );
+                    }
+
+                    painelGerenciarComponente.remove(painelGerenciarComponente.getComponent(1));
+                    painelGerenciarComponente.add(painelGerenciarOpcao, "grow, wrap", 1);
+
+                    painelGerenciarComponente.revalidate();
+                    painelGerenciarComponente.repaint();
+                }
+            });
+        }
+
+        // ----------------------------------------------------------------------------
+
+        JPanel opcoesNavegacao = new JPanel(new MigLayout("insets 0 0 0 0, fill"));
+        opcoesNavegacao.setBackground(gerenciadorDeRecursos.getColor("white"));
+
+        opcoesNavegacao.add(paineisOpcoesNavegacao[0], "split 3, gapright 0, grow");
+        opcoesNavegacao.add(paineisOpcoesNavegacao[1], "gapright 0, grow");
+        opcoesNavegacao.add(paineisOpcoesNavegacao[2], "grow");
+
+        // ----------------------------------------------------------------------------
+
+        JDialog dialogErroNomeClasse = getDialogErroNomeClasse();
+
+        // ----------------------------------------------------------------------------
+
+        JButton botaoAplicar = new JButton(gerenciadorDeRecursos.getString("estrutura_aplicar_alteracoes_maiuscula"));
+        botaoAplicar.setFont(gerenciadorDeRecursos.getRobotoBlack(13));
+        botaoAplicar.setForeground(gerenciadorDeRecursos.getColor("white"));
+        botaoAplicar.setBackground(gerenciadorDeRecursos.getColor("black"));
+        botaoAplicar.setBorder(new EmptyBorder(12, 20, 12, 20));
+        botaoAplicar.setOpaque(false);
+        botaoAplicar.setFocusable(false);
+        botaoAplicar.setHorizontalTextPosition(JButton.LEFT);
+        botaoAplicar.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                botaoAplicar.setBackground(gerenciadorDeRecursos.getColor("raisin_black"));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                botaoAplicar.setBackground(gerenciadorDeRecursos.getColor("black"));
+            }
+        });
+        botaoAplicar.addActionListener(e -> {
+            if (modeloAtual.getNome().isEmpty()) {
+                dialogErroNomeClasse.setLocationRelativeTo(null);
+                dialogErroNomeClasse.setVisible(true);
+                return;
+            }
+
+            if (modeloAntesDeAlteracoes.ehDiferente(modeloAtual)) {
+                adicionarAlteracaoDeComponente(new EstruturaModificada<>(
+                        modeloAntesDeAlteracoes.copiar(),
+                        modeloAtual.copiar(),
+                        ClasseUML.this
+                ));
+
+                atualizarComponentesGraficos();
+                modeloAntesDeAlteracoes = modeloAtual.copiar();
+            }
+        });
+
+        // ----------------------------------------------------------------------------
+
+        getFrameGerenciarComponente().addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                modeloAntesDeAlteracoes = modeloAtual.copiar();
+            }
+
+            @Override
+            public void componentHidden(ComponentEvent e) {
+                if (modeloAtual.getNome().isEmpty()) {
+                    dialogErroNomeClasse.setLocationRelativeTo(null);
+                    dialogErroNomeClasse.setVisible(true);
+                    return;
+                }
+
+                if (modeloAntesDeAlteracoes.ehDiferente(modeloAtual)) {
+                    adicionarAlteracaoDeComponente(new EstruturaModificada<>(
+                            modeloAntesDeAlteracoes.copiar(),
+                            modeloAtual.copiar(),
+                            ClasseUML.this
+                    ));
+
+                    atualizarComponentesGraficos();
+
+                    modeloAntesDeAlteracoes = modeloAtual.copiar();
+                }
+            }
+        });
+
+        // ----------------------------------------------------------------------------
+
+        painelGerenciarComponente.add(opcoesNavegacao, "north");
+
+        // Encontra o maior painel possivel para que a janela nao seja redimensionada depois
+        int maiorLarguraPossivel = Math.max(paineisGerenciarComponente[0].getPreferredSize().width,
+                Math.max(paineisGerenciarComponente[1].getPreferredSize().width,
+                        paineisGerenciarComponente[2].getPreferredSize().width));
+
+        int maiotAlturaPossivel = Math.max(paineisGerenciarComponente[0].getPreferredSize().height,
+                Math.max(paineisGerenciarComponente[1].getPreferredSize().height,
+                        paineisGerenciarComponente[2].getPreferredSize().height));
+
+
+        JPanel painelTamanhoMaximo = new JPanel();
+        painelTamanhoMaximo.setPreferredSize(new Dimension(maiorLarguraPossivel, maiotAlturaPossivel));
+
+
+        painelGerenciarComponente.add(painelTamanhoMaximo, "grow, wrap");
+
+        painelGerenciarComponente.add(botaoAplicar, "align right, gaptop:push, gapbottom 0");
+
+        super.getFrameGerenciarComponente().add(painelGerenciarComponente);
+        super.getFrameGerenciarComponente().pack();
+
+        painelGerenciarComponente.remove(painelTamanhoMaximo);
+        painelGerenciarComponente.add(paineisGerenciarComponente[0], "grow, wrap", 1);
     }
 
     @Override

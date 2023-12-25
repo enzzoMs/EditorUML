@@ -22,6 +22,7 @@ public class Anotacao implements ModeloDeComponenteUML<Anotacao> {
     public boolean ehDiferente(Anotacao modelo) {
         return !modelo.texto.equals(texto) || modelo.numCharsQuebrarTexto != numCharsQuebrarTexto;
     }
+
     public String getTexto() {
         return texto;
     }

@@ -5,7 +5,6 @@ import componentes.modelos.relacoes.Relacao;
 import componentes.relacoes.RelacaoUML;
 
 public class RelacaoModificada implements AlteracaoDeComponenteUML {
-
     private final Relacao modeloAntesDaAlteracao;
     private final Relacao modeloDepoisDaAlteracao;
     private final RelacaoUML relacaoModificada;

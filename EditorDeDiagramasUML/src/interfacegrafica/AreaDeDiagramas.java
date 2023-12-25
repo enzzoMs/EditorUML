@@ -27,13 +27,7 @@ import java.util.ArrayList;
  * remoção e modificação de componentes no quadro branco.
  */
 public class AreaDeDiagramas {
-
-    // TODO: arrumar esses atributos e ver comentarios em metodos
-    private final JPanel painelAreaDeDiagramas;
-    private final JPanel painelQuadroBranco;
     private DiagramaUML diagramaAtual = new DiagramaUML();
-    private boolean criacaoDeRelacaoAcontecendo;
-    private TipoDeRelacao tipoDeRelacaoSendoCriada;
     private final ArrayList<AlteracaoDeComponenteUML> alteracoesDeComponentes = new ArrayList<>();
     /**
      * Indica a posição atual na lista de alterações de acordo com as ações do usuário.
@@ -42,13 +36,15 @@ public class AreaDeDiagramas {
      */
     private int indexAlteracao = -1;
     private boolean movimentacaoPermitida = false;
+    private boolean criacaoDeRelacaoAcontecendo;
+    private TipoDeRelacao tipoDeRelacaoSendoCriada;
     private final GerenciadorInterfaceGrafica gerenciadorInterfaceGrafica;
     private final JDialog dialogSalvarAlteracoes = new JDialog();
     private final JPanel painelDiretorioDiagrama = new JPanel();
+    private final JPanel painelAreaDeDiagramas;
+    private final JPanel painelQuadroBranco;
     private final JPanel painelCriarRelacao = new JPanel();
-
     private final JPanel painelCancelarRelacao = new JPanel();
-
     private final JPanel painelInstrucoesRelacao = new JPanel();
     /**
      * Um painel contendo botões para ações como: mover quadro, selecionar componente, desfazer e refazer alterações
@@ -117,7 +113,7 @@ public class AreaDeDiagramas {
         );
         painelInstrucoesRelacao.setVisible(false);
 
-        JLabel labelInstrucao = new JLabel(gerenciadorDeRecursos.getString("instrucoes_maiusculo"), JLabel.CENTER);
+        JLabel labelInstrucao = new JLabel(gerenciadorDeRecursos.getString("relacoes_instrucoes_maiusculo"), JLabel.CENTER);
         labelInstrucao.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
         labelInstrucao.setForeground(gerenciadorDeRecursos.getColor("white"));
 
@@ -125,7 +121,7 @@ public class AreaDeDiagramas {
         painelErro.add(labelInstrucao, "align center, grow");
         painelErro.setBackground(gerenciadorDeRecursos.getColor("dark_charcoal"));
 
-        JLabel labelDescricaoInstrucao = new JLabel(gerenciadorDeRecursos.getString("instrucoes_relacoes") , JLabel.CENTER);
+        JLabel labelDescricaoInstrucao = new JLabel(gerenciadorDeRecursos.getString("relacoes_instrucoes") , JLabel.CENTER);
         labelDescricaoInstrucao.setFont(gerenciadorDeRecursos.getRobotoMedium(12));
 
         painelInstrucoesRelacao.add(painelErro, "north");
@@ -140,7 +136,7 @@ public class AreaDeDiagramas {
         );
         painelCriarRelacao.setVisible(false);
 
-        JLabel labelCriarRelacionamento = new JLabel(gerenciadorDeRecursos.getString("finalizar"));
+        JLabel labelCriarRelacionamento = new JLabel(gerenciadorDeRecursos.getString("geral_finalizar"));
         labelCriarRelacionamento.setFont(gerenciadorDeRecursos.getRobotoMedium(15));
         labelCriarRelacionamento.setForeground(gerenciadorDeRecursos.getColor("black"));
         painelCriarRelacao.add(labelCriarRelacionamento, "align center");
@@ -154,7 +150,7 @@ public class AreaDeDiagramas {
         );
         painelCancelarRelacao.setVisible(false);
 
-        JLabel cancelarRelacao = new JLabel(gerenciadorDeRecursos.getString("cancelar"));
+        JLabel cancelarRelacao = new JLabel(gerenciadorDeRecursos.getString("geral_cancelar"));
         cancelarRelacao.setFont(gerenciadorDeRecursos.getRobotoMedium(15));
         cancelarRelacao.setForeground(gerenciadorDeRecursos.getColor("black"));
 
@@ -279,7 +275,7 @@ public class AreaDeDiagramas {
         painelAreaDeDiagramas.add(painelCamadasQuadroBranco, "grow");
     }
 
-    public void addComponenteAoQuadro(EstruturaUML<?> componente, boolean centralizar) {
+    public void addEstruturaAoQuadro(EstruturaUML<?> componente, boolean centralizar) {
         diagramaAtual.addComponente(componente);
 
         if (componente instanceof PacoteUML) {
@@ -311,6 +307,12 @@ public class AreaDeDiagramas {
         revalidarQuadroBranco();
     }
 
+    public void addRelacaoAoDiagrama(RelacaoUML relacao) {
+        if (!diagramaAtual.getRelacoesUML().contains(relacao)) {
+            diagramaAtual.addRelacao(relacao);
+        }
+    }
+
     public void addComponenteAoQuadro(JComponent componente, int index) {
         painelQuadroBranco.add(componente, index);
         revalidarQuadroBranco();
@@ -319,27 +321,6 @@ public class AreaDeDiagramas {
     public void addComponenteAoQuadro(JComponent componente) {
         painelQuadroBranco.add(componente);
         revalidarQuadroBranco();
-    }
-
-    public void addRelacaoAoDiagrama(RelacaoUML relacao) {
-        if (!diagramaAtual.getRelacoesUML().contains(relacao)) {
-            diagramaAtual.addRelacao(relacao);
-        }
-    }
-
-    public void removerEstruturaDoQuadro(EstruturaUML<?> componente) {
-        diagramaAtual.removerComponente(componente);
-        painelQuadroBranco.remove(componente.getPainelComponente());
-        revalidarQuadroBranco();
-    }
-
-    public void removerComponenteDoQuadro(JComponent componente) {
-        painelQuadroBranco.remove(componente);
-        revalidarQuadroBranco();
-    }
-
-    public void removerRelacaoDoDiagrama(RelacaoUML relacao) {
-        diagramaAtual.removerRelacao(relacao);
     }
 
     public void addAlteracaoDeComponente(AlteracaoDeComponenteUML novaAlteracao) {
@@ -383,10 +364,19 @@ public class AreaDeDiagramas {
         }
     }
 
-    // TODO
-    // Por "habilitados" entende-se que o usuario pode interagir com eles
-    public boolean componentesEstaoHabilitados() {
-        return !movimentacaoPermitida && !criacaoDeRelacaoAcontecendo;
+    public void removerEstruturaDoQuadro(EstruturaUML<?> componente) {
+        diagramaAtual.removerComponente(componente);
+        painelQuadroBranco.remove(componente.getPainelComponente());
+        revalidarQuadroBranco();
+    }
+
+    public void removerRelacaoDoDiagrama(RelacaoUML relacao) {
+        diagramaAtual.removerRelacao(relacao);
+    }
+
+    public void removerComponenteDoQuadro(JComponent componente) {
+        painelQuadroBranco.remove(componente);
+        revalidarQuadroBranco();
     }
 
     public void revalidarQuadroBranco() {
@@ -456,7 +446,7 @@ public class AreaDeDiagramas {
             setVisibilidadeDiagramaNaoSalvo(false);
 
             gerenciadorInterfaceGrafica.setWindowTitle(
-                gerenciadorDeRecursos.getString("app_titulo") + " - " + diagramaAtual.arquivoDiagrama.getName()
+                    gerenciadorDeRecursos.getString("app_titulo") + " - " + diagramaAtual.arquivoDiagrama.getName()
             );
         }
     }
@@ -486,7 +476,7 @@ public class AreaDeDiagramas {
         setLabelDiretorioDiagrama(diagramaAtual.arquivoDiagrama.getAbsolutePath());
 
         gerenciadorInterfaceGrafica.setWindowTitle(
-            gerenciadorDeRecursos.getString("app_titulo") + " - " + diagramaAtual.arquivoDiagrama.getName()
+                gerenciadorDeRecursos.getString("app_titulo") + " - " + diagramaAtual.arquivoDiagrama.getName()
         );
     }
 
@@ -543,16 +533,16 @@ public class AreaDeDiagramas {
         for (Component componente : painelQuadroBranco.getComponents()) {
             painelCopiaQuadroBranco.add(componente);
             componente.setLocation(
-                componente.getX() - menorPontoX + MARGEM_MINIMA,
-                componente.getY() - menorPontoY + MARGEM_MINIMA
+                    componente.getX() - menorPontoX + MARGEM_MINIMA,
+                    componente.getY() - menorPontoY + MARGEM_MINIMA
             );
         }
 
         // Define o tamanho do painel a ser exportado como a area que contem os componentes + margem (* 2 para
         // adicionar margem em ambos os lados: direita e esquerda, cima e baixo)
         painelCopiaQuadroBranco.setSize(new Dimension(
-            (maiorPontoX - menorPontoX) + MARGEM_MINIMA * 2,
-            (maiorPontoY - menorPontoY) + MARGEM_MINIMA * 2)
+                (maiorPontoX - menorPontoX) + MARGEM_MINIMA * 2,
+                (maiorPontoY - menorPontoY) + MARGEM_MINIMA * 2)
         );
         GerenciadorDeArquivos.getInstancia().exportarDiagrama(painelCopiaQuadroBranco, diagramaAtual.arquivoDiagrama);
 
@@ -561,8 +551,8 @@ public class AreaDeDiagramas {
         for (Component componente : painelCopiaQuadroBranco.getComponents()) {
             painelQuadroBranco.add(componente);
             componente.setLocation(
-                componente.getX() + menorPontoX - MARGEM_MINIMA,
-                componente.getY() + menorPontoY - MARGEM_MINIMA
+                    componente.getX() + menorPontoX - MARGEM_MINIMA,
+                    componente.getY() + menorPontoY - MARGEM_MINIMA
             );
         }
 
@@ -611,6 +601,21 @@ public class AreaDeDiagramas {
         return !painelSalvar.getBackground().equals(white) || !painelNaoSalvar.getBackground().equals(white);
     }
 
+    public JPanel getPainelAreaDeDiagramas() {
+        return this.painelAreaDeDiagramas;
+    }
+
+    public int getTamanhoQuadroBranco() {
+        return TAMANHO_QUADRO_BRANCO;
+    }
+
+    /**
+     * @return 'True' se o usuário pode interagir com os componentes, 'False' caso contrário.
+     */
+    public boolean componentesEstaoHabilitados() {
+        return !movimentacaoPermitida && !criacaoDeRelacaoAcontecendo;
+    }
+
     private void setLabelDiretorioDiagrama(String diretorio) {
         GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
@@ -636,14 +641,6 @@ public class AreaDeDiagramas {
         criacaoDeRelacaoAcontecendo = criacaoAcontecendo;
         painelInstrucoesRelacao.setVisible(criacaoAcontecendo);
         painelCriarRelacao.setVisible(criacaoAcontecendo);
-    }
-
-    public JPanel getPainelAreaDeDiagramas() {
-        return this.painelAreaDeDiagramas;
-    }
-
-    public int getTamanhoQuadroBranco() {
-        return TAMANHO_QUADRO_BRANCO;
     }
 
     private JPanel getPainelMenuDeOpcoes() {
@@ -679,7 +676,7 @@ public class AreaDeDiagramas {
             gerenciadorDeRecursos.getString("salvar_como"),
             gerenciadorDeRecursos.getString("diagrama_abrir"),
             gerenciadorDeRecursos.getString("diagrama_exportar"),
-            gerenciadorDeRecursos.getString("voltar"),
+            gerenciadorDeRecursos.getString("geral_voltar"),
         };
 
         ImageIcon[] iconesOpcoes = {
@@ -851,7 +848,7 @@ public class AreaDeDiagramas {
                 if (!criacaoDeRelacaoAcontecendo) {
                     ClasseUML novaClasse = new ClasseUML(AreaDeDiagramas.this);
 
-                    addComponenteAoQuadro(novaClasse, true);
+                    addEstruturaAoQuadro(novaClasse, true);
 
                     addAlteracaoDeComponente(
                         new EstruturaCriada(
@@ -876,7 +873,7 @@ public class AreaDeDiagramas {
                 if (!criacaoDeRelacaoAcontecendo) {
                     AnotacaoUML novaAnotacao = new AnotacaoUML(AreaDeDiagramas.this);
 
-                    addComponenteAoQuadro(novaAnotacao, true);
+                    addEstruturaAoQuadro(novaAnotacao, true);
 
                     addAlteracaoDeComponente(
                         new EstruturaCriada(
@@ -901,7 +898,7 @@ public class AreaDeDiagramas {
                 if (!criacaoDeRelacaoAcontecendo) {
                     PacoteUML novoPacote = new PacoteUML(AreaDeDiagramas.this);
 
-                    addComponenteAoQuadro(novoPacote, true);
+                    addEstruturaAoQuadro(novoPacote, true);
 
                     Rectangle boundsPainelComponente = novoPacote.getPainelComponente().getBounds();
                     Pacote modeloPacote = new Pacote();
@@ -1540,7 +1537,7 @@ public class AreaDeDiagramas {
         String[] salvarAlteracoesOpcoesTexto = {
             gerenciadorDeRecursos.getString("salvar"),
             gerenciadorDeRecursos.getString("salvar_nao"),
-            gerenciadorDeRecursos.getString("cancelar")
+            gerenciadorDeRecursos.getString("geral_cancelar")
         };
 
         JPanel[] salvarAlteracoesOpcoes = new JPanel[salvarAlteracoesOpcoesTexto.length];

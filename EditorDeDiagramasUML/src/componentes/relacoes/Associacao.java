@@ -1,9 +1,7 @@
 package componentes.relacoes;
 
 import auxiliares.GerenciadorDeRecursos;
-import componentes.alteracoes.estruturas.EstruturaModificada;
 import componentes.alteracoes.relacoes.RelacaoRemovida;
-import componentes.estruturas.PacoteUML;
 import componentes.modelos.relacoes.DirecaoDeRelacao;
 import componentes.modelos.relacoes.Relacao;
 import interfacegrafica.AreaDeDiagramas;
@@ -82,7 +80,7 @@ public class Associacao extends RelacaoUML{
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelNomeRelacao = new JLabel(gerenciadorDeRecursos.getString("nome"));
+        JLabel labelNomeRelacao = new JLabel(gerenciadorDeRecursos.getString("geral_nome"));
         labelNomeRelacao.setFont(gerenciadorDeRecursos.getRobotoMedium(15));
 
         JTextField textFieldNomeRelacao = new JTextField();
@@ -122,13 +120,13 @@ public class Associacao extends RelacaoUML{
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelLadoA = new JLabel(gerenciadorDeRecursos.getString("lado_a"), JLabel.CENTER);
+        JLabel labelLadoA = new JLabel(gerenciadorDeRecursos.getString("relacao_lado_a"), JLabel.CENTER);
         labelLadoA.setFont(gerenciadorDeRecursos.getRobotoBlack(15));
 
-        JLabel labelLadoB = new JLabel(gerenciadorDeRecursos.getString("lado_b"), JLabel.CENTER);
+        JLabel labelLadoB = new JLabel(gerenciadorDeRecursos.getString("relacao_lado_b"), JLabel.CENTER);
         labelLadoB.setFont(gerenciadorDeRecursos.getRobotoBlack(15));
 
-        JLabel labelMostrarSeta = new JLabel(gerenciadorDeRecursos.getString("mostrar_seta"), JLabel.CENTER);
+        JLabel labelMostrarSeta = new JLabel(gerenciadorDeRecursos.getString("relacao_mostrar_seta"), JLabel.CENTER);
         labelMostrarSeta.setFont(gerenciadorDeRecursos.getRobotoBlack(14));
 
         // ----------------------------------------------------------------------------
@@ -139,7 +137,7 @@ public class Associacao extends RelacaoUML{
             1, 1, 1, 1, gerenciadorDeRecursos.getColor("raisin_black")
         ));
 
-        JLabel labelMostrarSetaA = new JLabel(gerenciadorDeRecursos.getString("nao"), JLabel.CENTER);
+        JLabel labelMostrarSetaA = new JLabel(gerenciadorDeRecursos.getString("geral_nao"), JLabel.CENTER);
         labelMostrarSetaA.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
         labelMostrarSetaA.setForeground(gerenciadorDeRecursos.getColor("black"));
 
@@ -153,7 +151,7 @@ public class Associacao extends RelacaoUML{
             1, 1, 1, 1, gerenciadorDeRecursos.getColor("raisin_black")
         ));
 
-        JLabel labelMostrarSetaB = new JLabel(gerenciadorDeRecursos.getString("nao"), JLabel.CENTER);
+        JLabel labelMostrarSetaB = new JLabel(gerenciadorDeRecursos.getString("geral_nao"), JLabel.CENTER);
         labelMostrarSetaB.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
         labelMostrarSetaB.setForeground(gerenciadorDeRecursos.getColor("black"));
 
@@ -170,7 +168,7 @@ public class Associacao extends RelacaoUML{
                 mostrar = !mostrar;
 
                 ((JLabel) ((JPanel) e.getSource()).getComponent(0)).setText(
-                    gerenciadorDeRecursos.getString(mostrar ? "sim" : "nao")
+                    gerenciadorDeRecursos.getString(mostrar ? "geral_sim" : "geral_nao")
                 );
 
                 mostrarSetaLadoA(mostrar);
@@ -186,7 +184,7 @@ public class Associacao extends RelacaoUML{
                 mostrar = !mostrar;
 
                 ((JLabel) ((JPanel) e.getSource()).getComponent(0)).setText(
-                    gerenciadorDeRecursos.getString(mostrar ? "sim" : "nao")
+                    gerenciadorDeRecursos.getString(mostrar ? "geral_sim" : "geral_nao")
                 );
 
                 mostrarSetaLadoB(mostrar);
@@ -196,7 +194,7 @@ public class Associacao extends RelacaoUML{
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelMultiplicidade = new JLabel(gerenciadorDeRecursos.getString("multiplicidade"), JLabel.CENTER);
+        JLabel labelMultiplicidade = new JLabel(gerenciadorDeRecursos.getString("relacao_multiplicidade"), JLabel.CENTER);
         labelMultiplicidade.setFont(gerenciadorDeRecursos.getRobotoBlack(14));
 
         JTextField textFieldMultiplicidadeA = new JTextField();
@@ -285,7 +283,7 @@ public class Associacao extends RelacaoUML{
             }
         });
 
-        JLabel labelExcluirRelacao = new JLabel(gerenciadorDeRecursos.getString("excluir_relacao"));
+        JLabel labelExcluirRelacao = new JLabel(gerenciadorDeRecursos.getString("relacao_excluir"));
         labelExcluirRelacao.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
         labelExcluirRelacao.setForeground(gerenciadorDeRecursos.getColor("black"));
 
@@ -350,11 +348,11 @@ public class Associacao extends RelacaoUML{
                 textFieldMultiplicidadeB.setText(getModeloAtual().getMultiplicidadeLadoB());
 
                 ((JLabel) painelMostrarSetaA.getComponent(0)).setText(
-                    gerenciadorDeRecursos.getString(getModeloAtual().estaMostrandoSetaA() ? "sim" : "nao")
+                    gerenciadorDeRecursos.getString(getModeloAtual().estaMostrandoSetaA() ? "geral_sim" : "geral_nao")
                 );
 
                 ((JLabel) painelMostrarSetaB.getComponent(0)).setText(
-                    gerenciadorDeRecursos.getString(getModeloAtual().estaMostrandoSetaB() ? "sim" : "nao")
+                    gerenciadorDeRecursos.getString(getModeloAtual().estaMostrandoSetaB() ? "geral_sim" : "geral_nao")
                 );
             }
         });

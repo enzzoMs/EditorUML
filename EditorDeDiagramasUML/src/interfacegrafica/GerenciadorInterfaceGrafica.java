@@ -94,10 +94,6 @@ public class GerenciadorInterfaceGrafica {
         framePrincipal.addWindowListener(windowAdapter);
     }
 
-    public void setWindowTitle(String titulo) {
-        framePrincipal.setTitle(titulo);
-    }
-
     public AreaDeDiagramas getAreaDeDiagramas() {
         return areaDeDiagramas;
     }
@@ -108,6 +104,10 @@ public class GerenciadorInterfaceGrafica {
 
     public boolean estaMostrandoAreaDeDiagramas() {
         return mostrandoAreaDeDiagramas;
+    }
+
+    public void setWindowTitle(String titulo) {
+        framePrincipal.setTitle(titulo);
     }
 
     private void inicializarDialogSairDoAplicativo() {
@@ -130,7 +130,7 @@ public class GerenciadorInterfaceGrafica {
             BorderFactory.createMatteBorder(0, 0, 2, 0, gerenciadorDeRecursos.getColor("black"))
         ));
 
-        JLabel labelPerguntaSair = new JLabel(gerenciadorDeRecursos.getString("sair_pergunta"));
+        JLabel labelPerguntaSair = new JLabel(gerenciadorDeRecursos.getString("geral_sair_pergunta"));
         labelPerguntaSair.setFont(gerenciadorDeRecursos.getRobotoMedium(16));
 
         painelPerguntaSair.add(labelPerguntaSair, "align center");
@@ -143,7 +143,7 @@ public class GerenciadorInterfaceGrafica {
             1, 1, 1, 1, gerenciadorDeRecursos.getColor("raisin_black")
         ));
 
-        JLabel labelRespostaSim = new JLabel(gerenciadorDeRecursos.getString("sim"));
+        JLabel labelRespostaSim = new JLabel(gerenciadorDeRecursos.getString("geral_sim"));
         labelRespostaSim.setFont(gerenciadorDeRecursos.getRobotoMedium(15));
         labelRespostaSim.setForeground(gerenciadorDeRecursos.getColor("black"));
 
@@ -164,7 +164,7 @@ public class GerenciadorInterfaceGrafica {
         ));
         painelRespostaNao.setOpaque(true);
 
-        JLabel labelRespostaNao = new JLabel(gerenciadorDeRecursos.getString("nao"));
+        JLabel labelRespostaNao = new JLabel(gerenciadorDeRecursos.getString("geral_nao"));
         labelRespostaNao.setFont(gerenciadorDeRecursos.getRobotoMedium(15));
         labelRespostaNao.setForeground(gerenciadorDeRecursos.getColor("black"));
 
@@ -209,7 +209,7 @@ public class GerenciadorInterfaceGrafica {
         painelPrincipalJDialogSair.add(painelImgInterrogacao, "north");
         painelPrincipalJDialogSair.add(painelConfirmacao, "south");
 
-        JDialogSairDoAplicativo.setTitle(gerenciadorDeRecursos.getString("sair"));
+        JDialogSairDoAplicativo.setTitle(gerenciadorDeRecursos.getString("geral_sair"));
         JDialogSairDoAplicativo.setContentPane(painelPrincipalJDialogSair);
         JDialogSairDoAplicativo.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
         JDialogSairDoAplicativo.setResizable(false);

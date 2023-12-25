@@ -103,7 +103,7 @@ public class Composicao extends RelacaoUML{
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelNomeRelacao = new JLabel(gerenciadorDeRecursos.getString("nome"));
+        JLabel labelNomeRelacao = new JLabel(gerenciadorDeRecursos.getString("geral_nome"));
         labelNomeRelacao.setFont(gerenciadorDeRecursos.getRobotoMedium(15));
 
         JTextField textFieldNomeRelacao = new JTextField();
@@ -143,15 +143,15 @@ public class Composicao extends RelacaoUML{
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelLadoA = new JLabel(gerenciadorDeRecursos.getString("lado_a"), JLabel.CENTER);
+        JLabel labelLadoA = new JLabel(gerenciadorDeRecursos.getString("relacao_lado_a"), JLabel.CENTER);
         labelLadoA.setFont(gerenciadorDeRecursos.getRobotoBlack(15));
 
-        JLabel labelLadoB = new JLabel(gerenciadorDeRecursos.getString("lado_b"), JLabel.CENTER);
+        JLabel labelLadoB = new JLabel(gerenciadorDeRecursos.getString("relacao_lado_b"), JLabel.CENTER);
         labelLadoB.setFont(gerenciadorDeRecursos.getRobotoBlack(15));
 
         // ----------------------------------------------------------------------------
 
-        JLabel labelMultiplicidade = new JLabel(gerenciadorDeRecursos.getString("multiplicidade"), JLabel.CENTER);
+        JLabel labelMultiplicidade = new JLabel(gerenciadorDeRecursos.getString("relacao_multiplicidade"), JLabel.CENTER);
         labelMultiplicidade.setFont(gerenciadorDeRecursos.getRobotoBlack(14));
 
         JTextField textFieldMultiplicidadeA = new JTextField();
@@ -260,7 +260,7 @@ public class Composicao extends RelacaoUML{
             }
         });
 
-        JLabel labelExcluirRelacao = new JLabel(gerenciadorDeRecursos.getString("excluir_relacao"));
+        JLabel labelExcluirRelacao = new JLabel(gerenciadorDeRecursos.getString("relacao_excluir"));
         labelExcluirRelacao.setFont(gerenciadorDeRecursos.getRobotoMedium(14));
         labelExcluirRelacao.setForeground(gerenciadorDeRecursos.getColor("black"));
 
