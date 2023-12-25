@@ -7,13 +7,13 @@ import java.io.File;
 import java.util.ArrayList;
 
 public class DiagramaUML {
-    private final ArrayList<EstruturaUML<?>> componentesUML = new ArrayList<>();
+    private final ArrayList<EstruturaUML<?>> estruturasUML = new ArrayList<>();
     private final ArrayList<RelacaoUML> relacoesUML = new ArrayList<>();
     private boolean diagramaSalvo = false;
     public File arquivoDiagrama;
 
     public void addComponente(EstruturaUML<?> novoComponente) {
-        componentesUML.add(novoComponente);
+        estruturasUML.add(novoComponente);
     }
 
     public void addRelacao(RelacaoUML novaRelacao) {
@@ -21,7 +21,7 @@ public class DiagramaUML {
     }
 
     public void removerComponente(EstruturaUML<?> componente) {
-        componentesUML.remove(componente);
+        estruturasUML.remove(componente);
     }
 
     public void removerRelacao(RelacaoUML relacao) {
@@ -32,8 +32,8 @@ public class DiagramaUML {
         this.diagramaSalvo = diagramaSalvo;
     }
 
-    public ArrayList<EstruturaUML<?>> getComponentesUML() {
-        return componentesUML;
+    public ArrayList<EstruturaUML<?>> getEstruturasUML() {
+        return estruturasUML;
     }
 
     public ArrayList<RelacaoUML> getRelacoesUML() {
@@ -52,10 +52,14 @@ public class DiagramaUML {
 
         diagramaEmString.append("UML APP\n");
         diagramaEmString.append("// Numero de componentes\n");
-        diagramaEmString.append(componentesUML.size()).append("\n");
+        diagramaEmString.append(estruturasUML.size() + relacoesUML.size()).append("\n");
 
-        for (EstruturaUML<?> componente : componentesUML) {
+        for (EstruturaUML<?> componente : estruturasUML) {
             diagramaEmString.append(componente.toString());
+        }
+
+        for (RelacaoUML relacao : relacoesUML) {
+            diagramaEmString.append(relacao.toString());
         }
 
         return diagramaEmString.toString();

@@ -322,7 +322,9 @@ public class AreaDeDiagramas {
     }
 
     public void addRelacaoAoDiagrama(RelacaoUML relacao) {
-        diagramaAtual.addRelacao(relacao);
+        if (!diagramaAtual.getRelacoesUML().contains(relacao)) {
+            diagramaAtual.addRelacao(relacao);
+        }
     }
 
     public void removerEstruturaDoQuadro(EstruturaUML<?> componente) {
@@ -396,11 +398,11 @@ public class AreaDeDiagramas {
         GerenciadorDeRecursos gerenciadorDeRecursos = GerenciadorDeRecursos.getInstancia();
 
         if (diagramaAtual != null) {
-            while (!diagramaAtual.getComponentesUML().isEmpty()) {
-                removerEstruturaDoQuadro(diagramaAtual.getComponentesUML().get(0));
+            while (!diagramaAtual.getEstruturasUML().isEmpty()) {
+                removerEstruturaDoQuadro(diagramaAtual.getEstruturasUML().get(0));
             }
-            for (int i = 0; i < diagramaAtual.getRelacoesUML().size(); i++) {
-                diagramaAtual.getRelacoesUML().get(i).removerRelacaoDoQuadroBranco();
+            while (!diagramaAtual.getRelacoesUML().isEmpty()) {
+                diagramaAtual.getRelacoesUML().get(0).removerRelacaoDoQuadroBranco();
             }
         }
 
@@ -466,13 +468,17 @@ public class AreaDeDiagramas {
 
         diagramaAtual = diagrama;
 
-        for (EstruturaUML<?> componente : diagrama.getComponentesUML()) {
+        for (EstruturaUML<?> componente : diagrama.getEstruturasUML()) {
             if (componente instanceof PacoteUML) {
                 // Os pacote ficam embaixo de todos os outros componentes
                 painelQuadroBranco.add(componente.getPainelComponente());
             } else {
                 painelQuadroBranco.add(componente.getPainelComponente(), 0);
             }
+        }
+
+        for (RelacaoUML relacaoUML : diagrama.getRelacoesUML()) {
+            relacaoUML.adicionarRelacaoAoQuadroBranco();
         }
 
         revalidarQuadroBranco();
@@ -505,12 +511,26 @@ public class AreaDeDiagramas {
         int maiorPontoX = 0;
         int maiorPontoY = 0;
 
-        for (Component componente : painelQuadroBranco.getComponents()) {
-            menorPontoX = Math.min(componente.getX(), menorPontoX);
-            menorPontoY = Math.min(componente.getY(), menorPontoY);
+        for (EstruturaUML<?> estruturaUML : diagramaAtual.getEstruturasUML()) {
+            Rectangle boundsEstrutura = estruturaUML.getPainelComponente().getBounds();
 
-            maiorPontoX = Math.max(componente.getX() + componente.getWidth(), maiorPontoX);
-            maiorPontoY = Math.max(componente.getY() + componente.getHeight(), maiorPontoY);
+            menorPontoX = Math.min(boundsEstrutura.x, menorPontoX);
+            menorPontoY = Math.min(boundsEstrutura.y, menorPontoY);
+
+            maiorPontoX = Math.max(boundsEstrutura.x + boundsEstrutura.width, maiorPontoX);
+            maiorPontoY = Math.max(boundsEstrutura.y + boundsEstrutura.height, maiorPontoY);
+        }
+
+        for (RelacaoUML relacaoUML : diagramaAtual.getRelacoesUML()) {
+            for (JPanel linha : relacaoUML.getLinhasDaRelacao()) {
+                Rectangle boundsLinha = linha.getBounds();
+
+                menorPontoX = Math.min(boundsLinha.x, menorPontoX);
+                menorPontoY = Math.min(boundsLinha.y, menorPontoY);
+
+                maiorPontoX = Math.max(boundsLinha.x + boundsLinha.width, maiorPontoX);
+                maiorPontoY = Math.max(boundsLinha.y + boundsLinha.height, maiorPontoY);
+            }
         }
 
         // Uma margem para adicionar um espaco ao redor do diagrama copiado (de modo que os componentes nao fiquem
@@ -752,7 +772,9 @@ public class AreaDeDiagramas {
         opcoes[5].addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                voltar();
+                if (!criacaoDeRelacaoAcontecendo) {
+                    voltar();
+                }
             }
         });
 
@@ -1049,8 +1071,13 @@ public class AreaDeDiagramas {
 
                         if (relacaoParaEstender != null) {
                             relacaoParaEstender.estenderRelacao(null, null);
-                            relacaoParaEstender.mostrarPontoDeExtensao(true);
                             relacaoParaEstender = null;
+                        }
+
+                        for (RelacaoUML relacao : diagramaAtual.getRelacoesUML()) {
+                            if (relacao.getTipoDeRelacao() == tipoDeRelacaoSendoCriada) {
+                                relacao.mostrarPontoDeExtensao(true);
+                            }
                         }
 
                         revalidarQuadroBranco();
@@ -1319,7 +1346,7 @@ public class AreaDeDiagramas {
         painelAcoesQuadroBranco.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseEntered(MouseEvent e) {
-                for (EstruturaUML<?> componente : diagramaAtual.getComponentesUML()) {
+                for (EstruturaUML<?> componente : diagramaAtual.getEstruturasUML()) {
                     componente.removerPainelDeOpcoes();
                 }
             }

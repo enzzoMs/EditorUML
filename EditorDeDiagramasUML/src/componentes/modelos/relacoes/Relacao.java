@@ -8,22 +8,26 @@ import java.util.ArrayList;
 
 public class Relacao implements ModeloDeComponenteUML<Relacao> {
     private String nome = "";
+    private OrientacaoDeSeta orientacaoLadoA;
+    private OrientacaoDeSeta orientacaoLadoB;
     private String multiplicidadeLadoA = "";
     private String multiplicidadeLadoB = "";
     private boolean mostrandoSetaA = false;
     private boolean mostrandoSetaB = false;
     private Point pontoLadoA;
-
     private DirecaoDeRelacao direcao = DirecaoDeRelacao.NENHUMA;
     private ArrayList<JPanel> linhasDaRelacao = new ArrayList<>();
 
     public Relacao() {}
 
     public Relacao(
-        String nome, String multiplicidadeLadoA, String multiplicidadeLadoB, boolean mostrandoSetaA,
-        boolean mostrandoSetaB, Point pontoLadoA, DirecaoDeRelacao direcao, ArrayList<JPanel> linhasDaRelacao
+        String nome, OrientacaoDeSeta orientacaoLadoA, OrientacaoDeSeta orientacaoLadoB, String multiplicidadeLadoA,
+        String multiplicidadeLadoB, boolean mostrandoSetaA, boolean mostrandoSetaB, Point pontoLadoA,
+        DirecaoDeRelacao direcao, ArrayList<JPanel> linhasDaRelacao
     ) {
         this.nome = nome;
+        this.orientacaoLadoA = orientacaoLadoA;
+        this.orientacaoLadoB = orientacaoLadoB;
         this.multiplicidadeLadoA = multiplicidadeLadoA;
         this.multiplicidadeLadoB = multiplicidadeLadoB;
         this.mostrandoSetaA = mostrandoSetaA;
@@ -48,7 +52,8 @@ public class Relacao implements ModeloDeComponenteUML<Relacao> {
         pontoLadoACopia.setLocation(pontoLadoA);
 
         return new Relacao(
-            nome, multiplicidadeLadoA, multiplicidadeLadoB, mostrandoSetaA, mostrandoSetaB, pontoLadoACopia, direcao, copiaLinhas
+            nome, orientacaoLadoA, orientacaoLadoB, multiplicidadeLadoA, multiplicidadeLadoB, mostrandoSetaA,
+            mostrandoSetaB, pontoLadoACopia, direcao, copiaLinhas
         );
     }
 
@@ -71,6 +76,8 @@ public class Relacao implements ModeloDeComponenteUML<Relacao> {
         boolean pontoLadoADiferente = pontoLadoA.x != modelo.pontoLadoA.x && pontoLadoA.y != modelo.pontoLadoA.y;
 
         return !modelo.nome.equals(nome) ||
+                !modelo.orientacaoLadoA.equals(orientacaoLadoA) ||
+                !modelo.orientacaoLadoB.equals(orientacaoLadoB) ||
                 !modelo.multiplicidadeLadoA.equals(multiplicidadeLadoA) ||
                 !modelo.multiplicidadeLadoB.equals(multiplicidadeLadoB) ||
                 modelo.mostrandoSetaA != mostrandoSetaA ||
@@ -81,6 +88,14 @@ public class Relacao implements ModeloDeComponenteUML<Relacao> {
 
     public String getNome() {
         return nome;
+    }
+
+    public OrientacaoDeSeta getOrientacaoLadoA() {
+        return orientacaoLadoA;
+    }
+
+    public OrientacaoDeSeta getOrientacaoLadoB() {
+        return orientacaoLadoB;
     }
 
     public String getMultiplicidadeLadoA() {
@@ -113,6 +128,14 @@ public class Relacao implements ModeloDeComponenteUML<Relacao> {
 
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public void setOrientacaoLadoA(OrientacaoDeSeta orientacaoLadoA) {
+        this.orientacaoLadoA = orientacaoLadoA;
+    }
+
+    public void setOrientacaoLadoB(OrientacaoDeSeta orientacaoLadoB) {
+        this.orientacaoLadoB = orientacaoLadoB;
     }
 
     public void setMultiplicidadeLadoA(String multiplicidadeLadoA) {

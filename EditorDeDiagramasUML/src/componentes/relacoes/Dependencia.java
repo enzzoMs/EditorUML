@@ -2,6 +2,7 @@ package componentes.relacoes;
 
 import auxiliares.GerenciadorDeRecursos;
 import componentes.alteracoes.relacoes.RelacaoRemovida;
+import componentes.modelos.relacoes.Relacao;
 import interfacegrafica.AreaDeDiagramas;
 import componentes.modelos.relacoes.TipoDeRelacao;
 import net.miginfocom.swing.MigLayout;
@@ -18,6 +19,11 @@ import java.util.ArrayList;
  * componente simples, possuindo uma seta "aberta" em uma das extremidades e linhas tracejadas.
  */
 public class Dependencia extends RelacaoUML {
+
+    public Dependencia(AreaDeDiagramas areaDeDiagramas, TipoDeRelacao tipoDeRelacao, Relacao modeloRelacao) {
+        super(new ArrayList<>(), areaDeDiagramas, null, null, tipoDeRelacao);
+        setModelo(modeloRelacao);
+    }
 
     public Dependencia(
         ArrayList<JPanel> linhasDaRelacao, AreaDeDiagramas areaDeDiagramas,

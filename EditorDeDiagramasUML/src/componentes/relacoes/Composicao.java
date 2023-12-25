@@ -3,6 +3,7 @@ package componentes.relacoes;
 import auxiliares.GerenciadorDeRecursos;
 import componentes.alteracoes.relacoes.RelacaoRemovida;
 import componentes.modelos.relacoes.DirecaoDeRelacao;
+import componentes.modelos.relacoes.Relacao;
 import componentes.modelos.relacoes.TipoDeRelacao;
 import interfacegrafica.AreaDeDiagramas;
 import net.miginfocom.swing.MigLayout;
@@ -11,11 +12,18 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class Composicao extends RelacaoUML{
+
+    public Composicao(AreaDeDiagramas areaDeDiagramas, TipoDeRelacao tipoDeRelacao, Relacao modeloRelacao) {
+        super(new ArrayList<>(), areaDeDiagramas, null, null, tipoDeRelacao);
+        setModelo(modeloRelacao);
+    }
 
     public Composicao(
         ArrayList<JPanel> linhasDaRelacao, AreaDeDiagramas areaDeDiagramas,
@@ -305,5 +313,14 @@ public class Composicao extends RelacaoUML{
 
         getFrameGerenciarRelacao().add(painelGerenciarRelacao);
         getFrameGerenciarRelacao().pack();
+        getFrameGerenciarRelacao().addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                textFieldNomeRelacao.setText(getModeloAtual().getNome());
+                comboBoxDirecao.setSelectedItem(getModeloAtual().getDirecao().getNome());
+                textFieldMultiplicidadeA.setText(getModeloAtual().getMultiplicidadeLadoA());
+                textFieldMultiplicidadeB.setText(getModeloAtual().getMultiplicidadeLadoB());
+            }
+        });
     }
 }

@@ -1,6 +1,7 @@
 package componentes.modelos.relacoes;
 
 import auxiliares.GerenciadorDeRecursos;
+import componentes.modelos.estruturas.Visibilidade;
 
 public enum DirecaoDeRelacao {
     NENHUMA(GerenciadorDeRecursos.getInstancia().getString("nenhuma")),
@@ -18,16 +19,12 @@ public enum DirecaoDeRelacao {
     }
 
     public static DirecaoDeRelacao getDirecaoPorNome(String nome) {
-        if (nome == null) {
-            return null;
-        } else if (nome.equals(A_ATE_B.nome)) {
-            return A_ATE_B;
-        } else if (nome.equals(B_ATE_A.nome)) {
-            return B_ATE_A;
-        } else if (nome.equals(NENHUMA.nome)) {
-            return NENHUMA;
-        } else {
-            return null;
+        for (DirecaoDeRelacao direcao : DirecaoDeRelacao.values()) {
+            if (direcao.nome.equalsIgnoreCase(nome)) {
+                return direcao;
+            }
         }
+
+        return null;
     }
 }

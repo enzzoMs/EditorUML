@@ -4,6 +4,11 @@ import componentes.estruturas.AnotacaoUML;
 import componentes.estruturas.ClasseUML;
 import componentes.estruturas.PacoteUML;
 import componentes.modelos.estruturas.*;
+import componentes.modelos.relacoes.DirecaoDeRelacao;
+import componentes.modelos.relacoes.OrientacaoDeSeta;
+import componentes.modelos.relacoes.Relacao;
+import componentes.modelos.relacoes.TipoDeRelacao;
+import componentes.relacoes.*;
 import diagrama.DiagramaUML;
 import interfacegrafica.AreaDeDiagramas;
 import net.miginfocom.swing.MigLayout;
@@ -223,7 +228,7 @@ public class GerenciadorDeArquivos {
 
     /**
      * Reconstroi um diagrama a partir de um aquivo de texto, criando e inicializando todos os objetos necessários no processo.
-     * O método retorna um DiagramaUML contendo todos os objetos necessários, porém caso qualquer erro ocorra o usuário
+     * O método retorna um DiagramaUML contendo todos os objetos necessários. Caso qualquer erro ocorra o usuário
      * será notificado através de um Dialog e retornará null.
      */
     private DiagramaUML reconstruirDiagrama(File arquivo, AreaDeDiagramas areaDeDiagramas) {
@@ -389,6 +394,79 @@ public class GerenciadorDeArquivos {
                         ));
 
                         novoDiagramaUML.addComponente(novoPacoteUML);
+                    }
+                    case "RELACAO_UML" -> {
+                        reader.readLine();
+                        TipoDeRelacao tipoDeRelacao = TipoDeRelacao.valueOf(reader.readLine().trim());
+
+                        Relacao modeloRelacao = new Relacao();
+
+                        reader.readLine();
+                        modeloRelacao.setNome(reader.readLine());
+
+                        reader.readLine();
+                        ArrayList<JPanel> linhasRelacao = new ArrayList<>();
+                        int numLinhas = Integer.parseInt(reader.readLine());
+
+                        for (int i = 0; i < numLinhas; i++) {
+                            JPanel linha = new JPanel();
+
+                            reader.readLine();
+                            int linhaX = Integer.parseInt(reader.readLine());
+                            reader.readLine();
+                            int linhaY = Integer.parseInt(reader.readLine());
+                            linha.setLocation(linhaX, linhaY);
+
+                            reader.readLine();
+                            int largura = Integer.parseInt(reader.readLine());
+                            reader.readLine();
+                            int altura = Integer.parseInt(reader.readLine());
+                            linha.setSize(largura, altura);
+
+                            linhasRelacao.add(linha);
+                        }
+
+                        modeloRelacao.setLinhasDaRelacao(linhasRelacao);
+
+                        reader.readLine();
+                        modeloRelacao.setOrientacaoLadoA(OrientacaoDeSeta.valueOf(reader.readLine()));
+
+                        reader.readLine();
+                        modeloRelacao.setOrientacaoLadoB(OrientacaoDeSeta.valueOf(reader.readLine()));
+
+                        reader.readLine();
+                        modeloRelacao.setMultiplicidadeLadoA(reader.readLine());
+
+                        reader.readLine();
+                        modeloRelacao.setMultiplicidadeLadoB(reader.readLine());
+
+                        reader.readLine();
+                        modeloRelacao.setMostrandoSetaA(Boolean.parseBoolean(reader.readLine()));
+
+                        reader.readLine();
+                        modeloRelacao.setMostrandoSetaB(Boolean.parseBoolean(reader.readLine()));
+
+                        reader.readLine();
+                        modeloRelacao.setDirecao(DirecaoDeRelacao.valueOf(reader.readLine()));
+
+                        reader.readLine();
+                        int pontoX = Integer.parseInt(reader.readLine());
+
+                        reader.readLine();
+                        int pontoY = Integer.parseInt(reader.readLine());
+
+                        modeloRelacao.setPontoLadoA(new Point(pontoX, pontoY));
+
+                        RelacaoUML novaRelacao = switch (tipoDeRelacao) {
+                            case GENERALIZACAO -> new Generalizacao(areaDeDiagramas, tipoDeRelacao, modeloRelacao);
+                            case REALIZACAO -> new Realizacao(areaDeDiagramas, tipoDeRelacao, modeloRelacao);
+                            case DEPENDENCIA -> new Dependencia(areaDeDiagramas, tipoDeRelacao, modeloRelacao);
+                            case ASSOCIACAO -> new Associacao(areaDeDiagramas, tipoDeRelacao, modeloRelacao);
+                            case AGREGACAO -> new Agregacao(areaDeDiagramas, tipoDeRelacao, modeloRelacao);
+                            case COMPOSICAO -> new Composicao(areaDeDiagramas, tipoDeRelacao, modeloRelacao);
+                        };
+
+                        novoDiagramaUML.addRelacao(novaRelacao);
                     }
                 }
             }

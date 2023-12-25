@@ -1,8 +1,11 @@
 package componentes.relacoes;
 
 import auxiliares.GerenciadorDeRecursos;
+import componentes.alteracoes.estruturas.EstruturaModificada;
 import componentes.alteracoes.relacoes.RelacaoRemovida;
+import componentes.estruturas.PacoteUML;
 import componentes.modelos.relacoes.DirecaoDeRelacao;
+import componentes.modelos.relacoes.Relacao;
 import interfacegrafica.AreaDeDiagramas;
 import componentes.modelos.relacoes.TipoDeRelacao;
 import net.miginfocom.swing.MigLayout;
@@ -11,11 +14,18 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 public class Associacao extends RelacaoUML{
+
+    public Associacao(AreaDeDiagramas areaDeDiagramas, TipoDeRelacao tipoDeRelacao, Relacao modeloRelacao) {
+        super(new ArrayList<>(), areaDeDiagramas, null, null, tipoDeRelacao);
+        setModelo(modeloRelacao);
+    }
 
     public Associacao(
         ArrayList<JPanel> linhasDaRelacao, AreaDeDiagramas areaDeDiagramas,
@@ -156,6 +166,7 @@ public class Associacao extends RelacaoUML{
 
             @Override
             public void mouseClicked(MouseEvent e) {
+                mostrar = getModeloAtual().estaMostrandoSetaA();
                 mostrar = !mostrar;
 
                 ((JLabel) ((JPanel) e.getSource()).getComponent(0)).setText(
@@ -165,11 +176,13 @@ public class Associacao extends RelacaoUML{
                 mostrarSetaLadoA(mostrar);
             }
         });
+
         painelMostrarSetaB.addMouseListener(new MouseAdapter() {
             boolean mostrar = false;
 
             @Override
             public void mouseClicked(MouseEvent e) {
+                mostrar = getModeloAtual().estaMostrandoSetaB();
                 mostrar = !mostrar;
 
                 ((JLabel) ((JPanel) e.getSource()).getComponent(0)).setText(
@@ -179,6 +192,7 @@ public class Associacao extends RelacaoUML{
                 mostrarSetaLadoB(mostrar);
             }
         });
+
 
         // ----------------------------------------------------------------------------
 
@@ -327,5 +341,22 @@ public class Associacao extends RelacaoUML{
 
         getFrameGerenciarRelacao().add(painelGerenciarRelacao);
         getFrameGerenciarRelacao().pack();
+        getFrameGerenciarRelacao().addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentShown(ComponentEvent e) {
+                textFieldNomeRelacao.setText(getModeloAtual().getNome());
+                comboBoxDirecao.setSelectedItem(getModeloAtual().getDirecao().getNome());
+                textFieldMultiplicidadeA.setText(getModeloAtual().getMultiplicidadeLadoA());
+                textFieldMultiplicidadeB.setText(getModeloAtual().getMultiplicidadeLadoB());
+
+                ((JLabel) painelMostrarSetaA.getComponent(0)).setText(
+                    gerenciadorDeRecursos.getString(getModeloAtual().estaMostrandoSetaA() ? "sim" : "nao")
+                );
+
+                ((JLabel) painelMostrarSetaB.getComponent(0)).setText(
+                    gerenciadorDeRecursos.getString(getModeloAtual().estaMostrandoSetaB() ? "sim" : "nao")
+                );
+            }
+        });
     }
 }

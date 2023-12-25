@@ -2,6 +2,7 @@ package componentes.relacoes;
 
 import auxiliares.GerenciadorDeRecursos;
 import componentes.alteracoes.relacoes.RelacaoRemovida;
+import componentes.modelos.relacoes.Relacao;
 import interfacegrafica.AreaDeDiagramas;
 import componentes.modelos.relacoes.TipoDeRelacao;
 import net.miginfocom.swing.MigLayout;
@@ -17,6 +18,11 @@ import java.util.ArrayList;
  * componente simples, possuindo uma seta "oca" em uma das extremidades.
  */
 public class Generalizacao extends RelacaoUML {
+
+    public Generalizacao(AreaDeDiagramas areaDeDiagramas, TipoDeRelacao tipoDeRelacao, Relacao modeloRelacao) {
+        super(new ArrayList<>(), areaDeDiagramas, null, null, tipoDeRelacao);
+        setModelo(modeloRelacao);
+    }
 
     public Generalizacao(
         ArrayList<JPanel> linhasDaRelacao, AreaDeDiagramas areaDeDiagramas,
