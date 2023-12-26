@@ -101,11 +101,13 @@ public abstract class RelacaoUML {
         painelSetaB.addMouseListener(adapterGerenciarRelacao);
 
         if (pontoFinalDaRelacao != null) {
-            modeloAtual.setOrientacaoLadoA(calcularOrientacaoDeLinha(pontoFinalDaRelacao, modeloAtual.getLinhasDaRelacao().getLast()));
+            modeloAtual.setOrientacaoLadoA(calcularOrientacaoDeLinha(
+                pontoFinalDaRelacao, modeloAtual.getLinhasDaRelacao().get(modeloAtual.getLinhasDaRelacao().size() - 1))
+            );
         }
 
         if (pontoInicialDaRelacao != null) {
-            modeloAtual.setOrientacaoLadoB(calcularOrientacaoDeLinha(pontoInicialDaRelacao, modeloAtual.getLinhasDaRelacao().getFirst()));
+            modeloAtual.setOrientacaoLadoB(calcularOrientacaoDeLinha(pontoInicialDaRelacao, modeloAtual.getLinhasDaRelacao().get(0)));
         }
 
         pontoDeExtensao = new JPanel() {
@@ -180,7 +182,10 @@ public abstract class RelacaoUML {
     public void mostrarSetaLadoA(boolean mostrar) {
         if (mostrar) {
             atualizarPontosDeSeta(modeloAtual.getOrientacaoLadoA(), pontosDaSetaA);
-            atualizarLocalizacaoDeSeta(painelSetaA, modeloAtual.getLinhasDaRelacao().getLast(), modeloAtual.getOrientacaoLadoA());
+            atualizarLocalizacaoDeSeta(
+                painelSetaA, modeloAtual.getLinhasDaRelacao().get(modeloAtual.getLinhasDaRelacao().size() - 1),
+                modeloAtual.getOrientacaoLadoA()
+            );
         }
         painelSetaA.setVisible(mostrar);
         modeloAtual.setMostrandoSetaA(mostrar);
@@ -189,7 +194,7 @@ public abstract class RelacaoUML {
     public void mostrarSetaLadoB(boolean mostrar) {
         if (mostrar) {
             atualizarPontosDeSeta(modeloAtual.getOrientacaoLadoB(), pontosDaSetaB);
-            atualizarLocalizacaoDeSeta(painelSetaB, modeloAtual.getLinhasDaRelacao().getFirst(), modeloAtual.getOrientacaoLadoB());
+            atualizarLocalizacaoDeSeta(painelSetaB, modeloAtual.getLinhasDaRelacao().get(0), modeloAtual.getOrientacaoLadoB());
         }
         painelSetaB.setVisible(mostrar);
         modeloAtual.setMostrandoSetaB(mostrar);
@@ -197,7 +202,10 @@ public abstract class RelacaoUML {
 
     public void mostrarMultiplicidadeLadoA(boolean mostrar) {
         if (mostrar) {
-            atualizarLocalizacaoDeMultiplicidade(labelMultiplicidadeA, modeloAtual.getLinhasDaRelacao().getLast(), modeloAtual.getOrientacaoLadoA());
+            atualizarLocalizacaoDeMultiplicidade(
+                labelMultiplicidadeA, modeloAtual.getLinhasDaRelacao().get(modeloAtual.getLinhasDaRelacao().size() - 1),
+                modeloAtual.getOrientacaoLadoA()
+            );
         }
 
         labelMultiplicidadeA.setVisible(mostrar);
@@ -205,7 +213,7 @@ public abstract class RelacaoUML {
 
     public void mostrarMultiplicidadeLadoB(boolean mostrar) {
         if (mostrar) {
-            atualizarLocalizacaoDeMultiplicidade(labelMultiplicidadeB, modeloAtual.getLinhasDaRelacao().getFirst(), modeloAtual.getOrientacaoLadoB());
+            atualizarLocalizacaoDeMultiplicidade(labelMultiplicidadeB, modeloAtual.getLinhasDaRelacao().get(0), modeloAtual.getOrientacaoLadoB());
         }
 
         labelMultiplicidadeB.setVisible(mostrar);
@@ -273,7 +281,9 @@ public abstract class RelacaoUML {
 
             modeloAtual.getLinhasDaRelacao().addAll(novosPaineis);
 
-            modeloAtual.setOrientacaoLadoA(calcularOrientacaoDeLinha(modeloAtual.getPontoLadoA(), modeloAtual.getLinhasDaRelacao().getLast()));
+            modeloAtual.setOrientacaoLadoA(calcularOrientacaoDeLinha(
+                modeloAtual.getPontoLadoA(), modeloAtual.getLinhasDaRelacao().get(modeloAtual.getLinhasDaRelacao().size() - 1)
+            ));
         }
 
         mostrarSetaLadoA(modeloAtual.estaMostrandoSetaA());
@@ -285,11 +295,14 @@ public abstract class RelacaoUML {
         }
 
         if (!modeloAtual.getMultiplicidadeLadoA().isEmpty()) {
-            atualizarLocalizacaoDeMultiplicidade(labelMultiplicidadeA, modeloAtual.getLinhasDaRelacao().getLast(), modeloAtual.getOrientacaoLadoA());
+            atualizarLocalizacaoDeMultiplicidade(
+                labelMultiplicidadeA, modeloAtual.getLinhasDaRelacao().get(modeloAtual.getLinhasDaRelacao().size() - 1),
+                modeloAtual.getOrientacaoLadoA()
+            );
         }
 
         if (!modeloAtual.getMultiplicidadeLadoB().isEmpty()) {
-            atualizarLocalizacaoDeMultiplicidade(labelMultiplicidadeB, modeloAtual.getLinhasDaRelacao().getFirst(), modeloAtual.getOrientacaoLadoB());
+            atualizarLocalizacaoDeMultiplicidade(labelMultiplicidadeB, modeloAtual.getLinhasDaRelacao().get(0), modeloAtual.getOrientacaoLadoB());
         }
 
         aplicarEstiloDasLinhas(modeloAtual.getLinhasDaRelacao());
@@ -391,7 +404,7 @@ public abstract class RelacaoUML {
     }
 
     private void atualizarLocalizacaoDoNome() {
-        JPanel maiorLinha = modeloAtual.getLinhasDaRelacao().getFirst();
+        JPanel maiorLinha = modeloAtual.getLinhasDaRelacao().get(0);
 
         for (JPanel linha : modeloAtual.getLinhasDaRelacao()) {
             int tamanhoDaLinha;
@@ -526,7 +539,8 @@ public abstract class RelacaoUML {
 
     private void atualizarLocalizacaoPontoDeExtensao() {
         Point localizacaoPontoDeExtensao = new Point();
-        Rectangle ancoraDoPonto = modeloAtual.estaMostrandoSetaA() ? painelSetaA.getBounds() : modeloAtual.getLinhasDaRelacao().getLast().getBounds();
+        Rectangle ancoraDoPonto = modeloAtual.estaMostrandoSetaA() ?
+                painelSetaA.getBounds() : modeloAtual.getLinhasDaRelacao().get(modeloAtual.getLinhasDaRelacao().size() - 1).getBounds();
 
         switch (modeloAtual.getOrientacaoLadoA()) {
             case SUL -> {
@@ -575,12 +589,12 @@ public abstract class RelacaoUML {
      * com o inicio da primeira linha.
      */
     public Point getLocalizacaoDeExtensao() {
-        Point localizacaoDeExtensao = modeloAtual.getLinhasDaRelacao().getLast().getLocation();
+        Point localizacaoDeExtensao = modeloAtual.getLinhasDaRelacao().get(modeloAtual.getLinhasDaRelacao().size() - 1).getLocation();
 
         switch (modeloAtual.getOrientacaoLadoA()) {
             case NORTE, OESTE -> localizacaoDeExtensao.x += TAMANHO_LINHAS_RELACAO;
             case SUL -> {
-                localizacaoDeExtensao.y += modeloAtual.getLinhasDaRelacao().getLast().getHeight() - TAMANHO_LINHAS_RELACAO;
+                localizacaoDeExtensao.y += modeloAtual.getLinhasDaRelacao().get(modeloAtual.getLinhasDaRelacao().size() - 1).getHeight() - TAMANHO_LINHAS_RELACAO;
                 localizacaoDeExtensao.x += TAMANHO_LINHAS_RELACAO;
             }
         }
@@ -647,7 +661,9 @@ public abstract class RelacaoUML {
 
         modeloAtual = novoModelo;
 
-        modeloAtual.setOrientacaoLadoA(calcularOrientacaoDeLinha(novoModelo.getPontoLadoA(), novoModelo.getLinhasDaRelacao().getLast()));
+        modeloAtual.setOrientacaoLadoA(calcularOrientacaoDeLinha(
+            novoModelo.getPontoLadoA(), novoModelo.getLinhasDaRelacao().get(novoModelo.getLinhasDaRelacao().size() - 1)
+        ));
 
         setNome(novoModelo.getNome());
 

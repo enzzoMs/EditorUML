@@ -33,7 +33,7 @@ O aplicativo foi desenvolvido como projeto final da disciplina de Técnicas de P
 
 ### Requisitos
 
-Para a execução do projeto basta ter o Java 21 ou superior instalado no seu sistema.
+Para a execução do projeto basta ter o Java 17 ou superior instalado no seu sistema.
 
 ### Como executar
 
