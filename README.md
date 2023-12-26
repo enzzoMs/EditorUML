@@ -19,9 +19,9 @@
 
 O Editor de Diagramas UML se trata de uma ferramenta para a elaboração de diagramas de software seguindo o padrão [UML (Unified Modeling Language)](https://pt.wikipedia.org/wiki/UML#).
 
-A UML é uma linguagem de notação que tenta padronizar a especificação, construção e documentação de sistemas de software. Ela disponibiliza uma várias de convenções e ideias sobre como especificar uma série de sistemas e seus componentes. Dentre esses, o aplicativo se foca em representar [diagramas de classe](https://pt.wikipedia.org/wiki/UML#Diagramas_de_classes), permitindo modelar sistemas simples.
+A UML é uma linguagem de notação que tenta padronizar a especificação, construção e documentação de sistemas de software. Ela disponibiliza várias de convenções e ideias sobre como especificar uma série de sistemas e seus componentes. Dentre esses, o aplicativo se foca em representar [diagramas de classe](https://pt.wikipedia.org/wiki/UML#Diagramas_de_classes), permitindo modelar sistemas simples.
 
-O aplicativo foi desenvolvido como projeto final da discplina de Técnicas de Programação 1 (TP1) ofertada pela [Universidade de Brasília](https://www.unb.br/) durante o semestre 2022/1. 
+O aplicativo foi desenvolvido como projeto final da disciplina de Técnicas de Programação 1 (TP1) ofertada pela [Universidade de Brasília](https://www.unb.br/) durante o semestre 2022/1. 
 
 <h1 align="center">
     <img alt="Exemplo de funcionamento" src="./readme_assets/editor_uml_exemplo.gif" />
@@ -86,7 +86,7 @@ Bibliotecas Adicionais:
 
 * Quadro Branco: O aplicativo funciona por meio de um esquema de quadro branco, onde os componentes podem ser livremente colocados e movimentados para qualquer posição.
 
-* Componentes Personalizáveis: Todos os componentes podem ser modificados, alterando as caracterísitcas de cada um para modelar o sistema desejado de forma precisa.
+* Componentes Personalizáveis: Todos os componentes podem ser modificados, alterando as características de cada um para modelar o sistema desejado de forma precisa.
 
 * Exportação: Os diagramas podem ser exportados como imagens `.png`
 
@@ -119,4 +119,4 @@ Bibliotecas Adicionais:
 
 * A ideia, funcionamento e alguns elementos gráficos foram inspirados pelo software [Dia Diagram Editor](http://dia-installer.de/).
 
-* Logo do aplicativo retirada de [Flaticon - Freepik](https://www.flaticon.com/free-icon/uml_5332798?term=uml&page=1&position=7&origin=search&related_id=5332798): 
+* Logo do aplicativo retirada de [Flaticon - Freepik](https://www.flaticon.com/free-icon/uml_5332798?term=uml&page=1&position=7&origin=search&related_id=5332798) 
