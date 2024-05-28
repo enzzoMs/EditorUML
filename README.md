@@ -1,7 +1,7 @@
 # (TP1 - 2022-1): Editor de Diagramas UML
 
 <h1 align="center">
-    <img alt="AvaliaUNB Logo" src="./readme_assets/logo_editor_uml.png" />
+    <img alt="AvaliaUNB Logo" src="./assets/logo_editor_uml.png" />
 </h1>
 <p align="center">Ferramenta de modelagem e elaboração de diagramas de classe UML</p>
 
@@ -24,7 +24,7 @@ A UML é uma linguagem de notação que tenta padronizar a especificação, cons
 O aplicativo foi desenvolvido como projeto final da disciplina de Técnicas de Programação 1 (TP1) ofertada pela [Universidade de Brasília](https://www.unb.br/) durante o semestre 2022/1. 
 
 <h1 align="center">
-    <img alt="Exemplo de funcionamento" src="./readme_assets/editor_uml_exemplo.gif" />
+    <img alt="Exemplo de funcionamento" src="./assets/editor_uml_exemplo.gif" />
 </h1>
 
 ---
@@ -95,20 +95,20 @@ Bibliotecas Adicionais:
 ## Showcase
 
 <h1 align="center">
-    <img alt="Tela de Login" src="./readme_assets/exemplo_diagrama.png" />
+    <img alt="Tela de Login" src="./assets/exemplo_diagrama.png" />
 </h1>
 
 <p align="center">Exemplo de um diagrama construído no aplicativo.</p>
 
 
 <h1 align="center">
-    <img alt="Tela de Perfil" src="./readme_assets/exemplo_exportar.png" />
+    <img alt="Tela de Perfil" src="./assets/exemplo_exportar.png" />
 </h1>
 
 <p align="center">Diagrama acima exportado como .png</p>
 
 <h1 align="center">
-    <img alt="Tela Principal" src="./readme_assets/exemplo_componentes.png" />
+    <img alt="Tela Principal" src="./assets/exemplo_componentes.png" />
 </h1>
 
 <p align="center">Todos os componentes fornecidos pelo Editor.</p>
